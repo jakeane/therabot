@@ -1,28 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/views/home/home_view.dart';
 
-void main() => runApp(FlutterChatbot());
+void main() => runApp(MyApp());
 
-class FlutterChatbot extends StatelessWidget {
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: "Flutter Chatbot",
       routes: {
-        '/': (context) => SignUpScreen(),
+        '/': (context) => HomeView(),
       },
     );
   }
 }
 
-class SignUpScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[200],
-      body: Center(
-        child: SizedBox(
-          child: Text("Hello Professor Jacobson"),
-        ),
-      ),
-    );
-  }
-}
