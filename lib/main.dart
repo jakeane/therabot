@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chatbot/views/home/home_view.dart';
+import 'package:flutter_chatbot/views/home/signup_view.dart';
+import 'package:flutter_chatbot/views/messaging/messaging_view.dart';
 
 void main() => runApp(MyApp());
 
@@ -10,7 +11,8 @@ class MyApp extends StatelessWidget {
       title: "Flutter Chatbot",
       routes: {
         // Creates a material app with a single homepage so far.
-        '/': (context) => HomeView(),
+        '/': (context) => SignUpView(),
+        '/chat': (context) => MessagingView(),
       },
     );
   }
