@@ -31,7 +31,7 @@ class _SignUpFormState extends State<SignUpForm> {
     });
   }
 
-  void _showWelcomeScreen() {
+  void _showMessagingView() {
     Navigator.of(context).pushNamed('/chat');
   }
 
@@ -68,7 +68,7 @@ class _SignUpFormState extends State<SignUpForm> {
           FlatButton(
             color: Colors.blue,
             textColor: Colors.white,
-            onPressed: _formProgress == 1 ? _showWelcomeScreen : null,
+            onPressed: _formProgress == 1 ? _showMessagingView : null,
             child: Text('Sign up'),
           ),
         ],
