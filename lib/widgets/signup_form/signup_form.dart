@@ -48,21 +48,21 @@ class _SignUpFormState extends State<SignUpForm> {
             padding: EdgeInsets.all(8.0),
             child: TextFormField(
               controller: _firstNameTextController,
-              decoration: InputDecoration(hintText: 'First name'),
+              decoration: InputDecoration(hintText: 'Name'),
             ),
           ),
           Padding(
             padding: EdgeInsets.all(8.0),
             child: TextFormField(
               controller: _lastNameTextController,
-              decoration: InputDecoration(hintText: 'Last name'),
+              decoration: InputDecoration(hintText: 'Username'),
             ),
           ),
           Padding(
             padding: EdgeInsets.all(8.0),
             child: TextFormField(
               controller: _usernameTextController,
-              decoration: InputDecoration(hintText: 'Username'),
+              decoration: InputDecoration(hintText: 'Password'),
             ),
           ),
           FlatButton(

@@ -46,7 +46,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     _textController.clear();
     AuthGoogle authGoogle = await AuthGoogle(
             fileJson:
-                "assets/credentials/simplechatbot-pkhufy-1318efc8aa8a.json")
+                "assets/credentials/simplechatbot-pkhufy-24d22513a231.json")
         .build();
     Dialogflow dialogflow =
         Dialogflow(authGoogle: authGoogle, language: Language.english);
