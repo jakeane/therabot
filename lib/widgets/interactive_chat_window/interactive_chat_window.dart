@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/html.dart';
+
+const SERVER_IP = '108.16.206.168';
+const SERVER_PORT = '1010';
+const URL = 'ws://$SERVER_IP:$SERVER_PORT';
+
+WebSocketChannel initializeWebSocketChannel(String url) {
+  return HtmlWebSocketChannel.connect(url);
+}
 
 class InteractiveChatWindow extends StatefulWidget {
   InteractiveChatWindow({Key key, this.title}) : super(key: key);
@@ -14,7 +24,9 @@ class InteractiveChatWindow extends StatefulWidget {
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = TextEditingController();
+  final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
 
+  
   Widget _buildTextComposer() {
     return IconTheme(
       data: IconThemeData(color: Theme.of(context).accentColor),
@@ -77,6 +89,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       });
       response(text);
     }
+
   }
 
   @override

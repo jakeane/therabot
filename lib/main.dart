@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/views/home/signup_view.dart';
 import 'package:flutter_chatbot/views/messaging/messaging_view.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-
 
 void main() => runApp(MyApp());
 
