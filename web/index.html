@@ -1,26 +1,52 @@
 <!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
 
+  <!-- STEP 3: ADD YOUR CLIENT ID -->
+  <meta name="google-signin-client_id" content="ADD-HERE.apps.googleusercontent.com">
+
+
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="flutter_chatbot">
+  <meta name="apple-mobile-web-app-title" content="flutter_web_firebase_googe_auth">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
   <!-- Favicon -->
-  <link rel="shortcut icon" type="image/png" href="favicon.png"/>
+  <link rel="shortcut icon" type="image/png" href="favicon.png" />
 
-  <title>flutter_chatbot</title>
+  <title>flutter_web_firebase_googe_auth</title>
   <link rel="manifest" href="manifest.json">
 </head>
+
 <body>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
+
+  <!-- STEP 1: ADD core Firebase JS SDK -->
+  
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.14.3/firebase-app.js"></script>
+
+  <!-- STEP 1: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="/__/firebase/7.14.6/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+      https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="/__/firebase/7.14.6/firebase-auth.js"></script>
+  <script src="/__/firebase/7.14.6/firebase-analytics.js"></script>
+  
+  <!-- Step 2: Initialize Firebase -->
+  <script src="/__/firebase/init.js"></script>
+  
+  <!-- Flutter Initialization -->
   <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
@@ -30,4 +56,5 @@
   </script>
   <script src="main.dart.js" type="application/javascript"></script>
 </body>
+
 </html>
