@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chatbot/views/home/signup_view.dart';
-import 'package:flutter_chatbot/views/messaging/messaging_view.dart';
+import 'package:provider/provider.dart';
 
-void main() => runApp(MyApp());
+import 'app/app.dart';
+import 'app/services/firebase_auth_service.dart';
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: "Flutter Chatbot",
-      routes: {
-        // Creates a material app with a single homepage so far.
-        '/': (context) => SignUpView(),
-        '/chat': (context) => MessagingView(),
-      },
+void main() => runApp(
+      /// Inject the [FirebaseAuthService]
+      /// and provide a stream of [User]
+      ///m
+      /// This needs to be above [MaterialApp]
+      /// At the top of the widget tree, to
+      /// accomodate for navigations in the app
+      MultiProvider(
+        providers: [
+          Provider(
+            create: (_) => FirebaseAuthService(),
+          ),
+          StreamProvider(
+            create: (context) =>
+                context.read<FirebaseAuthService>().onAuthStateChanged,
+          ),
+        ],
+        child: MyApp(),
+      ),
     );
-  }
-}
