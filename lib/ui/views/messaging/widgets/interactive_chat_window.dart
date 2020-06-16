@@ -77,15 +77,20 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       _messages.insert(0, message);
     });
 
+
+    print(_messages.length);
+   // print(_messages.getVars());
     // Try to save the user and chatbot messages into google cloud firestore
     var firebaseUser = await FirebaseAuth.instance.currentUser();
     print("Attemting to add data to firestore");
+  
     firestoreInstance.collection("users").document(firebaseUser.uid).setData({
       "user_message": query ,
       "bot_message": message.text,
     }, merge: true).then((_) {
       print("success!");
     });
+
   }
 
   void _handleSubmitted(String text) {
@@ -136,6 +141,10 @@ class ChatMessage extends StatelessWidget {
   final String text;
   final String name;
   final bool type;
+
+  String getVars(){
+     return "{text: $text, name: $name, type: $type}";
+ }
 
   List<Widget> otherMessage(context) {
     return <Widget>[
@@ -193,4 +202,6 @@ class ChatMessage extends StatelessWidget {
       ),
     );
   }
+
+
 }
