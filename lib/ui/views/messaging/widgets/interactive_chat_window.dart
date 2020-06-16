@@ -77,10 +77,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       _messages.insert(0, message);
     });
 
+    // Try to save the user and chatbot messages into google cloud firestore
     var firebaseUser = await FirebaseAuth.instance.currentUser();
+    print("Attemting to add data to firestore");
     firestoreInstance.collection("users").document(firebaseUser.uid).setData({
       "user_message": query ,
-      "bot_message": message.text
+      "bot_message": message.text,
     }, merge: true).then((_) {
       print("success!");
     });
