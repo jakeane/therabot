@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/html.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 const SERVER_IP = '108.16.206.168';
 const SERVER_PORT = '1010';
@@ -25,8 +27,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = TextEditingController();
   final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
+  final firestoreInstance = Firestore.instance;
 
-  
+
   Widget _buildTextComposer() {
     return IconTheme(
       data: IconThemeData(color: Theme.of(context).accentColor),
@@ -55,6 +58,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void response(query) async {
+
     _textController.clear();
     AuthGoogle authGoogle = await AuthGoogle(
             fileJson:
@@ -71,6 +75,14 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     );
     setState(() {
       _messages.insert(0, message);
+    });
+
+    var firebaseUser = await FirebaseAuth.instance.currentUser();
+    firestoreInstance.collection("users").document(firebaseUser.uid).setData({
+      "user_message": query ,
+      "bot_message": message.text
+    }, merge: true).then((_) {
+      print("success!");
     });
   }
 
@@ -89,7 +101,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       });
       response(text);
     }
-
   }
 
   @override
