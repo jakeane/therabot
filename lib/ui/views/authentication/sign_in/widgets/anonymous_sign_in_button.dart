@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/ui/views/messaging/messaging_view.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../app/constants/strings.dart';
@@ -14,6 +15,10 @@ class AnonymousSignInButton extends StatelessWidget {
     return RaisedButton(
       onPressed: () {
         context.read<SignInViewModel>().signInAnonymously();
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => MessagingView()),
+        );
       },
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: Colors.red[900],

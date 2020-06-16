@@ -7,7 +7,7 @@ import 'app/services/firebase_auth_service.dart';
 void main() => runApp(
       /// Inject the [FirebaseAuthService]
       /// and provide a stream of [User]
-      ///m
+      ///
       /// This needs to be above [MaterialApp]
       /// At the top of the widget tree, to
       /// accomodate for navigations in the app
@@ -23,4 +23,4 @@ void main() => runApp(
         ],
         child: MyApp(),
       ),
-    );
+    ); 
