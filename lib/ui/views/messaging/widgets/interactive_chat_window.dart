@@ -4,6 +4,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/html.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
 
 const SERVER_IP = '108.16.206.168';
 const SERVER_PORT = '1010';
@@ -28,7 +29,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
   final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
   final firestoreInstance = Firestore.instance;
-
 
   Widget _buildTextComposer() {
     return IconTheme(
@@ -58,7 +58,22 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void response(query) async {
+    var firebaseUser = await FirebaseAuth.instance.currentUser();
 
+    // Inserts the user input into cloud firestore
+
+    // 
+    firestoreInstance
+        .collection("users")
+        .document(firebaseUser.uid)
+        .collection("messages")
+        .document("message_id${_messages.length}")
+        .setData(json.decode(_messages.first.getVars()), merge: true)
+        .then((_) {
+      print("Added user input to firestore");
+    });
+
+    // Talks to dialogflow
     _textController.clear();
     AuthGoogle authGoogle = await AuthGoogle(
             fileJson:
@@ -73,24 +88,24 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       name: "Covid Bot",
       type: false,
     );
+    // Add in the user message to the firestore message list
     setState(() {
       _messages.insert(0, message);
     });
 
-
-    print(_messages.length);
-   // print(_messages.getVars());
+    // Add in the chatbot response message to the firestore message list
+    print(_messages.first.getVars());
+    json.decode(_messages.first.getVars());
     // Try to save the user and chatbot messages into google cloud firestore
-    var firebaseUser = await FirebaseAuth.instance.currentUser();
-    print("Attemting to add data to firestore");
-  
-    firestoreInstance.collection("users").document(firebaseUser.uid).setData({
-      "user_message": query ,
-      "bot_message": message.text,
-    }, merge: true).then((_) {
-      print("success!");
+    firestoreInstance
+        .collection("users")
+        .document(firebaseUser.uid)
+        .collection("messages")
+        .document("message_id${_messages.length}")
+        .setData(json.decode(_messages.first.getVars()), merge: true)
+        .then((_) {
+      print("Added chat response to firestore");
     });
-
   }
 
   void _handleSubmitted(String text) {
@@ -142,9 +157,9 @@ class ChatMessage extends StatelessWidget {
   final String name;
   final bool type;
 
-  String getVars(){
-     return "{text: $text, name: $name, type: $type}";
- }
+  String getVars() {
+    return '{"text": "$text", "name": "$name", "type": "$type"}';
+  }
 
   List<Widget> otherMessage(context) {
     return <Widget>[
@@ -202,6 +217,4 @@ class ChatMessage extends StatelessWidget {
       ),
     );
   }
-
-
 }
