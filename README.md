@@ -1,6 +1,6 @@
 # flutter_chatbot
 
-A new Flutter project.
+A flutter project for the deployment of a fine-tuned ParlAI Blenderbot developed by Dr. Michael Heinz, Professor Nicholas Jacobson, and Jason Kim. 
 
 ## Getting Started
 
