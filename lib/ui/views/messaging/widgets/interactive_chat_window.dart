@@ -29,6 +29,10 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
   final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
   final firestoreInstance = Firestore.instance;
+  String currentUserID = '';
+  int previousMessagesCount = 0;
+  int currentMessagesCount = 0;
+  int numConversations = 0;
 
   Widget _buildTextComposer() {
     return IconTheme(
@@ -59,13 +63,42 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
   void response(query) async {
     var firebaseUser = await FirebaseAuth.instance.currentUser();
+    currentUserID = firebaseUser.uid;
 
-    // Inserts the user input into cloud firestore
+    // Get the conversation number
+    previousMessagesCount = currentMessagesCount;
+    currentMessagesCount = _messages.length;
 
-    // 
+    if (newConversationStarted()) {
+      // if the conversationCount is empty then
+      final DocumentSnapshot getuserdoc = await Firestore.instance
+          .collection('users')
+          .document(currentUserID)
+          .get();
+
+      if (getuserdoc.exists == false) {
+        numConversations = 1;
+      }
+
+      else {
+        numConversations = getuserdoc.data['conversationCount'] + 1;
+      }
+
+      firestoreInstance
+            .collection("users")
+            .document(firebaseUser.uid)
+            .setData(json.decode('{"conversationCount": $numConversations}'), merge: true)
+            .then((_) {
+          print("Added first conversation number to firestore");
+        });
+    }
+
+
     firestoreInstance
         .collection("users")
         .document(firebaseUser.uid)
+        .collection("conversations")
+        .document("conversation_id$numConversations")
         .collection("messages")
         .document("message_id${_messages.length}")
         .setData(json.decode(_messages.first.getVars()), merge: true)
@@ -100,11 +133,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     firestoreInstance
         .collection("users")
         .document(firebaseUser.uid)
+        .collection("conversations")
+        .document("conversation_id$numConversations")
         .collection("messages")
         .document("message_id${_messages.length}")
         .setData(json.decode(_messages.first.getVars()), merge: true)
         .then((_) {
-      print("Added chat response to firestore");
+      print("Added bot response to firestore");
     });
   }
 
@@ -123,6 +158,17 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       });
       response(text);
     }
+  }
+
+  bool newConversationStarted() {
+    bool result = false;
+
+    if (previousMessagesCount == 0) {
+      if (currentMessagesCount > 0) {
+        result = true;
+      }
+    }
+    return result;
   }
 
   @override
