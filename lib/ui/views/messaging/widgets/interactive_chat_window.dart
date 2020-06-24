@@ -32,7 +32,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   String currentUserID = '';
   int previousMessagesCount = 0;
   int currentMessagesCount = 0;
-  int numConversations = 0;
+  int messageID = 0;
 
   Widget _buildTextComposer() {
     return IconTheme(
@@ -69,6 +69,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     previousMessagesCount = currentMessagesCount;
     currentMessagesCount = _messages.length;
 
+    print('Previous message count: $previousMessagesCount');
+    print('Current message count: $currentMessagesCount');
+
     if (newConversationStarted()) {
       // if the conversationCount is empty then
       final DocumentSnapshot getuserdoc = await Firestore.instance
@@ -77,33 +80,33 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           .get();
 
       if (getuserdoc.exists == false) {
-        numConversations = 1;
+        messageID = 0;
       }
 
       else {
-        numConversations = getuserdoc.data['conversationCount'] + 1;
+        messageID = getuserdoc.data['messagesCount'];
       }
+    }
 
-      firestoreInstance
+    messageID += 1;
+
+    firestoreInstance
             .collection("users")
             .document(firebaseUser.uid)
-            .setData(json.decode('{"conversationCount": $numConversations}'), merge: true)
+            .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
             .then((_) {
-          print("Added first conversation number to firestore");
+          print("messageCount set to $messageID");
         });
-    }
 
 
     firestoreInstance
         .collection("users")
         .document(firebaseUser.uid)
-        .collection("conversations")
-        .document("conversation_id$numConversations")
         .collection("messages")
-        .document("message_id${_messages.length}")
+        .document("message_id$messageID")
         .setData(json.decode(_messages.first.getVars()), merge: true)
         .then((_) {
-      print("Added user input to firestore");
+      print("Added user input to firestore with messageID: $messageID");
     });
 
     // Talks to dialogflow
@@ -126,20 +129,25 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       _messages.insert(0, message);
     });
 
-    // Add in the chatbot response message to the firestore message list
-    print(_messages.first.getVars());
-    json.decode(_messages.first.getVars());
+    messageID += 1;
+
+    firestoreInstance
+            .collection("users")
+            .document(firebaseUser.uid)
+            .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
+            .then((_) {
+          print("messageCount set to $messageID");
+        });
+
     // Try to save the user and chatbot messages into google cloud firestore
     firestoreInstance
         .collection("users")
         .document(firebaseUser.uid)
-        .collection("conversations")
-        .document("conversation_id$numConversations")
         .collection("messages")
-        .document("message_id${_messages.length}")
+        .document("message_id$messageID")
         .setData(json.decode(_messages.first.getVars()), merge: true)
         .then((_) {
-      print("Added bot response to firestore");
+      print("Added bot response to firestore with messageID: $messageID");
     });
   }
 
