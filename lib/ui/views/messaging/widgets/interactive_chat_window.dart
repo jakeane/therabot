@@ -43,6 +43,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           children: <Widget>[
             Flexible(
               child: TextField(
+                autofocus: true,
                 controller: _textController,
                 onSubmitted: _handleSubmitted,
                 decoration:
