@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/html.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:convert';
 
 const SERVER_IP = '108.16.206.168';
 const SERVER_PORT = '1010';
@@ -25,8 +28,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = TextEditingController();
   final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
+  final firestoreInstance = Firestore.instance;
+  String currentUserID = '';
+  int previousMessagesCount = 0;
+  int currentMessagesCount = 0;
+  int messageID = 0;
 
-  
   Widget _buildTextComposer() {
     return IconTheme(
       data: IconThemeData(color: Theme.of(context).accentColor),
@@ -36,6 +43,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           children: <Widget>[
             Flexible(
               child: TextField(
+                autofocus: true,
                 controller: _textController,
                 onSubmitted: _handleSubmitted,
                 decoration:
@@ -55,6 +63,60 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void response(query) async {
+    var firebaseUser = await FirebaseAuth.instance.currentUser();
+    currentUserID = firebaseUser.uid;
+
+    // Get the conversation number
+    previousMessagesCount = currentMessagesCount;
+    currentMessagesCount = _messages.length;
+
+    print('Previous message count: $previousMessagesCount');
+    print('Current message count: $currentMessagesCount');
+
+    if (newConversationStarted()) {
+      // if the conversationCount is empty then
+      final DocumentSnapshot getuserdoc = await Firestore.instance
+          .collection('users')
+          .document(currentUserID)
+          .get();
+
+      if (getuserdoc.exists == false) {
+        messageID = 0;
+      }
+
+      else {
+        messageID = getuserdoc.data['messagesCount'];
+      }
+    }
+
+    messageID += 1;
+
+    firestoreInstance
+            .collection("users")
+            .document(firebaseUser.uid)
+            .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
+            .then((_) {
+          print("messageCount set to $messageID");
+        });
+
+
+    // userMessage['timestamp'] = firestoreInstance.s
+    firestoreInstance
+        .collection("users")
+        .document(firebaseUser.uid)
+        .collection("messages")
+        .document("message_id$messageID")
+        .setData({
+          "text": _messages.first.text,
+          "name": _messages.first.name,
+          "type": _messages.first.type,
+          "timestamp": FieldValue.serverTimestamp(),
+        }, merge: true)
+        .then((_) {
+      print("Added user message to firestore");
+    });
+
+    // Talks to dialogflow
     _textController.clear();
     AuthGoogle authGoogle = await AuthGoogle(
             fileJson:
@@ -69,8 +131,35 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       name: "Covid Bot",
       type: false,
     );
+    // Add in the user message to the firestore message list
     setState(() {
       _messages.insert(0, message);
+    });
+
+    messageID += 1;
+
+    firestoreInstance
+            .collection("users")
+            .document(firebaseUser.uid)
+            .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
+            .then((_) {
+          print("messageCount set to $messageID");
+        });
+
+    // Save the bot message to firestore
+    firestoreInstance
+        .collection("users")
+        .document(firebaseUser.uid)
+        .collection("messages")
+        .document("message_id$messageID")
+        .setData({
+          "text": _messages.first.text,
+          "name": _messages.first.name,
+          "type": _messages.first.type,
+          "timestamp": FieldValue.serverTimestamp(),
+        }, merge: true)
+        .then((_) {
+      print("Added bot response to firestore");
     });
   }
 
@@ -89,7 +178,17 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       });
       response(text);
     }
+  }
 
+  bool newConversationStarted() {
+    bool result = false;
+
+    if (previousMessagesCount == 0) {
+      if (currentMessagesCount > 0) {
+        result = true;
+      }
+    }
+    return result;
   }
 
   @override
