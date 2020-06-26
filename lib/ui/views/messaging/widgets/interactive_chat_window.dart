@@ -99,14 +99,20 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         });
 
 
+    // userMessage['timestamp'] = firestoreInstance.s
     firestoreInstance
         .collection("users")
         .document(firebaseUser.uid)
         .collection("messages")
         .document("message_id$messageID")
-        .setData(json.decode(_messages.first.getVars()), merge: true)
+        .setData({
+          "text": _messages.first.text,
+          "name": _messages.first.name,
+          "type": _messages.first.type,
+          "timestamp": FieldValue.serverTimestamp(),
+        }, merge: true)
         .then((_) {
-      print("Added user input to firestore with messageID: $messageID");
+      print("Added user message to firestore");
     });
 
     // Talks to dialogflow
@@ -139,15 +145,20 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           print("messageCount set to $messageID");
         });
 
-    // Try to save the user and chatbot messages into google cloud firestore
+    // Save the bot message to firestore
     firestoreInstance
         .collection("users")
         .document(firebaseUser.uid)
         .collection("messages")
         .document("message_id$messageID")
-        .setData(json.decode(_messages.first.getVars()), merge: true)
+        .setData({
+          "text": _messages.first.text,
+          "name": _messages.first.name,
+          "type": _messages.first.type,
+          "timestamp": FieldValue.serverTimestamp(),
+        }, merge: true)
         .then((_) {
-      print("Added bot response to firestore with messageID: $messageID");
+      print("Added bot response to firestore");
     });
   }
 
@@ -210,10 +221,6 @@ class ChatMessage extends StatelessWidget {
   final String text;
   final String name;
   final bool type;
-
-  String getVars() {
-    return '{"text": "$text", "name": "$name", "type": "$type"}';
-  }
 
   List<Widget> otherMessage(context) {
     return <Widget>[
