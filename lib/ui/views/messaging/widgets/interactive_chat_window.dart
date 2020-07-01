@@ -34,6 +34,23 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   int currentMessagesCount = 0;
   int messageID = 0;
 
+  // Creates a focus node to autofocus the text controller when the chatbot responds
+  FocusNode myFocusNode;
+  
+  @override
+  void initState() {
+    super.initState();
+
+    myFocusNode = FocusNode();
+  }
+
+  @override
+  void dispose() {
+    myFocusNode.dispose();
+
+    super.dispose();
+  }
+
   Widget _buildTextComposer() {
     return IconTheme(
       data: IconThemeData(color: Theme.of(context).accentColor),
@@ -44,6 +61,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
             Flexible(
               child: TextField(
                 autofocus: true,
+                focusNode: myFocusNode,
                 controller: _textController,
                 onSubmitted: _handleSubmitted,
                 decoration:
@@ -161,6 +179,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         .then((_) {
       print("Added bot response to firestore");
     });
+
+    myFocusNode.requestFocus();
   }
 
   void _handleSubmitted(String text) {
