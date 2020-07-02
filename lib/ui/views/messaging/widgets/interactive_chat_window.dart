@@ -31,7 +31,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
   final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
 
-  String currentUserID = '';
+  String currentUserID;
   int previousMessagesCount = 0;
   int currentMessagesCount = 0;
   int messageID = 0;
@@ -83,7 +83,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void response(query) async {
-    currentUserID = await FirebaseDbService.getCurrentUserID();
+    if (currentUserID == null) {
+      currentUserID = await FirebaseDbService.getCurrentUserID();
+    }
 
     // Get the conversation number
     previousMessagesCount = currentMessagesCount;
