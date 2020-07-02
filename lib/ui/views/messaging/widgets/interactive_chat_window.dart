@@ -29,6 +29,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = TextEditingController();
   final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
+  // Remove firestoreInstance
   final firestoreInstance = Firestore.instance;
   String currentUserID = '';
   int previousMessagesCount = 0;
@@ -82,6 +83,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void response(query) async {
+    // Replace with FirebaseDbService.getCurrentUserID
     var firebaseUser = await FirebaseAuth.instance.currentUser();
     currentUserID = firebaseUser.uid;
 
@@ -94,6 +96,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     if (newConversationStarted()) {
       // if the conversationCount is empty then
+      // replace with FirebaseDbService.getUserDoc(currentUserID)
       final DocumentSnapshot getuserdoc = await Firestore.instance
           .collection('users')
           .document(currentUserID)
@@ -108,6 +111,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     messageID += 1;
 
+    // Replace with FirebaseDbService.addMessageCount
     firestoreInstance
         .collection("users")
         .document(firebaseUser.uid)
@@ -117,6 +121,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     });
 
     // userMessage['timestamp'] = firestoreInstance.s
+    var messageData = {
+      "text": _messages.first.text,
+      "name": _messages.first.name,
+      "type": _messages.first.type,
+      "timestamp": FieldValue.serverTimestamp(),
+    };
+    // Replace with FirebaseDbService.addMessageData(userID, messageID, messageData)
     firestoreInstance
         .collection("users")
         .document(firebaseUser.uid)
@@ -153,6 +164,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     messageID += 1;
 
+    // Replace with FirebaseDbService(userID, messageID)
     firestoreInstance
         .collection("users")
         .document(firebaseUser.uid)
@@ -162,6 +174,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     });
 
     // Save the bot message to firestore
+    var messageData2 = {
+      "text": _messages.first.text,
+      "name": _messages.first.name,
+      "type": _messages.first.type,
+      "timestamp": FieldValue.serverTimestamp(),
+    };
+    // Replace with FirebaseDbService.addMessageData(userID, messageID, messageData)
     firestoreInstance
         .collection("users")
         .document(firebaseUser.uid)
