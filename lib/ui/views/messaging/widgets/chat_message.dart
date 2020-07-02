@@ -14,19 +14,36 @@ class ChatMessage extends StatelessWidget {
         child: CircleAvatar(child: Text('CB')),
       ),
       Expanded(
-          child: InkWell(
-        onTap: () => print("Container pressed"), // handle your onTap here
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(this.name, style: TextStyle(fontWeight: FontWeight.bold)),
             Container(
-              margin: const EdgeInsets.only(top: 5.0),
-              child: Text(this.text),
-            ),
+                padding: const EdgeInsets.all(0.0),
+                child: Row(
+                  children: [
+                    Text(this.text),
+                    IconButton(
+                      icon: Icon(Icons.thumb_up),
+                      constraints: BoxConstraints.loose(Size(30, 30)),
+                      iconSize: 15,
+                      onPressed: () {
+                        print("Thumbs up");
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.thumb_down),
+                      constraints: BoxConstraints(),
+                      iconSize: 15,
+                      onPressed: () {
+                        print("Thumbs down");
+                      },
+                    )
+                  ],
+                )),
           ],
         ),
-      )),
+      ),
     ];
   }
 
