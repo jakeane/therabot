@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/html.dart';
@@ -29,8 +30,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = TextEditingController();
   final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
-  // Remove firestoreInstance
-  final firestoreInstance = Firestore.instance;
+
   String currentUserID = '';
   int previousMessagesCount = 0;
   int currentMessagesCount = 0;
@@ -83,9 +83,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void response(query) async {
-    // Replace with FirebaseDbService.getCurrentUserID
-    var firebaseUser = await FirebaseAuth.instance.currentUser();
-    currentUserID = firebaseUser.uid;
+    currentUserID = await FirebaseDbService.getCurrentUserID();
 
     // Get the conversation number
     previousMessagesCount = currentMessagesCount;
@@ -96,11 +94,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     if (newConversationStarted()) {
       // if the conversationCount is empty then
-      // replace with FirebaseDbService.getUserDoc(currentUserID)
-      final DocumentSnapshot getuserdoc = await Firestore.instance
-          .collection('users')
-          .document(currentUserID)
-          .get();
+      final DocumentSnapshot getuserdoc =
+          await FirebaseDbService.getUserDoc(currentUserID);
 
       if (getuserdoc.exists == false) {
         messageID = 0;
@@ -111,36 +106,15 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     messageID += 1;
 
-    // Replace with FirebaseDbService.addMessageCount
-    firestoreInstance
-        .collection("users")
-        .document(firebaseUser.uid)
-        .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
-        .then((_) {
-      print("messageCount set to $messageID");
-    });
+    FirebaseDbService.addMessageCount(currentUserID, messageID);
 
-    // userMessage['timestamp'] = firestoreInstance.s
-    var messageData = {
+    var userMessage = {
       "text": _messages.first.text,
       "name": _messages.first.name,
       "type": _messages.first.type,
       "timestamp": FieldValue.serverTimestamp(),
     };
-    // Replace with FirebaseDbService.addMessageData(userID, messageID, messageData)
-    firestoreInstance
-        .collection("users")
-        .document(firebaseUser.uid)
-        .collection("messages")
-        .document("message_id$messageID")
-        .setData({
-      "text": _messages.first.text,
-      "name": _messages.first.name,
-      "type": _messages.first.type,
-      "timestamp": FieldValue.serverTimestamp(),
-    }, merge: true).then((_) {
-      print("Added user message to firestore");
-    });
+    FirebaseDbService.addMessageData(currentUserID, messageID, userMessage);
 
     // Talks to dialogflow
     _textController.clear();
@@ -164,36 +138,15 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     messageID += 1;
 
-    // Replace with FirebaseDbService(userID, messageID)
-    firestoreInstance
-        .collection("users")
-        .document(firebaseUser.uid)
-        .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
-        .then((_) {
-      print("messageCount set to $messageID");
-    });
+    FirebaseDbService.addMessageCount(currentUserID, messageID);
 
-    // Save the bot message to firestore
-    var messageData2 = {
+    var botMessage = {
       "text": _messages.first.text,
       "name": _messages.first.name,
       "type": _messages.first.type,
       "timestamp": FieldValue.serverTimestamp(),
     };
-    // Replace with FirebaseDbService.addMessageData(userID, messageID, messageData)
-    firestoreInstance
-        .collection("users")
-        .document(firebaseUser.uid)
-        .collection("messages")
-        .document("message_id$messageID")
-        .setData({
-      "text": _messages.first.text,
-      "name": _messages.first.name,
-      "type": _messages.first.type,
-      "timestamp": FieldValue.serverTimestamp(),
-    }, merge: true).then((_) {
-      print("Added bot response to firestore");
-    });
+    FirebaseDbService.addMessageData(currentUserID, messageID, botMessage);
 
     myFocusNode.requestFocus();
   }

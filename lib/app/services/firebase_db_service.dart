@@ -5,20 +5,20 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseDbService {
-  final firestoreInstance = Firestore.instance;
+  static final firestoreInstance = Firestore.instance;
 
-  Future<String> getCurrentUserID() async {
+  static Future<String> getCurrentUserID() async {
     var user = await FirebaseAuth.instance.currentUser();
     return user.uid;
   }
 
-  Future<DocumentSnapshot> getUserDoc(String userID) async {
+  static Future<DocumentSnapshot> getUserDoc(String userID) async {
     var userDoc =
         await firestoreInstance.collection('users').document(userID).get();
     return userDoc;
   }
 
-  void addMessageCount(String userID, int messageID) {
+  static void addMessageCount(String userID, int messageID) {
     firestoreInstance
         .collection('users')
         .document(userID)
@@ -26,7 +26,7 @@ class FirebaseDbService {
         .then((_) => print("messageCount set to $messageID"));
   }
 
-  void addMessageData(
+  static void addMessageData(
       String userID, int messageID, Map<String, Object> messageData) {
     firestoreInstance
         .collection('users')
