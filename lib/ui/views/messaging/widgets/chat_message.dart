@@ -14,6 +14,8 @@ class ChatMessage extends StatelessWidget {
         child: CircleAvatar(child: Text('CB')),
       ),
       Expanded(
+          child: InkWell(
+        onTap: () => print("Container pressed"), // handle your onTap here
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -24,7 +26,7 @@ class ChatMessage extends StatelessWidget {
             ),
           ],
         ),
-      ),
+      )),
     ];
   }
 
