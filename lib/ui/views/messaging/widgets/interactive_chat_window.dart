@@ -4,6 +4,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/html.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import './chat_message.dart';
 import 'dart:convert';
 
 const SERVER_IP = '108.16.206.168';
@@ -36,7 +37,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
   // Creates a focus node to autofocus the text controller when the chatbot responds
   FocusNode myFocusNode;
-  
+
   @override
   void initState() {
     super.initState();
@@ -100,9 +101,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
       if (getuserdoc.exists == false) {
         messageID = 0;
-      }
-
-      else {
+      } else {
         messageID = getuserdoc.data['messagesCount'];
       }
     }
@@ -110,13 +109,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     messageID += 1;
 
     firestoreInstance
-            .collection("users")
-            .document(firebaseUser.uid)
-            .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
-            .then((_) {
-          print("messageCount set to $messageID");
-        });
-
+        .collection("users")
+        .document(firebaseUser.uid)
+        .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
+        .then((_) {
+      print("messageCount set to $messageID");
+    });
 
     // userMessage['timestamp'] = firestoreInstance.s
     firestoreInstance
@@ -125,12 +123,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         .collection("messages")
         .document("message_id$messageID")
         .setData({
-          "text": _messages.first.text,
-          "name": _messages.first.name,
-          "type": _messages.first.type,
-          "timestamp": FieldValue.serverTimestamp(),
-        }, merge: true)
-        .then((_) {
+      "text": _messages.first.text,
+      "name": _messages.first.name,
+      "type": _messages.first.type,
+      "timestamp": FieldValue.serverTimestamp(),
+    }, merge: true).then((_) {
       print("Added user message to firestore");
     });
 
@@ -157,12 +154,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     messageID += 1;
 
     firestoreInstance
-            .collection("users")
-            .document(firebaseUser.uid)
-            .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
-            .then((_) {
-          print("messageCount set to $messageID");
-        });
+        .collection("users")
+        .document(firebaseUser.uid)
+        .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
+        .then((_) {
+      print("messageCount set to $messageID");
+    });
 
     // Save the bot message to firestore
     firestoreInstance
@@ -171,12 +168,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         .collection("messages")
         .document("message_id$messageID")
         .setData({
-          "text": _messages.first.text,
-          "name": _messages.first.name,
-          "type": _messages.first.type,
-          "timestamp": FieldValue.serverTimestamp(),
-        }, merge: true)
-        .then((_) {
+      "text": _messages.first.text,
+      "name": _messages.first.name,
+      "type": _messages.first.type,
+      "timestamp": FieldValue.serverTimestamp(),
+    }, merge: true).then((_) {
       print("Added bot response to firestore");
     });
 
@@ -232,71 +228,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           child: _buildTextComposer(),
         ),
       ]),
-    );
-  }
-}
-
-class ChatMessage extends StatelessWidget {
-  ChatMessage({this.text, this.name, this.type});
-
-  final String text;
-  final String name;
-  final bool type;
-
-  List<Widget> otherMessage(context) {
-    return <Widget>[
-      Container(
-        margin: const EdgeInsets.only(right: 16.0),
-        child: CircleAvatar(child: Text('CB')),
-      ),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(this.name, style: TextStyle(fontWeight: FontWeight.bold)),
-            Container(
-              margin: const EdgeInsets.only(top: 5.0),
-              child: Text(this.text),
-            ),
-          ],
-        ),
-      ),
-    ];
-  }
-
-  List<Widget> myMessage(context) {
-    return <Widget>[
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            Text(this.name, style: TextStyle(fontWeight: FontWeight.bold)),
-            Container(
-              margin: const EdgeInsets.only(top: 5.0),
-              child: Text(text),
-            ),
-          ],
-        ),
-      ),
-      Container(
-        margin: const EdgeInsets.only(left: 16.0),
-        child: CircleAvatar(
-            child: Text(
-          this.name[0],
-          style: TextStyle(fontWeight: FontWeight.bold),
-        )),
-      ),
-    ];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: this.type ? myMessage(context) : otherMessage(context),
-      ),
     );
   }
 }
