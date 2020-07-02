@@ -107,7 +107,41 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     }
 
     messageID += 1;
+    print("Adding message to DB");
 
+    handleMessageData(currentUserID, messageID, query);
+  }
+
+  void _handleSubmitted(String text) {
+    // if the inputted string is empty, don't do anything
+    if (text == '') {
+    } else {
+      _textController.clear();
+      ChatMessage message = ChatMessage(
+        text: text,
+        name: "User",
+        type: true,
+      );
+      setState(() {
+        _messages.insert(0, message);
+      });
+      response(text);
+    }
+    print('Finished response');
+  }
+
+  bool newConversationStarted() {
+    bool result = false;
+
+    if (previousMessagesCount == 0) {
+      if (currentMessagesCount > 0) {
+        result = true;
+      }
+    }
+    return result;
+  }
+
+  void handleMessageData(String userID, int messageID, String query) async {
     FirebaseDbService.addMessageCount(currentUserID, messageID);
 
     var userMessage = {
@@ -151,34 +185,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     FirebaseDbService.addMessageData(currentUserID, messageID, botMessage);
 
     myFocusNode.requestFocus();
-  }
-
-  void _handleSubmitted(String text) {
-    // if the inputted string is empty, don't do anything
-    if (text == '') {
-    } else {
-      _textController.clear();
-      ChatMessage message = ChatMessage(
-        text: text,
-        name: "User",
-        type: true,
-      );
-      setState(() {
-        _messages.insert(0, message);
-      });
-      response(text);
-    }
-  }
-
-  bool newConversationStarted() {
-    bool result = false;
-
-    if (previousMessagesCount == 0) {
-      if (currentMessagesCount > 0) {
-        result = true;
-      }
-    }
-    return result;
   }
 
   @override
