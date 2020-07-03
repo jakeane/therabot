@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/message_rating.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:bubble/bubble.dart';
 
 class ChatMessage extends StatefulWidget {
   ChatMessage({this.text, this.name, this.type, this.id});
@@ -31,7 +32,10 @@ class _ChatMessageState extends State<ChatMessage> {
                 padding: const EdgeInsets.all(0.0),
                 child: Row(
                   children: [
-                    Text(widget.text),
+                    Bubble(
+                      child: Text(widget.text),
+                      color: Color.fromRGBO(200, 200, 200, 1.0),
+                    ),
                     IconButton(
                       icon: FaIcon(_selected[0]
                           ? FontAwesomeIcons.solidThumbsUp
@@ -69,7 +73,10 @@ class _ChatMessageState extends State<ChatMessage> {
             Text(widget.name, style: TextStyle(fontWeight: FontWeight.bold)),
             Container(
               margin: const EdgeInsets.only(top: 5.0),
-              child: Text(widget.text),
+              child: Bubble(
+                child: Text(widget.text),
+                color: Color.fromRGBO(212, 234, 244, 1.0),
+              ),
             ),
           ],
         ),
