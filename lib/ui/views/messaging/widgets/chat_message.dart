@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/message_rating.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class ChatMessage extends StatelessWidget {
-  ChatMessage({this.text, this.name, this.type});
-
+class ChatMessage extends StatefulWidget {
+  ChatMessage({this.text, this.name, this.type, this.id});
   final String text;
   final String name;
   final bool type;
+  final int id;
+
+  @override
+  _ChatMessageState createState() => _ChatMessageState();
+}
+
+class _ChatMessageState extends State<ChatMessage> {
+  var _selected = [false, false];
 
   List<Widget> otherMessage(context) {
     return <Widget>[
@@ -17,28 +26,32 @@ class ChatMessage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(this.name, style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(widget.name, style: TextStyle(fontWeight: FontWeight.bold)),
             Container(
                 padding: const EdgeInsets.all(0.0),
                 child: Row(
                   children: [
-                    Text(this.text),
+                    Text(widget.text),
                     IconButton(
-                      icon: Icon(Icons.thumb_up),
+                      icon: FaIcon(_selected[0]
+                          ? FontAwesomeIcons.solidThumbsUp
+                          : FontAwesomeIcons.thumbsUp),
                       constraints: BoxConstraints.loose(Size(30, 30)),
                       iconSize: 15,
-                      onPressed: () {
-                        print("Thumbs up");
-                      },
+                      onPressed: () => setState(() {
+                        _selected = [true, false];
+                      }),
                     ),
                     IconButton(
-                      icon: Icon(Icons.thumb_down),
+                      icon: FaIcon(_selected[1]
+                          ? FontAwesomeIcons.solidThumbsDown
+                          : FontAwesomeIcons.thumbsDown),
                       constraints: BoxConstraints(),
                       iconSize: 15,
-                      onPressed: () {
-                        print("Thumbs down");
-                      },
-                    )
+                      onPressed: () => setState(() {
+                        _selected = [false, true];
+                      }),
+                    ),
                   ],
                 )),
           ],
@@ -53,10 +66,10 @@ class ChatMessage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
-            Text(this.name, style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(widget.name, style: TextStyle(fontWeight: FontWeight.bold)),
             Container(
               margin: const EdgeInsets.only(top: 5.0),
-              child: Text(text),
+              child: Text(widget.text),
             ),
           ],
         ),
@@ -65,7 +78,7 @@ class ChatMessage extends StatelessWidget {
         margin: const EdgeInsets.only(left: 16.0),
         child: CircleAvatar(
             child: Text(
-          this.name[0],
+          widget.name[0],
           style: TextStyle(fontWeight: FontWeight.bold),
         )),
       ),
@@ -78,7 +91,7 @@ class ChatMessage extends StatelessWidget {
       margin: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: this.type ? myMessage(context) : otherMessage(context),
+        children: widget.type ? myMessage(context) : otherMessage(context),
       ),
     );
   }

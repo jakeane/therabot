@@ -106,7 +106,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       }
     }
 
-    messageID += 1;
     print("Adding message to DB");
 
     handleMessageData(currentUserID, messageID, query);
@@ -117,13 +116,16 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     if (text == '') {
     } else {
       _textController.clear();
+      messageID += 1;
       ChatMessage message = ChatMessage(
         text: text,
         name: "User",
         type: true,
+        id: messageID,
       );
       setState(() {
-        _messages.insert(0, message);
+        //_messages.insert(0, message);
+        _messages.add(message);
       });
       response(text);
     }
@@ -145,9 +147,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     FirebaseDbService.addMessageCount(currentUserID, messageID);
 
     var userMessage = {
-      "text": _messages.first.text,
-      "name": _messages.first.name,
-      "type": _messages.first.type,
+      "text": _messages.last.text,
+      "name": _messages.last.name,
+      "type": _messages.last.type,
       "timestamp": FieldValue.serverTimestamp(),
     };
     FirebaseDbService.addMessageData(currentUserID, messageID, userMessage);
@@ -161,25 +163,26 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     Dialogflow dialogflow =
         Dialogflow(authGoogle: authGoogle, language: Language.english);
     AIResponse response = await dialogflow.detectIntent(query);
+    messageID += 1;
     ChatMessage message = ChatMessage(
       text: response.getMessage() ??
           CardDialogflow(response.getListMessage()[0]).title,
       name: "Covid Bot",
       type: false,
+      id: messageID,
     );
     // Add in the user message to the firestore message list
     setState(() {
-      _messages.insert(0, message);
+      //_messages.insert(0, message);
+      _messages.add(message);
     });
-
-    messageID += 1;
 
     FirebaseDbService.addMessageCount(currentUserID, messageID);
 
     var botMessage = {
-      "text": _messages.first.text,
-      "name": _messages.first.name,
-      "type": _messages.first.type,
+      "text": _messages.last.text,
+      "name": _messages.last.name,
+      "type": _messages.last.type,
       "timestamp": FieldValue.serverTimestamp(),
     };
     FirebaseDbService.addMessageData(currentUserID, messageID, botMessage);
@@ -194,12 +197,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         centerTitle: true,
         title: Text("Covid-19 Chatbot"),
       ),
-      body: Column(children: <Widget>[
+      body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
         Flexible(
             child: ListView.builder(
           padding: EdgeInsets.all(8.0),
-          reverse: true,
-          itemBuilder: (_, int index) => _messages[index],
+          reverse: false,
+          itemBuilder: (_, index) => _messages[index],
           itemCount: _messages.length,
         )),
         Divider(height: 1.0),
