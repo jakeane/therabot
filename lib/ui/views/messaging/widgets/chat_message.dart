@@ -34,7 +34,7 @@ class _ChatMessageState extends State<ChatMessage> {
                   children: [
                     Bubble(
                       child: Text(widget.text),
-                      color: Color.fromRGBO(200, 200, 200, 1.0),
+                      color: Color.fromRGBO(225, 225, 225, 1.0),
                     ),
                     IconButton(
                       icon: FaIcon(_selected[0]
