@@ -68,19 +68,20 @@ class ChatMessage extends StatelessWidget {
                               .giveFeedback(index, 1);
                         },
                       ),
-                      IconButton(
-                        icon: FaIcon(
-                          FontAwesomeIcons.comment,
-                          color: chat.chatList[index].comment.isEmpty
-                              ? Colors.grey
-                              : Colors.lightBlue,
-                        ),
-                        iconSize: 15,
-                        onPressed: () {
-                          Provider.of<ChatModel>(context, listen: false)
-                              .addComment(index);
-                        },
-                      )
+                      if (chat.chatList[index].feedback != -1)
+                        IconButton(
+                          icon: FaIcon(
+                            FontAwesomeIcons.comment,
+                            color: chat.chatList[index].comment.isEmpty
+                                ? Colors.grey
+                                : Colors.lightBlue,
+                          ),
+                          iconSize: 15,
+                          onPressed: () {
+                            Provider.of<ChatModel>(context, listen: false)
+                                .addComment(index);
+                          },
+                        )
                     ],
                   );
                 })),
