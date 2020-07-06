@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/message_rating.dart';
+import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bubble/bubble.dart';
+import 'package:provider/provider.dart';
 
-class ChatMessage extends StatefulWidget {
-  ChatMessage({this.text, this.name, this.type, this.id});
+class ChatMessage extends StatelessWidget {
+  ChatMessage(
+      {this.text,
+      this.name,
+      this.type,
+      this.id,
+      this.index,
+      this.feedback,
+      this.comment});
   final String text;
   final String name;
   final bool type;
   final int id;
-
-  @override
-  _ChatMessageState createState() => _ChatMessageState();
-}
-
-class _ChatMessageState extends State<ChatMessage> {
-  var _selected = [false, false];
+  final int index;
+  int feedback;
+  String comment;
 
   List<Widget> otherMessage(context) {
     return <Widget>[
@@ -27,37 +31,45 @@ class _ChatMessageState extends State<ChatMessage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(widget.name, style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
             Container(
                 padding: const EdgeInsets.all(0.0),
-                child: Row(
-                  children: [
-                    Bubble(
-                      child: Text(widget.text),
-                      color: Color.fromRGBO(225, 225, 225, 1.0),
-                    ),
-                    IconButton(
-                      icon: FaIcon(_selected[0]
-                          ? FontAwesomeIcons.solidThumbsUp
-                          : FontAwesomeIcons.thumbsUp),
-                      constraints: BoxConstraints.loose(Size(30, 30)),
-                      iconSize: 15,
-                      onPressed: () => setState(() {
-                        _selected = [true, false];
-                      }),
-                    ),
-                    IconButton(
-                      icon: FaIcon(_selected[1]
-                          ? FontAwesomeIcons.solidThumbsDown
-                          : FontAwesomeIcons.thumbsDown),
-                      constraints: BoxConstraints(),
-                      iconSize: 15,
-                      onPressed: () => setState(() {
-                        _selected = [false, true];
-                      }),
-                    ),
-                  ],
-                )),
+                child: Consumer<ChatModel>(builder: (context, chat, child) {
+                  return Row(
+                    children: [
+                      Bubble(
+                        child: Text(text),
+                        color: Color.fromRGBO(225, 225, 225, 1.0),
+                      ),
+                      IconButton(
+                        icon: FaIcon(
+                          FontAwesomeIcons.check,
+                          color: chat.chatList[index].feedback == 0
+                              ? Colors.green
+                              : Colors.grey,
+                        ),
+                        iconSize: 15,
+                        onPressed: () {
+                          Provider.of<ChatModel>(context, listen: false)
+                              .giveFeedback(index, 0);
+                        },
+                      ),
+                      IconButton(
+                        icon: FaIcon(
+                          FontAwesomeIcons.times,
+                          color: chat.chatList[index].feedback == 1
+                              ? Colors.red
+                              : Colors.grey,
+                        ),
+                        iconSize: 15,
+                        onPressed: () {
+                          Provider.of<ChatModel>(context, listen: false)
+                              .giveFeedback(index, 1);
+                        },
+                      ),
+                    ],
+                  );
+                })),
           ],
         ),
       ),
@@ -70,11 +82,11 @@ class _ChatMessageState extends State<ChatMessage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
-            Text(widget.name, style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
             Container(
               margin: const EdgeInsets.only(top: 5.0),
               child: Bubble(
-                child: Text(widget.text),
+                child: Text(text),
                 color: Color.fromRGBO(212, 234, 244, 1.0),
               ),
             ),
@@ -85,7 +97,7 @@ class _ChatMessageState extends State<ChatMessage> {
         margin: const EdgeInsets.only(left: 16.0),
         child: CircleAvatar(
             child: Text(
-          widget.name[0],
+          name[0],
           style: TextStyle(fontWeight: FontWeight.bold),
         )),
       ),
@@ -98,7 +110,7 @@ class _ChatMessageState extends State<ChatMessage> {
       margin: const EdgeInsets.symmetric(vertical: 10.0),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: widget.type ? myMessage(context) : otherMessage(context),
+        children: type ? myMessage(context) : otherMessage(context),
       ),
     );
   }

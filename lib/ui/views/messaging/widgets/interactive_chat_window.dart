@@ -1,16 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/html.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import './chat_message.dart';
-import 'dart:convert';
 
 const SERVER_IP = '108.16.206.168';
 const SERVER_PORT = '1010';
 const URL = 'ws://$SERVER_IP:$SERVER_PORT';
+
+// TODO
+// 1. Add feedback data to chatmessage properties
+// 2. Manage properties via StreamProvider
+// 3. Change thumbs up/down to checkmark and 'X'
+// 4. Show comment option after providing feedback
+// 5. On comment press, provide fragment with comment box
+// 6. Only show checkmark/x on most recent message
+// 7. For other messages, show feedback on bubble corner
+// 8. On bubble press, show feedback options
+// 9. Remove username and avatar
+// 10. Change Firebase query behavior (To every X messages for now)
 
 WebSocketChannel initializeWebSocketChannel(String url) {
   return HtmlWebSocketChannel.connect(url);
@@ -27,7 +39,7 @@ class InteractiveChatWindow extends StatefulWidget {
 }
 
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
-  final List<ChatMessage> _messages = <ChatMessage>[];
+  List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = TextEditingController();
   final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
 
@@ -91,8 +103,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     previousMessagesCount = currentMessagesCount;
     currentMessagesCount = _messages.length;
 
-    print('Previous message count: $previousMessagesCount');
-    print('Current message count: $currentMessagesCount');
+    // print('Previous message count: $previousMessagesCount');
+    // print('Current message count: $currentMessagesCount');
 
     if (newConversationStarted()) {
       // if the conversationCount is empty then
@@ -106,8 +118,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       }
     }
 
-    print("Adding message to DB");
-
     handleMessageData(currentUserID, messageID, query);
   }
 
@@ -117,19 +127,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     } else {
       _textController.clear();
       messageID += 1;
-      ChatMessage message = ChatMessage(
-        text: text,
-        name: "User",
-        type: true,
-        id: messageID,
-      );
-      setState(() {
-        //_messages.insert(0, message);
-        _messages.add(message);
-      });
+      Provider.of<ChatModel>(context, listen: false)
+          .addChat(text, "User", true, messageID);
+
       response(text);
     }
-    print('Finished response');
   }
 
   bool newConversationStarted() {
@@ -144,15 +146,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void handleMessageData(String userID, int messageID, String query) async {
-    FirebaseDbService.addMessageCount(currentUserID, messageID);
+    //FirebaseDbService.addMessageCount(currentUserID, messageID);
 
-    var userMessage = {
-      "text": _messages.last.text,
-      "name": _messages.last.name,
-      "type": _messages.last.type,
-      "timestamp": FieldValue.serverTimestamp(),
-    };
-    FirebaseDbService.addMessageData(currentUserID, messageID, userMessage);
+    // FirebaseDbService.addMessageData(currentUserID, messageID, userMessage);
 
     // Talks to dialogflow
     _textController.clear();
@@ -164,28 +160,20 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         Dialogflow(authGoogle: authGoogle, language: Language.english);
     AIResponse response = await dialogflow.detectIntent(query);
     messageID += 1;
-    ChatMessage message = ChatMessage(
-      text: response.getMessage() ??
-          CardDialogflow(response.getListMessage()[0]).title,
-      name: "Covid Bot",
-      type: false,
-      id: messageID,
-    );
-    // Add in the user message to the firestore message list
-    setState(() {
-      //_messages.insert(0, message);
-      _messages.add(message);
-    });
+    String text = response.getMessage() ??
+        CardDialogflow(response.getListMessage()[0]).title;
+    Provider.of<ChatModel>(context, listen: false)
+        .addChat(text, "Covid Bot", false, messageID);
 
-    FirebaseDbService.addMessageCount(currentUserID, messageID);
+    // FirebaseDbService.addMessageCount(currentUserID, messageID);
 
-    var botMessage = {
-      "text": _messages.last.text,
-      "name": _messages.last.name,
-      "type": _messages.last.type,
-      "timestamp": FieldValue.serverTimestamp(),
-    };
-    FirebaseDbService.addMessageData(currentUserID, messageID, botMessage);
+    // var botMessage = {
+    //   "text": _messages.last.text,
+    //   "name": _messages.last.name,
+    //   "type": _messages.last.type,
+    //   "timestamp": FieldValue.serverTimestamp(),
+    // };
+    // FirebaseDbService.addMessageData(currentUserID, messageID, botMessage);
 
     myFocusNode.requestFocus();
   }
@@ -199,12 +187,18 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       ),
       body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
         Flexible(
-            child: ListView.builder(
-          padding: EdgeInsets.all(8.0),
-          reverse: false,
-          itemBuilder: (_, index) => _messages[index],
-          itemCount: _messages.length,
-        )),
+          child: Consumer<ChatModel>(
+            builder: (context, chat, child) {
+              return ListView.builder(
+                padding: EdgeInsets.all(8.0),
+                reverse: true,
+                itemBuilder: (_, index) =>
+                    chat.chatList[chat.chatList.length - index - 1],
+                itemCount: chat.chatList.length,
+              );
+            },
+          ),
+        ),
         Divider(height: 1.0),
         Container(
           decoration: new BoxDecoration(color: Theme.of(context).cardColor),
