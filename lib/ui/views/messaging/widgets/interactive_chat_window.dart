@@ -1,14 +1,28 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/models/chat_model.dart';
+import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_dialogflow/dialogflow_v2.dart';
+import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/html.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:convert';
+import './chat_message.dart';
 
 const SERVER_IP = '108.16.206.168';
 const SERVER_PORT = '1010';
 const URL = 'ws://$SERVER_IP:$SERVER_PORT';
+
+// TODO
+// done 1. Add feedback data to chatmessage properties
+// done 2. Manage properties via StreamProvider
+// done 3. Change thumbs up/down to checkmark and 'X'
+// done 4. Show comment option after providing feedback
+// 5. On comment press, provide fragment with dropdown options
+// done 6. Only show checkmark/x on most recent message
+// 7. For other messages, show feedback on bubble corner
+// done 8. On bubble press, show feedback options
+// 9. Remove username and avatar
+// 10. Change Firebase query behavior (To every X messages for now)
 
 WebSocketChannel initializeWebSocketChannel(String url) {
   return HtmlWebSocketChannel.connect(url);
@@ -25,18 +39,17 @@ class InteractiveChatWindow extends StatefulWidget {
 }
 
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
-  final List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = TextEditingController();
   final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
-  final firestoreInstance = Firestore.instance;
-  String currentUserID = '';
+
+  String currentUserID;
   int previousMessagesCount = 0;
   int currentMessagesCount = 0;
   int messageID = 0;
 
   // Creates a focus node to autofocus the text controller when the chatbot responds
   FocusNode myFocusNode;
-  
+
   @override
   void initState() {
     super.initState();
@@ -80,107 +93,33 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     );
   }
 
+  // Handles user message and generates response from bot
   void response(query) async {
-    var firebaseUser = await FirebaseAuth.instance.currentUser();
-    currentUserID = firebaseUser.uid;
+    if (currentUserID == null) {
+      currentUserID = await FirebaseDbService.getCurrentUserID();
+    }
 
     // Get the conversation number
     previousMessagesCount = currentMessagesCount;
-    currentMessagesCount = _messages.length;
+    currentMessagesCount =
+        Provider.of<ChatModel>(context, listen: false).chatList.length;
 
-    print('Previous message count: $previousMessagesCount');
-    print('Current message count: $currentMessagesCount');
+    // print('Previous message count: $previousMessagesCount');
+    // print('Current message count: $currentMessagesCount');
 
     if (newConversationStarted()) {
       // if the conversationCount is empty then
-      final DocumentSnapshot getuserdoc = await Firestore.instance
-          .collection('users')
-          .document(currentUserID)
-          .get();
+      final DocumentSnapshot getuserdoc =
+          await FirebaseDbService.getUserDoc(currentUserID);
 
       if (getuserdoc.exists == false) {
         messageID = 0;
-      }
-
-      else {
+      } else {
         messageID = getuserdoc.data['messagesCount'];
       }
     }
 
-    messageID += 1;
-
-    firestoreInstance
-            .collection("users")
-            .document(firebaseUser.uid)
-            .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
-            .then((_) {
-          print("messageCount set to $messageID");
-        });
-
-
-    // userMessage['timestamp'] = firestoreInstance.s
-    firestoreInstance
-        .collection("users")
-        .document(firebaseUser.uid)
-        .collection("messages")
-        .document("message_id$messageID")
-        .setData({
-          "text": _messages.first.text,
-          "name": _messages.first.name,
-          "type": _messages.first.type,
-          "timestamp": FieldValue.serverTimestamp(),
-        }, merge: true)
-        .then((_) {
-      print("Added user message to firestore");
-    });
-
-    // Talks to dialogflow
-    _textController.clear();
-    AuthGoogle authGoogle = await AuthGoogle(
-            fileJson:
-                "assets/credentials/simplechatbot-pkhufy-24d22513a231.json")
-        .build();
-    Dialogflow dialogflow =
-        Dialogflow(authGoogle: authGoogle, language: Language.english);
-    AIResponse response = await dialogflow.detectIntent(query);
-    ChatMessage message = ChatMessage(
-      text: response.getMessage() ??
-          CardDialogflow(response.getListMessage()[0]).title,
-      name: "Covid Bot",
-      type: false,
-    );
-    // Add in the user message to the firestore message list
-    setState(() {
-      _messages.insert(0, message);
-    });
-
-    messageID += 1;
-
-    firestoreInstance
-            .collection("users")
-            .document(firebaseUser.uid)
-            .setData(json.decode('{"messagesCount": $messageID}'), merge: true)
-            .then((_) {
-          print("messageCount set to $messageID");
-        });
-
-    // Save the bot message to firestore
-    firestoreInstance
-        .collection("users")
-        .document(firebaseUser.uid)
-        .collection("messages")
-        .document("message_id$messageID")
-        .setData({
-          "text": _messages.first.text,
-          "name": _messages.first.name,
-          "type": _messages.first.type,
-          "timestamp": FieldValue.serverTimestamp(),
-        }, merge: true)
-        .then((_) {
-      print("Added bot response to firestore");
-    });
-
-    myFocusNode.requestFocus();
+    handleMessageData(currentUserID, messageID, query);
   }
 
   void _handleSubmitted(String text) {
@@ -188,14 +127,10 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     if (text == '') {
     } else {
       _textController.clear();
-      ChatMessage message = ChatMessage(
-        text: text,
-        name: "User",
-        type: true,
-      );
-      setState(() {
-        _messages.insert(0, message);
-      });
+      messageID += 1;
+      Provider.of<ChatModel>(context, listen: false)
+          .addChat(text, "User", true, messageID);
+
       response(text);
     }
   }
@@ -211,6 +146,38 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     return result;
   }
 
+  // Called by response()
+  void handleMessageData(String userID, int messageID, String query) async {
+    FirebaseDbService.addMessageCount(currentUserID, messageID);
+
+    var userMessage =
+        Provider.of<ChatModel>(context, listen: false).getLastMessage();
+    FirebaseDbService.addMessageData(currentUserID, messageID, userMessage);
+
+    // Talks to dialogflow
+    _textController.clear();
+    AuthGoogle authGoogle = await AuthGoogle(
+            fileJson:
+                "assets/credentials/simplechatbot-pkhufy-24d22513a231.json")
+        .build();
+    Dialogflow dialogflow =
+        Dialogflow(authGoogle: authGoogle, language: Language.english);
+    AIResponse response = await dialogflow.detectIntent(query);
+    messageID += 1;
+    String text = response.getMessage() ??
+        CardDialogflow(response.getListMessage()[0]).title;
+    Provider.of<ChatModel>(context, listen: false)
+        .addChat(text, "Covid Bot", false, messageID);
+
+    FirebaseDbService.addMessageCount(currentUserID, messageID);
+
+    var botMessage =
+        Provider.of<ChatModel>(context, listen: false).getLastMessage();
+    FirebaseDbService.addMessageData(currentUserID, messageID, botMessage);
+
+    myFocusNode.requestFocus();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -218,85 +185,26 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         centerTitle: true,
         title: Text("Covid-19 Chatbot"),
       ),
-      body: Column(children: <Widget>[
+      body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
         Flexible(
-            child: ListView.builder(
-          padding: EdgeInsets.all(8.0),
-          reverse: true,
-          itemBuilder: (_, int index) => _messages[index],
-          itemCount: _messages.length,
-        )),
+          child: Consumer<ChatModel>(
+            builder: (context, chat, child) {
+              return ListView.builder(
+                padding: EdgeInsets.all(8.0),
+                reverse: true,
+                itemBuilder: (_, index) =>
+                    chat.chatList[chat.chatList.length - index - 1],
+                itemCount: chat.chatList.length,
+              );
+            },
+          ),
+        ),
         Divider(height: 1.0),
         Container(
           decoration: new BoxDecoration(color: Theme.of(context).cardColor),
           child: _buildTextComposer(),
         ),
       ]),
-    );
-  }
-}
-
-class ChatMessage extends StatelessWidget {
-  ChatMessage({this.text, this.name, this.type});
-
-  final String text;
-  final String name;
-  final bool type;
-
-  List<Widget> otherMessage(context) {
-    return <Widget>[
-      Container(
-        margin: const EdgeInsets.only(right: 16.0),
-        child: CircleAvatar(child: Text('CB')),
-      ),
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Text(this.name, style: TextStyle(fontWeight: FontWeight.bold)),
-            Container(
-              margin: const EdgeInsets.only(top: 5.0),
-              child: Text(this.text),
-            ),
-          ],
-        ),
-      ),
-    ];
-  }
-
-  List<Widget> myMessage(context) {
-    return <Widget>[
-      Expanded(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: <Widget>[
-            Text(this.name, style: TextStyle(fontWeight: FontWeight.bold)),
-            Container(
-              margin: const EdgeInsets.only(top: 5.0),
-              child: Text(text),
-            ),
-          ],
-        ),
-      ),
-      Container(
-        margin: const EdgeInsets.only(left: 16.0),
-        child: CircleAvatar(
-            child: Text(
-          this.name[0],
-          style: TextStyle(fontWeight: FontWeight.bold),
-        )),
-      ),
-    ];
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: this.type ? myMessage(context) : otherMessage(context),
-      ),
     );
   }
 }
