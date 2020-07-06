@@ -17,7 +17,7 @@ const URL = 'ws://$SERVER_IP:$SERVER_PORT';
 // done 2. Manage properties via StreamProvider
 // done 3. Change thumbs up/down to checkmark and 'X'
 // done 4. Show comment option after providing feedback
-// 5. On comment press, provide fragment with comment box
+// 5. On comment press, provide fragment with dropdown options
 // done 6. Only show checkmark/x on most recent message
 // 7. For other messages, show feedback on bubble corner
 // done 8. On bubble press, show feedback options
@@ -39,7 +39,6 @@ class InteractiveChatWindow extends StatefulWidget {
 }
 
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
-  List<ChatMessage> _messages = <ChatMessage>[];
   final TextEditingController _textController = TextEditingController();
   final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
 
@@ -94,6 +93,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     );
   }
 
+  // Handles user message and generates response from bot
   void response(query) async {
     if (currentUserID == null) {
       currentUserID = await FirebaseDbService.getCurrentUserID();
@@ -101,7 +101,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     // Get the conversation number
     previousMessagesCount = currentMessagesCount;
-    currentMessagesCount = _messages.length;
+    currentMessagesCount =
+        Provider.of<ChatModel>(context, listen: false).chatList.length;
 
     // print('Previous message count: $previousMessagesCount');
     // print('Current message count: $currentMessagesCount');
@@ -145,10 +146,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     return result;
   }
 
+  // Called by response()
   void handleMessageData(String userID, int messageID, String query) async {
-    //FirebaseDbService.addMessageCount(currentUserID, messageID);
+    FirebaseDbService.addMessageCount(currentUserID, messageID);
 
-    // FirebaseDbService.addMessageData(currentUserID, messageID, userMessage);
+    var userMessage =
+        Provider.of<ChatModel>(context, listen: false).getLastMessage();
+    FirebaseDbService.addMessageData(currentUserID, messageID, userMessage);
 
     // Talks to dialogflow
     _textController.clear();
@@ -165,15 +169,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     Provider.of<ChatModel>(context, listen: false)
         .addChat(text, "Covid Bot", false, messageID);
 
-    // FirebaseDbService.addMessageCount(currentUserID, messageID);
+    FirebaseDbService.addMessageCount(currentUserID, messageID);
 
-    // var botMessage = {
-    //   "text": _messages.last.text,
-    //   "name": _messages.last.name,
-    //   "type": _messages.last.type,
-    //   "timestamp": FieldValue.serverTimestamp(),
-    // };
-    // FirebaseDbService.addMessageData(currentUserID, messageID, botMessage);
+    var botMessage =
+        Provider.of<ChatModel>(context, listen: false).getLastMessage();
+    FirebaseDbService.addMessageData(currentUserID, messageID, botMessage);
 
     myFocusNode.requestFocus();
   }

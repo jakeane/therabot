@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -12,6 +13,7 @@ class ChatMessage extends StatelessWidget {
       this.id,
       this.index,
       this.feedback,
+      this.timestamp,
       this.comment,
       this.selected});
   final String text;
@@ -19,6 +21,7 @@ class ChatMessage extends StatelessWidget {
   final bool type;
   final int id;
   final int index;
+  final FieldValue timestamp;
   int feedback;
   String comment;
   bool selected;

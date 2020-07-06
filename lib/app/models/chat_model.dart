@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/chat_message.dart';
 
@@ -12,6 +13,7 @@ class ChatModel extends ChangeNotifier {
       id: id,
       index: chatList.length,
       feedback: -1,
+      timestamp: FieldValue.serverTimestamp(),
       comment: "",
       selected: false,
     );
@@ -34,5 +36,14 @@ class ChatModel extends ChangeNotifier {
       chatList[index].selected = !chatList[index].selected;
       notifyListeners();
     }
+  }
+
+  Map<String, Object> getLastMessage() {
+    return {
+      "text": chatList.last.text,
+      "name": chatList.last.name,
+      "type": chatList.last.type,
+      "timestamp": chatList.last.timestamp,
+    };
   }
 }
