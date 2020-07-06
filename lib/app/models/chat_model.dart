@@ -13,6 +13,7 @@ class ChatModel extends ChangeNotifier {
       index: chatList.length,
       feedback: -1,
       comment: "",
+      selected: false,
     );
     chatList.add(message);
     notifyListeners();
@@ -26,5 +27,12 @@ class ChatModel extends ChangeNotifier {
   void addComment(int index) {
     chatList[index].comment = "hi";
     notifyListeners();
+  }
+
+  void changeSelected(int index) {
+    if (index != chatList.length - 1) {
+      chatList[index].selected = !chatList[index].selected;
+      notifyListeners();
+    }
   }
 }

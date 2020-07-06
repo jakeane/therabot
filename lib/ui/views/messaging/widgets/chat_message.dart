@@ -12,7 +12,8 @@ class ChatMessage extends StatelessWidget {
       this.id,
       this.index,
       this.feedback,
-      this.comment});
+      this.comment,
+      this.selected});
   final String text;
   final String name;
   final bool type;
@@ -20,6 +21,7 @@ class ChatMessage extends StatelessWidget {
   final int index;
   int feedback;
   String comment;
+  bool selected;
 
   List<Widget> otherMessage(context) {
     return <Widget>[
@@ -38,37 +40,46 @@ class ChatMessage extends StatelessWidget {
                 child: Consumer<ChatModel>(builder: (context, chat, child) {
                   return Row(
                     children: [
-                      Bubble(
-                        child: Text(text),
-                        color: Color.fromRGBO(225, 225, 225, 1.0),
-                      ),
-                      IconButton(
-                        icon: FaIcon(
-                          FontAwesomeIcons.check,
-                          color: chat.chatList[index].feedback == 0
-                              ? Colors.green
-                              : Colors.grey,
-                        ),
-                        iconSize: 15,
-                        onPressed: () {
+                      GestureDetector(
+                        onTap: () {
                           Provider.of<ChatModel>(context, listen: false)
-                              .giveFeedback(index, 0);
+                              .changeSelected(index);
                         },
-                      ),
-                      IconButton(
-                        icon: FaIcon(
-                          FontAwesomeIcons.times,
-                          color: chat.chatList[index].feedback == 1
-                              ? Colors.red
-                              : Colors.grey,
+                        child: Bubble(
+                          child: Text(text),
+                          color: Color.fromRGBO(225, 225, 225, 1.0),
                         ),
-                        iconSize: 15,
-                        onPressed: () {
-                          Provider.of<ChatModel>(context, listen: false)
-                              .giveFeedback(index, 1);
-                        },
                       ),
-                      if (chat.chatList[index].feedback != -1)
+                      if ((index == chat.chatList.length - 1) | selected)
+                        IconButton(
+                          icon: FaIcon(
+                            FontAwesomeIcons.check,
+                            color: chat.chatList[index].feedback == 0
+                                ? Colors.green
+                                : Colors.grey,
+                          ),
+                          iconSize: 15,
+                          onPressed: () {
+                            Provider.of<ChatModel>(context, listen: false)
+                                .giveFeedback(index, 0);
+                          },
+                        ),
+                      if ((index == chat.chatList.length - 1) | selected)
+                        IconButton(
+                          icon: FaIcon(
+                            FontAwesomeIcons.times,
+                            color: chat.chatList[index].feedback == 1
+                                ? Colors.red
+                                : Colors.grey,
+                          ),
+                          iconSize: 15,
+                          onPressed: () {
+                            Provider.of<ChatModel>(context, listen: false)
+                                .giveFeedback(index, 1);
+                          },
+                        ),
+                      if (((index == chat.chatList.length - 1) | selected) &
+                          (chat.chatList[index].feedback != -1))
                         IconButton(
                           icon: FaIcon(
                             FontAwesomeIcons.comment,

@@ -16,11 +16,11 @@ const URL = 'ws://$SERVER_IP:$SERVER_PORT';
 // done 1. Add feedback data to chatmessage properties
 // done 2. Manage properties via StreamProvider
 // done 3. Change thumbs up/down to checkmark and 'X'
-// 4. Show comment option after providing feedback
+// done 4. Show comment option after providing feedback
 // 5. On comment press, provide fragment with comment box
-// 6. Only show checkmark/x on most recent message
+// done 6. Only show checkmark/x on most recent message
 // 7. For other messages, show feedback on bubble corner
-// 8. On bubble press, show feedback options
+// done 8. On bubble press, show feedback options
 // 9. Remove username and avatar
 // 10. Change Firebase query behavior (To every X messages for now)
 
