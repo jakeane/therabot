@@ -13,9 +13,9 @@ const SERVER_PORT = '1010';
 const URL = 'ws://$SERVER_IP:$SERVER_PORT';
 
 // TODO
-// 1. Add feedback data to chatmessage properties
-// 2. Manage properties via StreamProvider
-// 3. Change thumbs up/down to checkmark and 'X'
+// done 1. Add feedback data to chatmessage properties
+// done 2. Manage properties via StreamProvider
+// done 3. Change thumbs up/down to checkmark and 'X'
 // 4. Show comment option after providing feedback
 // 5. On comment press, provide fragment with comment box
 // 6. Only show checkmark/x on most recent message

@@ -34,6 +34,7 @@ class ChatMessage extends StatelessWidget {
             Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
             Container(
                 padding: const EdgeInsets.all(0.0),
+                // Consumer listens to changes in feedback
                 child: Consumer<ChatModel>(builder: (context, chat, child) {
                   return Row(
                     children: [
@@ -67,6 +68,19 @@ class ChatMessage extends StatelessWidget {
                               .giveFeedback(index, 1);
                         },
                       ),
+                      IconButton(
+                        icon: FaIcon(
+                          FontAwesomeIcons.comment,
+                          color: chat.chatList[index].comment.isEmpty
+                              ? Colors.grey
+                              : Colors.lightBlue,
+                        ),
+                        iconSize: 15,
+                        onPressed: () {
+                          Provider.of<ChatModel>(context, listen: false)
+                              .addComment(index);
+                        },
+                      )
                     ],
                   );
                 })),
