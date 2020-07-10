@@ -6,10 +6,9 @@ import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:web_socket_channel/html.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import './chat_message.dart';
 
-const SERVER_IP = '108.16.206.168';
-const SERVER_PORT = '1010';
+const SERVER_IP = 'localhost';
+const SERVER_PORT = '1001';
 const URL = 'ws://$SERVER_IP:$SERVER_PORT';
 
 // TODO
@@ -23,6 +22,10 @@ const URL = 'ws://$SERVER_IP:$SERVER_PORT';
 // done 8. On bubble press, show feedback options
 // 9. Remove username and avatar
 // 10. Change Firebase query behavior (To every X messages for now)
+
+// Todo Websocket Integration
+// 1. Listen to the correct IP and locat host
+
 
 WebSocketChannel initializeWebSocketChannel(String url) {
   return HtmlWebSocketChannel.connect(url);
