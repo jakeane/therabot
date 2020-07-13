@@ -148,11 +148,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
   // Called by response()
   void handleMessageData(String userID, int messageID, String query) async {
-    FirebaseDbService.addMessageCount(currentUserID, messageID);
+    FirebaseDbService.addMessageCount(userID, messageID);
 
     var userMessage =
         Provider.of<ChatModel>(context, listen: false).getLastMessage();
-    FirebaseDbService.addMessageData(currentUserID, messageID, userMessage);
+    FirebaseDbService.addMessageData(userID, messageID, userMessage);
 
     // Talks to dialogflow
     _textController.clear();
