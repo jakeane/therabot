@@ -26,7 +26,6 @@ const URL = 'ws://$SERVER_IP:$SERVER_PORT';
 // Todo Websocket Integration
 // 1. Listen to the correct IP and locat host
 
-
 WebSocketChannel initializeWebSocketChannel(String url) {
   return HtmlWebSocketChannel.connect(url);
 }
@@ -105,7 +104,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     // Get the conversation number
     previousMessagesCount = currentMessagesCount;
     currentMessagesCount =
-        Provider.of<ChatModel>(context, listen: false).chatList.length;
+        Provider.of<ChatModel>(context, listen: false).getChatList().length;
 
     // print('Previous message count: $previousMessagesCount');
     // print('Current message count: $currentMessagesCount');
@@ -196,8 +195,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                 padding: EdgeInsets.all(8.0),
                 reverse: true,
                 itemBuilder: (_, index) =>
-                    chat.chatList[chat.chatList.length - index - 1],
-                itemCount: chat.chatList.length,
+                    chat.getChatList()[chat.getChatList().length - index - 1],
+                itemCount: chat.getChatList().length,
               );
             },
           ),
