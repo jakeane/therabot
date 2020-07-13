@@ -8,7 +8,7 @@ import 'package:web_socket_channel/html.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 const SERVER_IP = 'localhost';
-const SERVER_PORT = '1001';
+const SERVER_PORT = '10001';
 const URL = 'ws://$SERVER_IP:$SERVER_PORT';
 
 // TODO
