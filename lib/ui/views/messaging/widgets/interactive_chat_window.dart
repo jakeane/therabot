@@ -26,15 +26,12 @@ const URL = 'ws://$SERVER_IP:$SERVER_PORT';
 // Todo Websocket Integration
 // 1. Listen to the correct IP and locat host
 
-WebSocketChannel initializeWebSocketChannel(String url) {
-  return HtmlWebSocketChannel.connect(url);
-}
-
 class InteractiveChatWindow extends StatefulWidget {
   InteractiveChatWindow({Key key, this.title}) : super(key: key);
 
   // Takes a single input which is the title of the chat window
   final String title;
+  final channel = WebSocketChannel.connect(Uri.parse(URL));
 
   @override
   _InteractiveChatWindow createState() => _InteractiveChatWindow();
@@ -42,7 +39,7 @@ class InteractiveChatWindow extends StatefulWidget {
 
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
-  final WebSocketChannel channel = WebSocketChannel.connect(Uri.parse(URL));
+  final channel = WebSocketChannel.connect(Uri.parse(URL));
 
   String currentUserID;
   int previousMessagesCount = 0;
@@ -62,6 +59,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   @override
   void dispose() {
     myFocusNode.dispose();
+    channel.sink.close();
 
     super.dispose();
   }
@@ -105,6 +103,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     previousMessagesCount = currentMessagesCount;
     currentMessagesCount =
         Provider.of<ChatModel>(context, listen: false).getChatList().length;
+
+    String jsonStringified = '{"text": "$query"}';
+    channel.sink.add(jsonStringified);
 
     // print('Previous message count: $previousMessagesCount');
     // print('Current message count: $currentMessagesCount');
@@ -188,6 +189,17 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         title: Text("Covid-19 Chatbot"),
       ),
       body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+        StreamBuilder(
+          stream: channel.stream,
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              print(snapshot.data.toString());
+            } else {
+              print("no data");
+            }
+            return snapshot.hasData ? Text(snapshot.data.toString()) : Text('');
+          },
+        ),
         Flexible(
           child: Consumer<ChatModel>(
             builder: (context, chat, child) {
