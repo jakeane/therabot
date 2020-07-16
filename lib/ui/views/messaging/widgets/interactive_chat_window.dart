@@ -13,19 +13,16 @@ const SERVER_PORT = '10001';
 const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
 
 // TODO
-// done 1. Add feedback data to chatmessage properties
-// done 2. Manage properties via StreamProvider
-// done 3. Change thumbs up/down to checkmark and 'X'
-// done 4. Show comment option after providing feedback
-// 5. On comment press, provide fragment with dropdown options
-// done 6. Only show checkmark/x on most recent message
-// 7. For other messages, show feedback on bubble corner
-// done 8. On bubble press, show feedback options
-// 9. Remove username and avatar
-// 10. Change Firebase query behavior (To every X messages for now)
-
-// Todo Websocket Integration
-// 1. Listen to the correct IP and locat host
+// 1. Set container padding to 20px
+// 2. Redesign typing bar according to style guide
+// 3. Add bubble nips (with logic)
+// 4. Import style guide components
+// 5. Add new feedback buttons
+// 6. Have settings button go to different view
+// 7. Add message bubble spacing logic
+// 8. Add typing bubble for bot
+// 9. Add bot avatar placeholder and implement chat bubble logic
+// 10. Add feedback flow
 
 class InteractiveChatWindow extends StatefulWidget {
   InteractiveChatWindow({Key key, this.title}) : super(key: key);
@@ -59,7 +56,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       Provider.of<ChatModel>(context, listen: false)
           .addChat(text, "Covid Bot", false, messageID);
 
-      print("channel:" + data['text']);
+      print("channel text: " + text);
     });
 
     myFocusNode = FocusNode();

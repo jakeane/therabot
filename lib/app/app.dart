@@ -9,11 +9,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
-      //Here we provide our ThemeManager to child widget tree
       create: (_) => ThemeModel(),
-
-      //Consumer will call builder method each time ThemeManager
-      //calls notifyListeners()
       child: Consumer<ThemeModel>(builder: (context, theme, _) {
         return MaterialApp(
           title: 'Chatbot App',
@@ -26,7 +22,6 @@ class MyApp extends StatelessWidget {
         );
       }),
     );
-    final themeNotifier = Provider.of<ThemeModel>(context);
   }
 }
 

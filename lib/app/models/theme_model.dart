@@ -1,6 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+// Theme Schema:
+//  Color Palette:
+//    Accent -> User message bubble and send button -> colorScheme.primary
+//    Bot bubbles -> colorScheme.primaryVariant
+//    Light Message / Message -> User message text -> textTheme.bodyText1.color
+//    Dark Message / Message -> Bot message text -> textTheme.bodyText2.color
+//    Background -> backgroundColor
+//    Dividers & Settings -> dividerColor
+//    Input -> colorScheme.secondary
+//    Feedback -> colorScheme.secondaryVariant
+//  Typography:
+//    Messages (User) -> textTheme.bodyText1
+//    Messages (Bot) -> textTheme.bodyText2
+//    Input -> textTheme.caption
+//    Feedback Buttons -> textTheme.button
+
 class ThemeModel extends ChangeNotifier {
   bool _isDark = true;
 
