@@ -1,9 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bubble/bubble.dart';
 import 'package:provider/provider.dart';
+import '../../../../app/models/theme_model.dart';
 
 class ChatMessage extends StatelessWidget {
   ChatMessage(
@@ -28,77 +30,15 @@ class ChatMessage extends StatelessWidget {
 
   List<Widget> otherMessage(context) {
     return <Widget>[
-      Container(
-        margin: const EdgeInsets.only(right: 16.0),
-        child: CircleAvatar(child: Text('CB')),
-      ),
       Expanded(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
             Container(
-                padding: const EdgeInsets.all(0.0),
-                // Consumer listens to changes in feedback
-                child: Consumer<ChatModel>(builder: (context, chat, child) {
-                  return Row(
-                    children: [
-                      GestureDetector(
-                        onTap: () {
-                          Provider.of<ChatModel>(context, listen: false)
-                              .changeSelected(index);
-                        },
-                        child: Bubble(
-                          child: Text(text),
-                          color: Color.fromRGBO(225, 225, 225, 1.0),
-                        ),
-                      ),
-                      if ((index == chat.chatList.length - 1) | selected)
-                        IconButton(
-                          icon: FaIcon(
-                            FontAwesomeIcons.check,
-                            color: chat.chatList[index].feedback == 0
-                                ? Colors.green
-                                : Colors.grey,
-                          ),
-                          iconSize: 15,
-                          onPressed: () {
-                            Provider.of<ChatModel>(context, listen: false)
-                                .giveFeedback(index, 0);
-                          },
-                        ),
-                      if ((index == chat.chatList.length - 1) | selected)
-                        IconButton(
-                          icon: FaIcon(
-                            FontAwesomeIcons.times,
-                            color: chat.chatList[index].feedback == 1
-                                ? Colors.red
-                                : Colors.grey,
-                          ),
-                          iconSize: 15,
-                          onPressed: () {
-                            Provider.of<ChatModel>(context, listen: false)
-                                .giveFeedback(index, 1);
-                          },
-                        ),
-                      if (((index == chat.chatList.length - 1) | selected) &
-                          (chat.chatList[index].feedback != -1))
-                        IconButton(
-                          icon: FaIcon(
-                            FontAwesomeIcons.comment,
-                            color: chat.chatList[index].comment.isEmpty
-                                ? Colors.grey
-                                : Colors.lightBlue,
-                          ),
-                          iconSize: 15,
-                          onPressed: () {
-                            Provider.of<ChatModel>(context, listen: false)
-                                .addComment(index);
-                          },
-                        )
-                    ],
-                  );
-                })),
+                child: MessageBubble(
+                    text: text,
+                    bubbleColor: Theme.of(context).colorScheme.primaryVariant,
+                    textStyle: Theme.of(context).textTheme.bodyText2))
           ],
         ),
       ),
@@ -111,25 +51,23 @@ class ChatMessage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
-            Text(name, style: TextStyle(fontWeight: FontWeight.bold)),
             Container(
-              margin: const EdgeInsets.only(top: 5.0),
-              child: Bubble(
-                child: Text(text),
-                color: Color.fromRGBO(212, 234, 244, 1.0),
-              ),
-            ),
+                child: MessageBubble(
+              text: text,
+              bubbleColor: Theme.of(context).colorScheme.primary,
+              textStyle: Theme.of(context).textTheme.bodyText1,
+            )),
           ],
         ),
       ),
-      Container(
-        margin: const EdgeInsets.only(left: 16.0),
-        child: CircleAvatar(
-            child: Text(
-          name[0],
-          style: TextStyle(fontWeight: FontWeight.bold),
-        )),
-      ),
+      // Container(
+      //   margin: const EdgeInsets.only(left: 16.0),
+      //   child: CircleAvatar(
+      //       child: Text(
+      //     name[0],
+      //     style: TextStyle(fontWeight: FontWeight.bold),
+      //   )),
+      // ),
     ];
   }
 
@@ -144,3 +82,64 @@ class ChatMessage extends StatelessWidget {
     );
   }
 }
+
+// child: Consumer<ChatModel>(builder: (context, chat, child) {
+//                   return Row(
+//                     children: [
+//                       GestureDetector(
+//                         onTap: () {
+//                           Provider.of<ChatModel>(context, listen: false)
+//                               .changeSelected(index);
+//                         },
+//                         child: Bubble(
+//                           child: Text(text),
+//                           color: Color.fromRGBO(225, 225, 225, 1.0),
+//                         ),
+//                       ),
+//                       if ((index == chat.getChatList().length - 1) | selected)
+//                         IconButton(
+//                           icon: FaIcon(
+//                             FontAwesomeIcons.check,
+//                             color: chat.getChatList()[index].feedback == 0
+//                                 ? Colors.green
+//                                 : Colors.grey,
+//                           ),
+//                           iconSize: 15,
+//                           onPressed: () {
+//                             Provider.of<ChatModel>(context, listen: false)
+//                                 .giveFeedback(index, 0);
+//                           },
+//                         ),
+//                       if ((index == chat.getChatList().length - 1) | selected)
+//                         IconButton(
+//                           icon: FaIcon(
+//                             FontAwesomeIcons.times,
+//                             color: chat.getChatList()[index].feedback == 1
+//                                 ? Colors.red
+//                                 : Colors.grey,
+//                           ),
+//                           iconSize: 15,
+//                           onPressed: () {
+//                             Provider.of<ChatModel>(context, listen: false)
+//                                 .giveFeedback(index, 1);
+//                           },
+//                         ),
+//                       if (((index == chat.getChatList().length - 1) |
+//                               selected) &
+//                           (chat.getChatList()[index].feedback != -1))
+//                         IconButton(
+//                           icon: FaIcon(
+//                             FontAwesomeIcons.comment,
+//                             color: chat.getChatList()[index].comment.isEmpty
+//                                 ? Colors.grey
+//                                 : Colors.lightBlue,
+//                           ),
+//                           iconSize: 15,
+//                           onPressed: () {
+//                             Provider.of<ChatModel>(context, listen: false)
+//                                 .addComment(index);
+//                           },
+//                         )
+//                     ],
+//                   );
+//                 })),

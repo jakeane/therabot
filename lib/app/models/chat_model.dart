@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/chat_message.dart';
 
 class ChatModel extends ChangeNotifier {
-  final List<ChatMessage> chatList = [];
+  final List<ChatMessage> _chatList = [];
+
+  getChatList() => _chatList;
 
   void addChat(String text, String name, bool type, int id) {
     ChatMessage message = ChatMessage(
@@ -11,39 +13,39 @@ class ChatModel extends ChangeNotifier {
       name: name,
       type: type,
       id: id,
-      index: chatList.length,
+      index: getChatList().length,
       feedback: -1,
       timestamp: FieldValue.serverTimestamp(),
       comment: "",
       selected: false,
     );
-    chatList.add(message);
+    getChatList().add(message);
     notifyListeners();
   }
 
   void giveFeedback(int index, int feedback) {
-    chatList[index].feedback = feedback;
+    getChatList()[index].feedback = feedback;
     notifyListeners();
   }
 
   void addComment(int index) {
-    chatList[index].comment = "hi";
+    getChatList()[index].comment = "hi";
     notifyListeners();
   }
 
   void changeSelected(int index) {
-    if (index != chatList.length - 1) {
-      chatList[index].selected = !chatList[index].selected;
+    if (index != getChatList().length - 1) {
+      getChatList()[index].selected = !getChatList()[index].selected;
       notifyListeners();
     }
   }
 
   Map<String, Object> getLastMessage() {
     return {
-      "text": chatList.last.text,
-      "name": chatList.last.name,
-      "type": chatList.last.type,
-      "timestamp": chatList.last.timestamp,
+      "text": getChatList().last.text,
+      "name": getChatList().last.name,
+      "type": getChatList().last.type,
+      "timestamp": getChatList().last.timestamp,
     };
   }
 }
