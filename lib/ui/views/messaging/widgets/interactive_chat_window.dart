@@ -1,15 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
-import 'package:flutter_dialogflow/dialogflow_v2.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:web_socket_channel/html.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 const SERVER_IP = 'localhost';
 const SERVER_PORT = '10001';
-const URL = 'ws://$SERVER_IP:$SERVER_PORT';
+const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
 
 // TODO
 // done 1. Add feedback data to chatmessage properties
@@ -52,6 +52,14 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   @override
   void initState() {
     super.initState();
+    channel.stream.listen((event) {
+      var data = jsonDecode(event) as Map;
+      var text = data['text'];
+      Provider.of<ChatModel>(context, listen: false)
+          .addChat(text, "Covid Bot", false, messageID);
+
+      print("channel:" + data['text']);
+    });
 
     myFocusNode = FocusNode();
   }
@@ -99,13 +107,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       currentUserID = await FirebaseDbService.getCurrentUserID();
     }
 
+    String jsonStringified = '{"text": "$query"}';
+    channel.sink.add(jsonStringified);
+
     // Get the conversation number
     previousMessagesCount = currentMessagesCount;
     currentMessagesCount =
         Provider.of<ChatModel>(context, listen: false).getChatList().length;
-
-    String jsonStringified = '{"text": "$query"}';
-    channel.sink.add(jsonStringified);
 
     // print('Previous message count: $previousMessagesCount');
     // print('Current message count: $currentMessagesCount');
@@ -157,21 +165,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         Provider.of<ChatModel>(context, listen: false).getLastMessage();
     FirebaseDbService.addMessageData(userID, messageID, userMessage);
 
-    // Talks to dialogflow
-    _textController.clear();
-    AuthGoogle authGoogle = await AuthGoogle(
-            fileJson:
-                "assets/credentials/simplechatbot-pkhufy-24d22513a231.json")
-        .build();
-    Dialogflow dialogflow =
-        Dialogflow(authGoogle: authGoogle, language: Language.english);
-    AIResponse response = await dialogflow.detectIntent(query);
-    messageID += 1;
-    String text = response.getMessage() ??
-        CardDialogflow(response.getListMessage()[0]).title;
-    Provider.of<ChatModel>(context, listen: false)
-        .addChat(text, "Covid Bot", false, messageID);
-
     FirebaseDbService.addMessageCount(currentUserID, messageID);
 
     var botMessage =
@@ -189,17 +182,17 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         title: Text("Covid-19 Chatbot"),
       ),
       body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-        StreamBuilder(
-          stream: channel.stream,
-          builder: (context, snapshot) {
-            if (snapshot.hasData) {
-              print(snapshot.data.toString());
-            } else {
-              print("no data");
-            }
-            return snapshot.hasData ? Text(snapshot.data.toString()) : Text('');
-          },
-        ),
+        // StreamBuilder(
+        //   stream: channel.stream,
+        //   builder: (context, snapshot) {
+        //     if (snapshot.hasData) {
+        //       print(snapshot.data.toString());
+        //     } else {
+        //       print("no data");
+        //     }
+        //     return snapshot.hasData ? Text(snapshot.data.toString()) : Text('');
+        //   },
+        // ),
         Flexible(
           child: Consumer<ChatModel>(
             builder: (context, chat, child) {
