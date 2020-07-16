@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
+import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -182,6 +184,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         title: Text("CBT Chatbot"),
       ),
       body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+        IconButton(
+          icon: FaIcon(FontAwesomeIcons.cog),
+          color: Theme.of(context).dividerColor,
+          onPressed: () {
+            Provider.of<ThemeModel>(context, listen: false).setTheme();
+          },
+        ),
         Flexible(
           child: Consumer<ChatModel>(
             builder: (context, chat, child) {
