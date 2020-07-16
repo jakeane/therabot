@@ -35,15 +35,10 @@ class ChatMessage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Container(
-              child: Consumer<ThemeModel>(
-                builder: (context, theme, child) {
-                  return MessageBubble(
-                      text: text,
-                      textColor: theme.getTheme()["botText"],
-                      bubbleColor: theme.getTheme()["botBubble"]);
-                },
-              ),
-            )
+                child: MessageBubble(
+                    text: text,
+                    bubbleColor: Theme.of(context).colorScheme.primaryVariant,
+                    textStyle: Theme.of(context).textTheme.bodyText2))
           ],
         ),
       ),
@@ -57,16 +52,11 @@ class ChatMessage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
             Container(
-              child: Consumer<ThemeModel>(
-                builder: (context, theme, child) {
-                  return MessageBubble(
-                    text: text,
-                    bubbleColor: theme.getTheme()["userBubble"],
-                    textColor: theme.getTheme()["userText"],
-                  );
-                },
-              ),
-            ),
+                child: MessageBubble(
+              text: text,
+              bubbleColor: Theme.of(context).colorScheme.primary,
+              textStyle: Theme.of(context).textTheme.bodyText1,
+            )),
           ],
         ),
       ),

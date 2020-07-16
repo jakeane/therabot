@@ -1,5 +1,4 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
@@ -177,22 +176,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      //backgroundColor: ,
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Covid-19 Chatbot"),
+        title: Text("CBT Chatbot"),
       ),
       body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-        // StreamBuilder(
-        //   stream: channel.stream,
-        //   builder: (context, snapshot) {
-        //     if (snapshot.hasData) {
-        //       print(snapshot.data.toString());
-        //     } else {
-        //       print("no data");
-        //     }
-        //     return snapshot.hasData ? Text(snapshot.data.toString()) : Text('');
-        //   },
-        // ),
         Flexible(
           child: Consumer<ChatModel>(
             builder: (context, chat, child) {

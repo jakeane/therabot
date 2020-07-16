@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class MessageBubble extends StatefulWidget {
-  MessageBubble({this.text, this.bubbleColor, this.textColor});
+  MessageBubble({this.text, this.bubbleColor, this.textStyle});
   final String text;
   final Color bubbleColor;
-  final Color textColor;
+  final TextStyle textStyle;
 
   @override
   _MessageBubble createState() => _MessageBubble();
@@ -22,7 +22,7 @@ class _MessageBubble extends State<MessageBubble> {
           maxWidth: (2 * MediaQuery.of(context).size.width / 3) + 20),
       child: Text(
         widget.text,
-        style: TextStyle(color: widget.textColor),
+        style: widget.textStyle,
       ),
     );
   }

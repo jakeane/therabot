@@ -10,10 +10,7 @@ class MessagingView extends StatelessWidget {
   Widget build(BuildContext context) {
     // The current home view is a simple full page window of the chatbot window.
     return (MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ChatModel()),
-        ChangeNotifierProvider(create: (_) => ThemeModel())
-      ],
+      providers: [ChangeNotifierProvider(create: (_) => ChatModel())],
       child: InteractiveChatWindow(),
     ));
   }
