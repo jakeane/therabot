@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/text_composer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -13,8 +14,8 @@ const SERVER_PORT = '10001';
 const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
 
 // TODO
-// 1. Set container padding to 20px
-// 2. Redesign typing bar according to style guide
+// done 1. Set container padding to 20px
+// debug 2. Redesign typing bar according to style guide
 // 3. Add bubble nips (with logic)
 // 4. Import style guide components
 // 5. Add new feedback buttons
@@ -132,6 +133,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void _handleSubmitted(String text) {
+    print('submitting');
     // if the inputted string is empty, don't do anything
     if (text == '') {
     } else {
@@ -175,11 +177,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      //backgroundColor: ,
+      backgroundColor: Theme.of(context).backgroundColor,
       appBar: AppBar(
         centerTitle: true,
         title: Text("CBT Chatbot"),
       ),
+      // wrap in GestureDetector(onTap: () => FocusScope.of(context).unfocus())
+      // For mobile this will remove the keyboard
       body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
         IconButton(
           icon: FaIcon(FontAwesomeIcons.cog),
@@ -192,7 +196,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           child: Consumer<ChatModel>(
             builder: (context, chat, child) {
               return ListView.builder(
-                padding: EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(20.0),
                 reverse: true,
                 itemBuilder: (_, index) =>
                     chat.getChatList()[chat.getChatList().length - index - 1],
@@ -202,10 +206,17 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           ),
         ),
         Divider(height: 1.0),
-        Container(
-          decoration: new BoxDecoration(color: Theme.of(context).cardColor),
-          child: _buildTextComposer(),
-        ),
+        TextComposer(
+          focusNode: myFocusNode,
+          handleSubmit: (text) {
+            _handleSubmitted(text);
+          },
+          controller: _textController,
+        )
+        // Container(
+        //   decoration: new BoxDecoration(color: Theme.of(context).cardColor),
+        //   child: _buildTextComposer(),
+        // ),
       ]),
     );
   }

@@ -14,7 +14,8 @@ class SignInView extends StatelessWidget {
     return ChangeNotifierProvider<SignInViewModel>(
       create: (_) => SignInViewModel(context.read),
       builder: (_, child) {
-        return const Scaffold(
+        return Scaffold(
+          backgroundColor: Theme.of(context).backgroundColor,
           body: SignInViewBody._(),
         );
       },
@@ -38,7 +39,7 @@ class SignInViewBody extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Text(
               Strings.signInMessage,
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.button,
             ),
           ),
           Expanded(
