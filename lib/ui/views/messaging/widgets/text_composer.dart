@@ -26,9 +26,9 @@ class TextComposer extends StatelessWidget {
                 focusNode: focusNode,
                 style: Theme.of(context).textTheme.caption,
                 textCapitalization: TextCapitalization.sentences,
-                onSubmitted: (value) {
-                  handleSubmit(value);
-                },
+                // onSubmitted: (value) {
+                //   handleSubmit(value);
+                // },
                 decoration: InputDecoration.collapsed(
                   hintText: "Type message here",
                 ),
@@ -38,7 +38,7 @@ class TextComposer extends StatelessWidget {
                 iconSize: 25.0,
                 color: Theme.of(context).colorScheme.primary,
                 onPressed: () {
-                  print("send");
+                  handleSubmit(controller.text);
                 },
               )
             ],

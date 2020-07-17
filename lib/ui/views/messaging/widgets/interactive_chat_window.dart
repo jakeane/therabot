@@ -25,6 +25,11 @@ const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
 // 9. Add bot avatar placeholder and implement chat bubble logic
 // 10. Add feedback flow
 
+// BUGS
+// 1. Pressing any button will submit the textfield
+// 2. Sometimes textfield is focused but not used
+// 3. Multiline handle
+
 class InteractiveChatWindow extends StatefulWidget {
   InteractiveChatWindow({Key key, this.title}) : super(key: key);
 
@@ -69,35 +74,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     channel.sink.close();
 
     super.dispose();
-  }
-
-  Widget _buildTextComposer() {
-    return IconTheme(
-      data: IconThemeData(color: Theme.of(context).accentColor),
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 8.0),
-        child: Row(
-          children: <Widget>[
-            Flexible(
-              child: TextField(
-                autofocus: true,
-                focusNode: myFocusNode,
-                controller: _textController,
-                onSubmitted: _handleSubmitted,
-                decoration:
-                    InputDecoration.collapsed(hintText: "Send a message"),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: 4.0),
-              child: IconButton(
-                  icon: Icon(Icons.send),
-                  onPressed: () => _handleSubmitted(_textController.text)),
-            ),
-          ],
-        ),
-      ),
-    );
   }
 
   // Handles user message and generates response from bot
@@ -178,14 +154,15 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text("CBT Chatbot"),
-      ),
+      // appBar: AppBar(
+      //   centerTitle: true,
+      //   title: Text("CBT Chatbot"),
+      // ),
       // wrap in GestureDetector(onTap: () => FocusScope.of(context).unfocus())
       // For mobile this will remove the keyboard
       body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
         IconButton(
+          alignment: Alignment.topRight,
           icon: FaIcon(FontAwesomeIcons.cog),
           color: Theme.of(context).dividerColor,
           onPressed: () {
@@ -221,3 +198,32 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     );
   }
 }
+
+// Widget _buildTextComposer() {
+//     return IconTheme(
+//       data: IconThemeData(color: Theme.of(context).accentColor),
+//       child: Container(
+//         margin: const EdgeInsets.symmetric(horizontal: 8.0),
+//         child: Row(
+//           children: <Widget>[
+//             Flexible(
+//               child: TextField(
+//                 autofocus: true,
+//                 focusNode: myFocusNode,
+//                 controller: _textController,
+//                 onSubmitted: _handleSubmitted,
+//                 decoration:
+//                     InputDecoration.collapsed(hintText: "Send a message"),
+//               ),
+//             ),
+//             Container(
+//               margin: EdgeInsets.symmetric(horizontal: 4.0),
+//               child: IconButton(
+//                   icon: Icon(Icons.send),
+//                   onPressed: () => _handleSubmitted(_textController.text)),
+//             ),
+//           ],
+//         ),
+//       ),
+//     );
+//   }
