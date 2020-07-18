@@ -11,6 +11,7 @@ void main() => runApp(
       /// This needs to be above [MaterialApp]
       /// At the top of the widget tree, to
       /// accomodate for navigations in the app
+
       MultiProvider(
         providers: [
           Provider(
@@ -23,4 +24,4 @@ void main() => runApp(
         ],
         child: MyApp(),
       ),
-    ); 
+    );

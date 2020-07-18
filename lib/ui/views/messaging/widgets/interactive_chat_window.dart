@@ -26,8 +26,8 @@ const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
 // 10. Add feedback flow
 
 // BUGS
-// 1. Pressing any button will submit the textfield
-// 2. Sometimes textfield is focused but not used
+// 1. Websocket error on Android
+// 2. Press enter to send message
 // 3. Multiline handle
 
 class InteractiveChatWindow extends StatefulWidget {
@@ -162,7 +162,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       // For mobile this will remove the keyboard
       body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
         IconButton(
-          alignment: Alignment.topRight,
           icon: FaIcon(FontAwesomeIcons.cog),
           color: Theme.of(context).dividerColor,
           onPressed: () {

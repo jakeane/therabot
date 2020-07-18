@@ -14,9 +14,14 @@ class SignInView extends StatelessWidget {
     return ChangeNotifierProvider<SignInViewModel>(
       create: (_) => SignInViewModel(context.read),
       builder: (_, child) {
-        return Scaffold(
-          backgroundColor: Theme.of(context).backgroundColor,
-          body: SignInViewBody._(),
+        return Container(
+          color: Theme.of(context).backgroundColor,
+          child: SafeArea(
+            child: Scaffold(
+              backgroundColor: Theme.of(context).backgroundColor,
+              body: SignInViewBody._(),
+            ),
+          ),
         );
       },
     );
