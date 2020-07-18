@@ -12,15 +12,10 @@ class MessagingView extends StatelessWidget {
     return (MultiProvider(
         providers: [ChangeNotifierProvider(create: (_) => ChatModel())],
         child: Container(
-          color: Theme.of(context).dividerColor,
+          color: Theme.of(context).backgroundColor,
           child: SafeArea(
             child: InteractiveChatWindow(),
           ),
         )));
   }
 }
-
-// ChangeNotifierProvider(
-//       create: (_) => ChatModel(),
-//       child: InteractiveChatWindow(),
-//     )
