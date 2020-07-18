@@ -162,7 +162,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       // For mobile this will remove the keyboard
       body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
         IconButton(
-          alignment: Alignment.topRight,
           icon: FaIcon(FontAwesomeIcons.cog),
           color: Theme.of(context).dividerColor,
           onPressed: () {
