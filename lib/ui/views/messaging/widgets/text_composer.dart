@@ -26,9 +26,9 @@ class TextComposer extends StatelessWidget {
                 focusNode: focusNode,
                 style: Theme.of(context).textTheme.caption,
                 textCapitalization: TextCapitalization.sentences,
-                // onSubmitted: (value) {
-                //   handleSubmit(value);
-                // },
+                onSubmitted: (value) {
+                  handleSubmit(value);
+                },
                 decoration: InputDecoration.collapsed(
                   hintText: "Type message here",
                 ),

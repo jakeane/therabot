@@ -8,6 +8,7 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 const SERVER_IP = 'localhost';
 const SERVER_PORT = '10001';
@@ -59,6 +60,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     channel.stream.listen((event) {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
+      text = text.toString().replaceAll(" .", ".");
+      text = text.toString().replaceAll(" ?", "?");
+      text = text.toString().replaceAll(" '", "'");
+      text = text.toString().replaceAll("' ", "'");
+      text = text.toString().replaceAll(" , ", ", ");
+      text = toBeginningOfSentenceCase(text);
+
       Provider.of<ChatModel>(context, listen: false)
           .addChat(text, "Covid Bot", false, messageID);
 
@@ -145,6 +153,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     var botMessage =
         Provider.of<ChatModel>(context, listen: false).getLastMessage();
+
     FirebaseDbService.addMessageData(currentUserID, messageID, botMessage);
 
     myFocusNode.requestFocus();
