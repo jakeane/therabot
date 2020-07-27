@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
+import 'package:flutter_chatbot/assets/chatbot_icons_icons.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:bubble/bubble.dart';
 import 'package:provider/provider.dart';
 import '../../../../app/models/theme_model.dart';
+import 'package:flutter_chatbot/assets/chatbot_icons_icons.dart';
 
 class ChatMessage extends StatelessWidget {
   ChatMessage(
@@ -37,7 +39,25 @@ class ChatMessage extends StatelessWidget {
             MessageBubble(
                 text: text,
                 bubbleColor: Theme.of(context).colorScheme.primaryVariant,
-                textStyle: Theme.of(context).textTheme.bodyText2)
+                textStyle: Theme.of(context).textTheme.bodyText2),
+            Row(
+              children: [
+                IconButton(
+                  icon: Icon(ChatbotIcons.feedbackcheck),
+                  iconSize: 15,
+                  onPressed: () {
+                    print('check');
+                  },
+                ),
+                IconButton(
+                  icon: Icon(ChatbotIcons.feedbackex),
+                  iconSize: 15,
+                  onPressed: () {
+                    print('ecks');
+                  },
+                )
+              ],
+            )
           ],
         ),
       ),
