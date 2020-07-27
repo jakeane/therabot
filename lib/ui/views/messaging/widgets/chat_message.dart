@@ -34,11 +34,10 @@ class ChatMessage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-                child: MessageBubble(
-                    text: text,
-                    bubbleColor: Theme.of(context).colorScheme.primaryVariant,
-                    textStyle: Theme.of(context).textTheme.bodyText2))
+            MessageBubble(
+                text: text,
+                bubbleColor: Theme.of(context).colorScheme.primaryVariant,
+                textStyle: Theme.of(context).textTheme.bodyText2)
           ],
         ),
       ),
@@ -60,14 +59,6 @@ class ChatMessage extends StatelessWidget {
           ],
         ),
       ),
-      // Container(
-      //   margin: const EdgeInsets.only(left: 16.0),
-      //   child: CircleAvatar(
-      //       child: Text(
-      //     name[0],
-      //     style: TextStyle(fontWeight: FontWeight.bold),
-      //   )),
-      // ),
     ];
   }
 
