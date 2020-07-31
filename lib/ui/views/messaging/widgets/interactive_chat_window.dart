@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/text_composer.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/bot_response.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -190,6 +192,29 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
             },
           ),
         ),
+        ConstrainedBox(
+            constraints: new BoxConstraints(minHeight: 140),
+            child: Container(
+                margin: EdgeInsets.only(top: 2.5),
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                        width: 100,
+                        height: 140,
+                        margin: EdgeInsets.only(right: 20),
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            color: Theme.of(context).dividerColor)),
+                    BotResponse(
+                        text:
+                            "hello asdjf nasug asiru adsfasepifouahspeiuahpa  piuh apiudh iu  paisue a asdf afiyb asilduf alsdufapsuhg aposug apsug",
+                        bubbleColor:
+                            Theme.of(context).colorScheme.primaryVariant,
+                        textStyle: Theme.of(context).textTheme.bodyText2),
+                  ],
+                ))),
         Divider(height: 1.0),
         TextComposer(
           focusNode: myFocusNode,
@@ -198,10 +223,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           },
           controller: _textController,
         )
-        // Container(
-        //   decoration: new BoxDecoration(color: Theme.of(context).cardColor),
-        //   child: _buildTextComposer(),
-        // ),
       ]),
     );
   }
