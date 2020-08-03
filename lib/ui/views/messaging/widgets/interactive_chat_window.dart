@@ -185,41 +185,49 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           child: Consumer<ChatModel>(
             builder: (context, chat, child) {
               return ListView.builder(
-                padding: EdgeInsets.all(20.0),
-                reverse: true,
-                itemBuilder: (_, index) =>
-                    chat.getChatList()[chat.getChatList().length - index - 1],
-                itemCount: chat.getChatList().length,
-              );
+                  padding: EdgeInsets.all(20.0),
+                  reverse: true,
+                  itemCount: chat.getChatList().length + 1,
+                  itemBuilder: (_, index) {
+                    if (index == 0) {
+                      return ConstrainedBox(
+                          constraints: new BoxConstraints(minHeight: 140),
+                          child: Container(
+                              margin: EdgeInsets.only(top: 2.5),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Container(
+                                      width: 100,
+                                      height: 140,
+                                      margin: EdgeInsets.only(right: 20),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color:
+                                              Theme.of(context).dividerColor)),
+                                  Consumer<ChatModel>(
+                                      builder: (context, chat, child) {
+                                    return (chat.getBotResponse() != null)
+                                        ? BotResponse(
+                                            text: chat.getBotResponse().text,
+                                            bubbleColor: Theme.of(context)
+                                                .colorScheme
+                                                .primaryVariant,
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2)
+                                        : Container();
+                                  })
+                                ],
+                              )));
+                    }
+                    return chat
+                        .getChatList()[chat.getChatList().length - index];
+                  });
             },
           ),
         ),
-        ConstrainedBox(
-            constraints: new BoxConstraints(minHeight: 140),
-            child: Container(
-                margin: EdgeInsets.only(top: 2.5),
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                        width: 100,
-                        height: 140,
-                        margin: EdgeInsets.only(right: 20),
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: Theme.of(context).dividerColor)),
-                    Consumer<ChatModel>(builder: (context, chat, child) {
-                      return (chat.getBotResponse() != null)
-                          ? BotResponse(
-                              text: chat.getBotResponse().text,
-                              bubbleColor:
-                                  Theme.of(context).colorScheme.primaryVariant,
-                              textStyle: Theme.of(context).textTheme.bodyText2)
-                          : Container();
-                    })
-                  ],
-                ))),
         Divider(height: 1.0),
         TextComposer(
           focusNode: myFocusNode,

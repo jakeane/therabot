@@ -11,17 +11,17 @@ class ChatModel extends ChangeNotifier {
 
   void addChat(String text, String name, bool type, int id) {
     if (_botResponse != null) {
-      getChatList().add(_botResponse);
+      _chatList.add(_botResponse);
       _botResponse = null;
     }
     ChatMessage message = createMessage(text, name, type, id);
-    getChatList().add(message);
+    _chatList.add(message);
     notifyListeners();
   }
 
   void addBotResponse(String text, String name, bool type, int id) {
     if (_botResponse != null) {
-      getChatList().add(_botResponse);
+      _chatList.add(_botResponse);
       _botResponse = null;
     }
     _botResponse = createMessage(text, name, type, id);
@@ -34,7 +34,7 @@ class ChatModel extends ChangeNotifier {
       name: name,
       type: type,
       id: id,
-      index: getChatList().length,
+      index: _chatList.length,
       feedback: -1,
       timestamp: FieldValue.serverTimestamp(),
       comment: "",
@@ -43,28 +43,28 @@ class ChatModel extends ChangeNotifier {
   }
 
   void giveFeedback(int index, int feedback) {
-    getChatList()[index].feedback = feedback;
+    _chatList[index].feedback = feedback;
     notifyListeners();
   }
 
   void addComment(int index) {
-    getChatList()[index].comment = "hi";
+    _chatList[index].comment = "hi";
     notifyListeners();
   }
 
   void changeSelected(int index) {
-    if (index != getChatList().length - 1) {
-      getChatList()[index].selected = !getChatList()[index].selected;
+    if (index != _chatList.length - 1) {
+      _chatList[index].selected = !_chatList[index].selected;
       notifyListeners();
     }
   }
 
   Map<String, Object> getLastMessage() {
     return {
-      "text": getChatList().last.text,
-      "name": getChatList().last.name,
-      "type": getChatList().last.type,
-      "timestamp": getChatList().last.timestamp,
+      "text": _chatList.last.text,
+      "name": _chatList.last.name,
+      "type": _chatList.last.type,
+      "timestamp": _chatList.last.timestamp,
     };
   }
 }
