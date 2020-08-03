@@ -32,7 +32,8 @@ class ChatMessage extends StatelessWidget {
             MessageBubble(
                 text: text,
                 bubbleColor: Theme.of(context).colorScheme.primaryVariant,
-                textStyle: Theme.of(context).textTheme.bodyText2),
+                textStyle: Theme.of(context).textTheme.bodyText2,
+                maxWidth: (2 * MediaQuery.of(context).size.width / 3) + 20)
           ],
         ),
       ),
@@ -50,6 +51,7 @@ class ChatMessage extends StatelessWidget {
               text: text,
               bubbleColor: Theme.of(context).colorScheme.primary,
               textStyle: Theme.of(context).textTheme.bodyText1,
+              maxWidth: (2 * MediaQuery.of(context).size.width / 3) + 20,
             )),
           ],
         ),

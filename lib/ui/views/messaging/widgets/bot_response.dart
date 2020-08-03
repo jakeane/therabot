@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
 
 class BotResponse extends StatefulWidget {
   BotResponse({this.text, this.bubbleColor, this.textStyle});
@@ -20,19 +21,29 @@ class _BotResponse extends State<BotResponse> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
-              margin: EdgeInsets.only(top: 2.5, bottom: 2.5),
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: widget.bubbleColor,
-              ),
-              padding: EdgeInsets.all(15),
-              constraints: BoxConstraints(
-                  maxWidth: MediaQuery.of(context).size.width - 160),
-              child: Text(
-                widget.text,
-                style: widget.textStyle,
-              ),
+            Stack(
+              children: [
+                MessageBubble(
+                  text: widget.text,
+                  bubbleColor: Theme.of(context).colorScheme.primaryVariant,
+                  textStyle: Theme.of(context).textTheme.bodyText2,
+                  maxWidth: MediaQuery.of(context).size.width - 160,
+                ),
+                if (_hasFeedback)
+                  Positioned(
+                      top: -20,
+                      right: -20,
+                      child: IconButton(
+                        icon: Icon(Cb.feedbackcheckpressed),
+                        iconSize: 25,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary, // Needs a specified color
+                        padding: const EdgeInsets.all(0.0),
+                        onPressed: () => print("stack"),
+                      )),
+              ],
+              overflow: Overflow.visible,
             ),
             _hasFeedback
                 ? IconButton(
