@@ -18,7 +18,7 @@ const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
 
 // TODO
 // done 1. Set container padding to 20px
-// debug 2. Redesign typing bar according to style guide
+// done 2. Redesign typing bar according to style guide
 // 3. Add bubble nips (with logic)
 // 4. Import style guide components
 // 5. Add new feedback buttons
@@ -62,6 +62,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     channel.stream.listen((event) {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
+
+      // Could turn this into helper?
       text = text.toString().replaceAll(" .", ".");
       text = text.toString().replaceAll(" ?", "?");
       text = text.toString().replaceAll(" '", "'");
@@ -70,7 +72,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       text = toBeginningOfSentenceCase(text);
 
       Provider.of<ChatModel>(context, listen: false)
-          .addChat(text, "Covid Bot", false, messageID);
+          .addBotResponse(text, "Covid Bot", false, messageID);
 
       print("channel text: " + text);
     });
@@ -207,12 +209,15 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: Theme.of(context).dividerColor)),
-                    BotResponse(
-                        text:
-                            "hello asdjf nasug asiru adsfasepifouahspeiuahpa  piuh apiudh iu  paisue a asdf afiyb asilduf alsdufapsuhg aposug apsug",
-                        bubbleColor:
-                            Theme.of(context).colorScheme.primaryVariant,
-                        textStyle: Theme.of(context).textTheme.bodyText2),
+                    Consumer<ChatModel>(builder: (context, chat, child) {
+                      return (chat.getBotResponse() != null)
+                          ? BotResponse(
+                              text: chat.getBotResponse().text,
+                              bubbleColor:
+                                  Theme.of(context).colorScheme.primaryVariant,
+                              textStyle: Theme.of(context).textTheme.bodyText2)
+                          : Container();
+                    })
                   ],
                 ))),
         Divider(height: 1.0),

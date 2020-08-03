@@ -4,11 +4,32 @@ import 'package:flutter_chatbot/ui/views/messaging/widgets/chat_message.dart';
 
 class ChatModel extends ChangeNotifier {
   final List<ChatMessage> _chatList = [];
+  ChatMessage _botResponse;
 
   getChatList() => _chatList;
+  getBotResponse() => _botResponse;
 
   void addChat(String text, String name, bool type, int id) {
-    ChatMessage message = ChatMessage(
+    if (_botResponse != null) {
+      getChatList().add(_botResponse);
+      _botResponse = null;
+    }
+    ChatMessage message = createMessage(text, name, type, id);
+    getChatList().add(message);
+    notifyListeners();
+  }
+
+  void addBotResponse(String text, String name, bool type, int id) {
+    if (_botResponse != null) {
+      getChatList().add(_botResponse);
+      _botResponse = null;
+    }
+    _botResponse = createMessage(text, name, type, id);
+    notifyListeners();
+  }
+
+  ChatMessage createMessage(String text, String name, bool type, int id) {
+    return ChatMessage(
       text: text,
       name: name,
       type: type,
@@ -19,8 +40,6 @@ class ChatModel extends ChangeNotifier {
       comment: "",
       selected: false,
     );
-    getChatList().add(message);
-    notifyListeners();
   }
 
   void giveFeedback(int index, int feedback) {
