@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/text_composer.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/bot_response.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -16,7 +18,7 @@ const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
 
 // TODO
 // done 1. Set container padding to 20px
-// debug 2. Redesign typing bar according to style guide
+// done 2. Redesign typing bar according to style guide
 // 3. Add bubble nips (with logic)
 // 4. Import style guide components
 // 5. Add new feedback buttons
@@ -60,6 +62,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     channel.stream.listen((event) {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
+
+      // Could turn this into helper?
       text = text.toString().replaceAll(" .", ".");
       text = text.toString().replaceAll(" ?", "?");
       text = text.toString().replaceAll(" '", "'");
@@ -68,7 +72,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       text = toBeginningOfSentenceCase(text);
 
       Provider.of<ChatModel>(context, listen: false)
-          .addChat(text, "Covid Bot", false, messageID);
+          .addBotResponse(text, "Covid Bot", false, messageID);
 
       print("channel text: " + text);
     });
@@ -181,12 +185,46 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           child: Consumer<ChatModel>(
             builder: (context, chat, child) {
               return ListView.builder(
-                padding: EdgeInsets.all(20.0),
-                reverse: true,
-                itemBuilder: (_, index) =>
-                    chat.getChatList()[chat.getChatList().length - index - 1],
-                itemCount: chat.getChatList().length,
-              );
+                  padding: EdgeInsets.all(20.0),
+                  reverse: true,
+                  itemCount: chat.getChatList().length + 1,
+                  itemBuilder: (_, index) {
+                    if (index == 0) {
+                      return ConstrainedBox(
+                          constraints: new BoxConstraints(minHeight: 140),
+                          child: Container(
+                              margin: EdgeInsets.only(top: 2.5),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Container(
+                                      width: 100,
+                                      height: 140,
+                                      margin: EdgeInsets.only(right: 20),
+                                      decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(20),
+                                          color:
+                                              Theme.of(context).dividerColor)),
+                                  Consumer<ChatModel>(
+                                      builder: (context, chat, child) {
+                                    return (chat.getBotResponse() != null)
+                                        ? BotResponse(
+                                            text: chat.getBotResponse().text,
+                                            bubbleColor: Theme.of(context)
+                                                .colorScheme
+                                                .primaryVariant,
+                                            textStyle: Theme.of(context)
+                                                .textTheme
+                                                .bodyText2)
+                                        : Container();
+                                  })
+                                ],
+                              )));
+                    }
+                    return chat
+                        .getChatList()[chat.getChatList().length - index];
+                  });
             },
           ),
         ),
@@ -198,10 +236,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           },
           controller: _textController,
         )
-        // Container(
-        //   decoration: new BoxDecoration(color: Theme.of(context).cardColor),
-        //   child: _buildTextComposer(),
-        // ),
       ]),
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/assets/assets.dart';
 
 class TextComposer extends StatelessWidget {
   TextComposer({this.focusNode, this.handleSubmit, this.controller});
@@ -34,7 +35,7 @@ class TextComposer extends StatelessWidget {
                 ),
               )),
               IconButton(
-                icon: Icon(Icons.send),
+                icon: Icon(Cb.send),
                 iconSize: 25.0,
                 color: Theme.of(context).colorScheme.primary,
                 onPressed: () {

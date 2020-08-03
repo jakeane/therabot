@@ -1,11 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:bubble/bubble.dart';
-import 'package:provider/provider.dart';
-import '../../../../app/models/theme_model.dart';
 
 class ChatMessage extends StatelessWidget {
   ChatMessage(
@@ -34,11 +29,11 @@ class ChatMessage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            Container(
-                child: MessageBubble(
-                    text: text,
-                    bubbleColor: Theme.of(context).colorScheme.primaryVariant,
-                    textStyle: Theme.of(context).textTheme.bodyText2))
+            MessageBubble(
+                text: text,
+                bubbleColor: Theme.of(context).colorScheme.primaryVariant,
+                textStyle: Theme.of(context).textTheme.bodyText2,
+                maxWidth: (2 * MediaQuery.of(context).size.width / 3) + 20)
           ],
         ),
       ),
@@ -56,18 +51,11 @@ class ChatMessage extends StatelessWidget {
               text: text,
               bubbleColor: Theme.of(context).colorScheme.primary,
               textStyle: Theme.of(context).textTheme.bodyText1,
+              maxWidth: (2 * MediaQuery.of(context).size.width / 3) + 20,
             )),
           ],
         ),
       ),
-      // Container(
-      //   margin: const EdgeInsets.only(left: 16.0),
-      //   child: CircleAvatar(
-      //       child: Text(
-      //     name[0],
-      //     style: TextStyle(fontWeight: FontWeight.bold),
-      //   )),
-      // ),
     ];
   }
 
