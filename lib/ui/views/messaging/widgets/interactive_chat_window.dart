@@ -27,6 +27,9 @@ const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
 // 8. Add typing bubble for bot
 // 9. Add bot avatar placeholder and implement chat bubble logic
 // 10. Add feedback flow
+// 11. Placeholder GIFs for chatbot avatar
+//      - Parse user's text
+//      - Query for emotion with nrcLEX
 
 // BUGS
 // 1. Websocket error on Android
@@ -185,7 +188,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           child: Consumer<ChatModel>(
             builder: (context, chat, child) {
               return ListView.builder(
-                  padding: EdgeInsets.all(20.0),
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
                   reverse: true,
                   itemCount: chat.getChatList().length + 1,
                   itemBuilder: (_, index) {
@@ -198,14 +201,16 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
                                   Container(
+                                    width: 100,
+                                    height: 140,
+                                    margin: EdgeInsets.only(right: 20),
+                                    child: new Image(
+                                      image: new AssetImage(
+                                          "assets/gifs/bot_transparent.gif"),
                                       width: 100,
                                       height: 140,
-                                      margin: EdgeInsets.only(right: 20),
-                                      decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(20),
-                                          color:
-                                              Theme.of(context).dividerColor)),
+                                    ),
+                                  ),
                                   Consumer<ChatModel>(
                                       builder: (context, chat, child) {
                                     return (chat.getBotResponse() != null)
