@@ -43,7 +43,11 @@ class ChatModel extends ChangeNotifier {
   }
 
   void giveFeedback(int index, int feedback) {
-    _chatList[index].feedback = feedback;
+    if (index == -1) {
+      _botResponse.feedback = feedback;
+    } else {
+      _chatList[index].feedback = feedback;
+    }
     notifyListeners();
   }
 

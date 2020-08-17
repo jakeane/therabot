@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
+import 'package:flutter_chatbot/assets/assets.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_chatbot/app/models/chat_model.dart';
 
 class ChatMessage extends StatelessWidget {
   ChatMessage(
@@ -29,11 +32,42 @@ class ChatMessage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            MessageBubble(
-                text: text,
-                bubbleColor: Theme.of(context).colorScheme.primaryVariant,
-                textStyle: Theme.of(context).textTheme.bodyText2,
-                maxWidth: (2 * MediaQuery.of(context).size.width / 3) + 20)
+            Stack(
+              children: [
+                MessageBubble(
+                    text: text,
+                    bubbleColor: Theme.of(context).colorScheme.primaryVariant,
+                    textStyle: Theme.of(context).textTheme.bodyText2,
+                    maxWidth: (2 * MediaQuery.of(context).size.width / 3) + 20),
+                if (feedback != -1)
+                  Positioned(
+                      top: -5,
+                      right: -5,
+                      child: Container(
+                        width: 20,
+                        height: 20,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: Theme.of(context).backgroundColor,
+                        ),
+                      )),
+                if (feedback != -1)
+                  Positioned(
+                      top: -20,
+                      right: -20,
+                      child: IconButton(
+                        icon: feedback == 1
+                            ? Icon(Cb.feedbackcheckpressed)
+                            : Icon(Cb.feedbackexpressed),
+                        iconSize: 25,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .primary, // Needs a specified color
+                        padding: const EdgeInsets.all(0.0),
+                      )),
+              ],
+              overflow: Overflow.visible,
+            )
           ],
         ),
       ),

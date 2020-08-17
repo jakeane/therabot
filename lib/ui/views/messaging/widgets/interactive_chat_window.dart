@@ -216,6 +216,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                                     return (chat.getBotResponse() != null)
                                         ? BotResponse(
                                             text: chat.getBotResponse().text,
+                                            feedback:
+                                                chat.getBotResponse().feedback,
                                             bubbleColor: Theme.of(context)
                                                 .colorScheme
                                                 .primaryVariant,

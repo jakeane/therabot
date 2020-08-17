@@ -38,6 +38,7 @@ class TextComposer extends StatelessWidget {
                 icon: Icon(Cb.send),
                 iconSize: 25.0,
                 color: Theme.of(context).colorScheme.primary,
+                padding: const EdgeInsets.all(0.0),
                 onPressed: () {
                   handleSubmit(controller.text);
                 },
