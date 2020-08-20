@@ -14,6 +14,9 @@ class ChatModel extends ChangeNotifier {
       _chatList.add(_botResponse);
       _botResponse = null;
     }
+    if (_chatList.length > 0 && _chatList.last.type) {
+      _chatList.last.consecutive = true;
+    }
     ChatMessage message = createMessage(text, name, type, id);
     _chatList.add(message);
     notifyListeners();
@@ -39,11 +42,16 @@ class ChatModel extends ChangeNotifier {
       timestamp: FieldValue.serverTimestamp(),
       comment: "",
       selected: false,
+      consecutive: false,
     );
   }
 
   void giveFeedback(int index, int feedback) {
-    _chatList[index].feedback = feedback;
+    if (index == -1) {
+      _botResponse.feedback = feedback;
+    } else {
+      _chatList[index].feedback = feedback;
+    }
     notifyListeners();
   }
 
