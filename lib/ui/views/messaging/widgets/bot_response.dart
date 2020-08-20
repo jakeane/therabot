@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
+import 'package:flutter_chatbot/assets/chat_nip.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
 import 'package:provider/provider.dart';
 
@@ -24,6 +25,16 @@ class BotResponse extends StatelessWidget {
                   bubbleColor: Theme.of(context).colorScheme.primaryVariant,
                   textStyle: Theme.of(context).textTheme.bodyText2,
                   maxWidth: MediaQuery.of(context).size.width - 180,
+                ),
+                Positioned(
+                  bottom: -5,
+                  child: CustomPaint(
+                    size: Size(20, 25),
+                    painter: ChatNip(
+                        nipHeight: 5,
+                        color: Theme.of(context).colorScheme.primaryVariant,
+                        isUser: false),
+                  ),
                 ),
                 if (feedback != -1)
                   Positioned(

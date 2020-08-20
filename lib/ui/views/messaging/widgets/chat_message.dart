@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/assets/chat_nip.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
 
@@ -13,7 +14,8 @@ class ChatMessage extends StatelessWidget {
       this.feedback,
       this.timestamp,
       this.comment,
-      this.selected});
+      this.selected,
+      this.consecutive});
   final String text;
   final String name;
   final bool type;
@@ -23,6 +25,7 @@ class ChatMessage extends StatelessWidget {
   int feedback;
   String comment;
   bool selected;
+  bool consecutive;
 
   List<Widget> otherMessage(context) {
     return <Widget>[
@@ -37,6 +40,17 @@ class ChatMessage extends StatelessWidget {
                     bubbleColor: Theme.of(context).colorScheme.primaryVariant,
                     textStyle: Theme.of(context).textTheme.bodyText2,
                     maxWidth: (2 * MediaQuery.of(context).size.width / 3) + 20),
+                if (!consecutive)
+                  Positioned(
+                    bottom: -5,
+                    child: CustomPaint(
+                      size: Size(20, 25),
+                      painter: ChatNip(
+                          nipHeight: 5,
+                          color: Theme.of(context).colorScheme.primaryVariant,
+                          isUser: false),
+                    ),
+                  ),
                 if (feedback != -1)
                   Positioned(
                       top: -5,
@@ -74,13 +88,30 @@ class ChatMessage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: <Widget>[
-            Container(
-                child: MessageBubble(
-              text: text,
-              bubbleColor: Theme.of(context).colorScheme.primary,
-              textStyle: Theme.of(context).textTheme.bodyText1,
-              maxWidth: (2 * MediaQuery.of(context).size.width / 3) + 20,
-            )),
+            Stack(
+              children: [
+                Container(
+                    child: MessageBubble(
+                  text: text,
+                  bubbleColor: Theme.of(context).colorScheme.primary,
+                  textStyle: Theme.of(context).textTheme.bodyText1,
+                  maxWidth: (2 * MediaQuery.of(context).size.width / 3) + 20,
+                )),
+                if (!consecutive)
+                  Positioned(
+                    bottom: -5,
+                    right: 0,
+                    child: CustomPaint(
+                      size: Size(20, 25),
+                      painter: ChatNip(
+                          nipHeight: 5,
+                          color: Theme.of(context).colorScheme.primary,
+                          isUser: true),
+                    ),
+                  ),
+              ],
+              overflow: Overflow.visible,
+            ),
           ],
         ),
       ),
