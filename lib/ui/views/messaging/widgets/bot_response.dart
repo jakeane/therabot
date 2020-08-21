@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
-import 'package:flutter_chatbot/assets/chat_nip.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/chat_nip.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
 import 'package:provider/provider.dart';
 

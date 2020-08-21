@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/text_composer.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/bot_response.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/copy_jumping.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -62,7 +62,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   @override
   void initState() {
     super.initState();
-    channel.stream.listen((event) {
+    channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
 
@@ -74,6 +74,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       text = text.toString().replaceAll(" , ", ", ");
       text = toBeginningOfSentenceCase(text);
 
+      await Future.delayed(Duration(seconds: 2));
       Provider.of<ChatModel>(context, listen: false)
           .addBotResponse(text, "Covid Bot", false, messageID);
 
@@ -224,7 +225,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                                             textStyle: Theme.of(context)
                                                 .textTheme
                                                 .bodyText2)
-                                        : Container();
+                                        : JumpingDotsProgressIndicator(
+                                            beginTweenValue: Theme.of(context)
+                                                .colorScheme
+                                                .secondary,
+                                            endTweenValue:
+                                                Theme.of(context).dividerColor,
+                                          );
                                   })
                                 ],
                               )));
