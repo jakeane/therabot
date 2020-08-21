@@ -5,7 +5,7 @@ import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/text_composer.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/bot_response.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/copy_jumping.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/typing_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -225,7 +225,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                                             textStyle: Theme.of(context)
                                                 .textTheme
                                                 .bodyText2)
-                                        : JumpingDotsProgressIndicator(
+                                        : TypingIndicator(
                                             beginTweenValue: Theme.of(context)
                                                 .colorScheme
                                                 .secondary,
