@@ -58,11 +58,16 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
   bool botThinking = false;
 
+  List<String> botInitPhrases = [
+    "Welcome to the overworld for the ParlAI messenger chatbot demo. Please type \"begin\" to start.",
+    "Welcome to the ParlAI Chatbot demo. You are now paired with a bot - feel free to send a message.Type [DONE] to finish the chat."
+  ];
+
   // Creates a focus node to autofocus the text controller when the chatbot responds
   FocusNode myFocusNode;
 
   @override
-  void initState() {
+  Future<void> initState() {
     super.initState();
     channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
@@ -76,21 +81,38 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       text = text.toString().replaceAll(" , ", ", ");
       text = toBeginningOfSentenceCase(text);
 
-      setState(() {
-        botThinking = true;
-      });
+      if (!botInitPhrases.contains(text)) {
+        await Future.delayed(Duration(seconds: 1));
 
-      int waitTime = text.length * 30;
-      print('waittime: $waitTime');
+        setState(() {
+          botThinking = true;
+        });
 
-      await Future.delayed(Duration(milliseconds: waitTime));
-      Provider.of<ChatModel>(context, listen: false)
-          .addBotResponse(text, "Covid Bot", false, messageID);
+        int waitTime = text.length * 30 + 2000;
+        print('waittime: $waitTime');
+
+        await Future.delayed(Duration(milliseconds: waitTime));
+        Provider.of<ChatModel>(context, listen: false)
+            .addBotResponse(text, "Covid Bot", false, messageID);
+      }
 
       print("channel text: " + text);
     });
 
+    initializeChat();
+
     myFocusNode = FocusNode();
+  }
+
+  void initializeChat() async {
+    await Future.delayed(Duration(milliseconds: 100));
+
+    channel.sink.add('{"text": "Hi"}');
+    channel.sink.add('{"text": "Begin"}');
+    String welcomeMessage =
+        "Hi! I am TheraBot. I am here to talk to you about any mental health problems you might be having.";
+    Provider.of<ChatModel>(context, listen: false)
+        .addBotResponse(welcomeMessage, "Covid Bot", false, messageID);
   }
 
   @override
