@@ -49,7 +49,7 @@ class TypingIndicator extends StatefulWidget {
 class _TypingIndicatorState extends State<TypingIndicator>
     with TickerProviderStateMixin {
   int numberOfDots = 3;
-  int milliseconds = 750;
+  int microseconds = 937500;
   List<AnimationController> controllers = new List<AnimationController>();
   List<Animation<Color>> animations = new List<Animation<Color>>();
   List<Widget> _widgets = new List<Widget>();
@@ -70,7 +70,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
 
   void _addAnimationControllers() {
     controllers.add(AnimationController(
-        duration: Duration(milliseconds: milliseconds), vsync: this));
+        duration: Duration(microseconds: microseconds), vsync: this));
   }
 
   void _addListOfDots(int index) {
@@ -89,11 +89,11 @@ class _TypingIndicatorState extends State<TypingIndicator>
       ColorTween(begin: widget.beginTweenValue, end: widget.endTweenValue)
           .animate(CurvedAnimation(
               parent: controllers[index],
-              curve: Interval(index * 0.15, 0.5 + index * 0.25,
-                  curve: Curves.ease),
-              reverseCurve: Interval((numberOfDots - index - 1) * 0.15,
-                  0.5 + (numberOfDots - index - 1) * 0.25,
-                  curve: Curves.ease)))
+              curve: Interval(0.2 + index * 0.2, 0.6 + index * 0.2,
+                  curve: Curves.decelerate),
+              reverseCurve: Interval(0.2 + (numberOfDots - index - 1) * 0.2,
+                  0.6 + (numberOfDots - index - 1) * 0.2,
+                  curve: Curves.easeIn)))
             ..addStatusListener(
               (AnimationStatus status) {
                 if (status == AnimationStatus.completed)

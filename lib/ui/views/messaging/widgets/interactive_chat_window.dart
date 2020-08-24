@@ -56,6 +56,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   int currentMessagesCount = 0;
   int messageID = 0;
 
+  bool botThinking = false;
+
   // Creates a focus node to autofocus the text controller when the chatbot responds
   FocusNode myFocusNode;
 
@@ -74,7 +76,14 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       text = text.toString().replaceAll(" , ", ", ");
       text = toBeginningOfSentenceCase(text);
 
-      await Future.delayed(Duration(seconds: 2));
+      setState(() {
+        botThinking = true;
+      });
+
+      int waitTime = text.length * 30;
+      print('waittime: $waitTime');
+
+      await Future.delayed(Duration(milliseconds: waitTime));
       Provider.of<ChatModel>(context, listen: false)
           .addBotResponse(text, "Covid Bot", false, messageID);
 
@@ -126,6 +135,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
   void _handleSubmitted(String text) {
     print('submitting');
+    setState(() {
+      botThinking = false;
+    });
     // if the inputted string is empty, don't do anything
     if (text == '') {
     } else {
@@ -225,13 +237,16 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                                             textStyle: Theme.of(context)
                                                 .textTheme
                                                 .bodyText2)
-                                        : TypingIndicator(
-                                            beginTweenValue: Theme.of(context)
-                                                .colorScheme
-                                                .secondary,
-                                            endTweenValue:
-                                                Theme.of(context).dividerColor,
-                                          );
+                                        : (botThinking
+                                            ? TypingIndicator(
+                                                beginTweenValue:
+                                                    Theme.of(context)
+                                                        .dividerColor,
+                                                endTweenValue: Theme.of(context)
+                                                    .colorScheme
+                                                    .secondary,
+                                              )
+                                            : Container());
                                   })
                                 ],
                               )));
