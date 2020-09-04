@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/avatar_view.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/text_composer.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/bot_response.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/typing_indicator.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -19,13 +18,13 @@ const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
 // TODO
 // done 1. Set container padding to 20px
 // done 2. Redesign typing bar according to style guide
-// 3. Add bubble nips (with logic)
-// 4. Import style guide components
-// 5. Add new feedback buttons
+// done 3. Add bubble nips (with logic)
+// done 4. Import style guide components
+// done 5. Add new feedback buttons
 // 6. Have settings button go to different view
 // 7. Add message bubble spacing logic
-// 8. Add typing bubble for bot
-// 9. Add bot avatar placeholder and implement chat bubble logic
+// done 8. Add typing bubble for bot
+// done 9. Add bot avatar placeholder and implement chat bubble logic
 // 10. Add feedback flow
 // 11. Placeholder GIFs for chatbot avatar
 //      - Parse user's text
@@ -67,7 +66,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   FocusNode myFocusNode;
 
   @override
-  Future<void> initState() {
+  void initState() {
     super.initState();
     channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
@@ -137,9 +136,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     currentMessagesCount =
         Provider.of<ChatModel>(context, listen: false).getChatList().length;
 
-    // print('Previous message count: $previousMessagesCount');
-    // print('Current message count: $currentMessagesCount');
-
     if (newConversationStarted()) {
       // if the conversationCount is empty then
       final DocumentSnapshot getuserdoc =
@@ -156,7 +152,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void _handleSubmitted(String text) {
-    print('submitting');
     setState(() {
       botThinking = false;
     });
@@ -227,54 +222,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                   reverse: true,
                   itemCount: chat.getChatList().length + 1,
                   itemBuilder: (_, index) {
-                    if (index == 0) {
-                      return ConstrainedBox(
-                          constraints: new BoxConstraints(minHeight: 140),
-                          child: Container(
-                              margin: EdgeInsets.only(top: 2.5),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Container(
-                                    width: 100,
-                                    height: 140,
-                                    margin: EdgeInsets.only(right: 20),
-                                    child: new Image(
-                                      image: new AssetImage(
-                                          "assets/gifs/bot_transparent.gif"),
-                                      width: 100,
-                                      height: 140,
-                                    ),
-                                  ),
-                                  Consumer<ChatModel>(
-                                      builder: (context, chat, child) {
-                                    return (chat.getBotResponse() != null)
-                                        ? BotResponse(
-                                            text: chat.getBotResponse().text,
-                                            feedback:
-                                                chat.getBotResponse().feedback,
-                                            bubbleColor: Theme.of(context)
-                                                .colorScheme
-                                                .primaryVariant,
-                                            textStyle: Theme.of(context)
-                                                .textTheme
-                                                .bodyText2)
-                                        : (botThinking
-                                            ? TypingIndicator(
-                                                beginTweenValue:
-                                                    Theme.of(context)
-                                                        .dividerColor,
-                                                endTweenValue: Theme.of(context)
-                                                    .colorScheme
-                                                    .secondary,
-                                              )
-                                            : Container());
-                                  })
-                                ],
-                              )));
-                    }
-                    return chat
-                        .getChatList()[chat.getChatList().length - index];
+                    return index == 0
+                        ? AvatarView(botThinking: botThinking)
+                        : chat.getChatList()[chat.getChatList().length - index];
                   });
             },
           ),
@@ -291,32 +241,3 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     );
   }
 }
-
-// Widget _buildTextComposer() {
-//     return IconTheme(
-//       data: IconThemeData(color: Theme.of(context).accentColor),
-//       child: Container(
-//         margin: const EdgeInsets.symmetric(horizontal: 8.0),
-//         child: Row(
-//           children: <Widget>[
-//             Flexible(
-//               child: TextField(
-//                 autofocus: true,
-//                 focusNode: myFocusNode,
-//                 controller: _textController,
-//                 onSubmitted: _handleSubmitted,
-//                 decoration:
-//                     InputDecoration.collapsed(hintText: "Send a message"),
-//               ),
-//             ),
-//             Container(
-//               margin: EdgeInsets.symmetric(horizontal: 4.0),
-//               child: IconButton(
-//                   icon: Icon(Icons.send),
-//                   onPressed: () => _handleSubmitted(_textController.text)),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
