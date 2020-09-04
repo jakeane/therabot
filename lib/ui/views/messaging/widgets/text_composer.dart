@@ -19,21 +19,28 @@ class TextComposer extends StatelessWidget {
               border:
                   Border.all(color: Theme.of(context).colorScheme.secondary)),
           child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: <Widget>[
               Expanded(
-                  child: TextField(
-                controller: controller,
-                autofocus: true,
-                focusNode: focusNode,
-                style: Theme.of(context).textTheme.caption,
-                textCapitalization: TextCapitalization.sentences,
-                onSubmitted: (value) {
-                  handleSubmit(value);
-                },
-                decoration: InputDecoration.collapsed(
-                  hintText: "Type message here",
-                ),
-              )),
+                  flex: 1,
+                  child: Container(
+                      padding: EdgeInsets.only(bottom: 15, top: 15),
+                      child: TextField(
+                        controller: controller,
+                        autofocus: true,
+                        focusNode: focusNode,
+                        style: Theme.of(context).textTheme.caption,
+                        textCapitalization: TextCapitalization.sentences,
+                        keyboardType: TextInputType.multiline,
+                        minLines: 1,
+                        maxLines: 15,
+                        onSubmitted: (value) {
+                          handleSubmit(value);
+                        },
+                        decoration: InputDecoration.collapsed(
+                          hintText: "Type message here",
+                        ),
+                      ))),
               IconButton(
                 icon: Icon(Cb.send),
                 iconSize: 25.0,
