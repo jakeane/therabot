@@ -3,7 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
+import 'package:flutter_chatbot/app/state/chat_state.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/avatar_view.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/feedback_bar.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/text_composer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -16,24 +18,19 @@ const SERVER_PORT = '10001';
 const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
 
 // TODO
-// done 1. Set container padding to 20px
-// done 2. Redesign typing bar according to style guide
-// done 3. Add bubble nips (with logic)
-// done 4. Import style guide components
-// done 5. Add new feedback buttons
-// 6. Have settings button go to different view
-// 7. Add message bubble spacing logic
-// done 8. Add typing bubble for bot
-// done 9. Add bot avatar placeholder and implement chat bubble logic
-// 10. Add feedback flow
-// 11. Placeholder GIFs for chatbot avatar
+// 1. Have settings button go to different view
+// 2. Add message bubble spacing logic
+// 3. Add feedback flow
+// 4. Login page
+// 5. New user flow vs. returning user
+// 6. Set up backend with dialogue model and emotions
+// 7. Placeholder GIFs for chatbot avatar
 //      - Parse user's text
 //      - Query for emotion with nrcLEX
 
 // BUGS
 // 1. Websocket error on Android
 // 2. Press enter to send message
-// 3. Multiline handle
 
 class InteractiveChatWindow extends StatefulWidget {
   InteractiveChatWindow({Key key, this.title}) : super(key: key);
@@ -230,13 +227,19 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           ),
         ),
         Divider(height: 1.0),
-        TextComposer(
-          focusNode: myFocusNode,
-          handleSubmit: (text) {
-            _handleSubmitted(text);
+        Consumer<ChatState>(
+          builder: (context, state, child) {
+            return state.feedbackMode
+                ? FeedbackBar(selected: state.selected)
+                : TextComposer(
+                    focusNode: myFocusNode,
+                    handleSubmit: (text) {
+                      _handleSubmitted(text);
+                    },
+                    controller: _textController,
+                  );
           },
-          controller: _textController,
-        )
+        ),
       ]),
     );
   }

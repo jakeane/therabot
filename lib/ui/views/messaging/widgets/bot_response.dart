@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
+import 'package:flutter_chatbot/app/state/chat_state.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/chat_nip.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
@@ -11,6 +12,8 @@ class BotResponse extends StatelessWidget {
   final int feedback;
   final Color bubbleColor;
   final TextStyle textStyle;
+
+  final bool comment = true;
 
   Widget build(BuildContext context) {
     return Container(
@@ -57,9 +60,7 @@ class BotResponse extends StatelessWidget {
                               ? Icon(Cb.feedbackcheckpressed)
                               : Icon(Cb.feedbackexpressed),
                           iconSize: 25,
-                          color: Theme.of(context)
-                              .colorScheme
-                              .primary, // Needs a specified color
+                          color: Theme.of(context).colorScheme.primary,
                           padding: const EdgeInsets.all(0.0),
                           onPressed: () {
                             Provider.of<ChatModel>(context, listen: false)
@@ -69,15 +70,19 @@ class BotResponse extends StatelessWidget {
               overflow: Overflow.visible,
             ),
             feedback != -1
-                ? IconButton(
-                    icon: Icon(Cb.feedbackcomment),
-                    iconSize: 40,
-                    color: Theme.of(context).colorScheme.secondaryVariant,
-                    padding: const EdgeInsets.all(0.0),
-                    onPressed: () {
-                      print('comment');
-                    },
-                  )
+                ? comment
+                    ? IconButton(
+                        icon: Icon(Cb.feedbackcomment),
+                        iconSize: 40,
+                        color: Theme.of(context).colorScheme.secondaryVariant,
+                        padding: const EdgeInsets.all(0.0),
+                        onPressed: () {
+                          print('comment');
+                          Provider.of<ChatState>(context, listen: false)
+                              .changeFeedbackState();
+                        },
+                      )
+                    : Container(width: 100, height: 100, color: Colors.red)
                 : Row(
                     children: [
                       IconButton(
