@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/ui/views/onboarding/onboard_pageview.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../app/constants/strings.dart';
@@ -68,7 +69,25 @@ class SignInViewBody extends StatelessWidget {
         const AnonymousSignInButton(),
         const GoogleSignInButton(),
         const Spacer(),
+        const OnBoardButton(),
       ],
     );
+  }
+}
+
+class OnBoardButton extends StatelessWidget {
+  const OnBoardButton({
+    Key key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return RaisedButton(
+        onPressed: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => OnBoardPages()));
+        },
+        color: Colors.blue,
+        child: Text("onboard"));
   }
 }

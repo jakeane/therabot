@@ -5,6 +5,7 @@ class Strings {
   // Routes
   static const String homeRoute = '/';
   static const String messsagingViewRoute = '/chatwithbot';
+  static const String onBoardingRoute = '/onboarding';
 
   // Authentication
   static const String signInMessage = 'Please sign in';
