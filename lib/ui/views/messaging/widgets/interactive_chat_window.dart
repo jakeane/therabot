@@ -141,7 +141,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       if (getuserdoc.exists == false) {
         messageID = 0;
       } else {
-        messageID = getuserdoc.data['messagesCount'];
+        messageID = getuserdoc.data()['messagesCount'];
       }
     }
 
