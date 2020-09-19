@@ -3,9 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
+import 'package:flutter_chatbot/app/services/firebase_signin.dart';
+import 'package:flutter_chatbot/app/state/chat_state.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/avatar_view.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/feedback_bar.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/text_composer.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/bot_response.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -17,24 +19,19 @@ const SERVER_PORT = '10001';
 const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
 
 // TODO
-// done 1. Set container padding to 20px
-// done 2. Redesign typing bar according to style guide
-// 3. Add bubble nips (with logic)
-// 4. Import style guide components
-// 5. Add new feedback buttons
-// 6. Have settings button go to different view
-// 7. Add message bubble spacing logic
-// 8. Add typing bubble for bot
-// 9. Add bot avatar placeholder and implement chat bubble logic
-// 10. Add feedback flow
-// 11. Placeholder GIFs for chatbot avatar
+// 1. Have settings button go to different view
+// 2. Add message bubble spacing logic
+// 3. Add feedback flow
+// 4. Login page
+// 5. New user flow vs. returning user
+// 6. Set up backend with dialogue model and emotions
+// 7. Placeholder GIFs for chatbot avatar
 //      - Parse user's text
 //      - Query for emotion with nrcLEX
 
 // BUGS
 // 1. Websocket error on Android
 // 2. Press enter to send message
-// 3. Multiline handle
 
 class InteractiveChatWindow extends StatefulWidget {
   InteractiveChatWindow({Key key, this.title}) : super(key: key);
@@ -56,13 +53,20 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   int currentMessagesCount = 0;
   int messageID = 0;
 
+  bool botThinking = false;
+
+  List<String> botInitPhrases = [
+    "Welcome to the overworld for the ParlAI messenger chatbot demo. Please type \"begin\" to start.",
+    "Welcome to the ParlAI Chatbot demo. You are now paired with a bot - feel free to send a message.Type [DONE] to finish the chat."
+  ];
+
   // Creates a focus node to autofocus the text controller when the chatbot responds
   FocusNode myFocusNode;
 
   @override
   void initState() {
     super.initState();
-    channel.stream.listen((event) {
+    channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
 
@@ -74,13 +78,38 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       text = text.toString().replaceAll(" , ", ", ");
       text = toBeginningOfSentenceCase(text);
 
-      Provider.of<ChatModel>(context, listen: false)
-          .addBotResponse(text, "Covid Bot", false, messageID);
+      if (!botInitPhrases.contains(text)) {
+        await Future.delayed(Duration(seconds: 1));
+
+        setState(() {
+          botThinking = true;
+        });
+
+        int waitTime = text.length * 30 + 2000;
+        print('waittime: $waitTime');
+
+        await Future.delayed(Duration(milliseconds: waitTime));
+        Provider.of<ChatModel>(context, listen: false)
+            .addBotResponse(text, "Covid Bot", false, messageID);
+      }
 
       print("channel text: " + text);
     });
 
+    initializeChat();
+
     myFocusNode = FocusNode();
+  }
+
+  void initializeChat() async {
+    await Future.delayed(Duration(milliseconds: 100));
+
+    channel.sink.add('{"text": "Hi"}');
+    channel.sink.add('{"text": "Begin"}');
+    String welcomeMessage =
+        "Hi! I am TheraBot. I am here to talk to you about any mental health problems you might be having.";
+    Provider.of<ChatModel>(context, listen: false)
+        .addBotResponse(welcomeMessage, "Covid Bot", false, messageID);
   }
 
   @override
@@ -105,9 +134,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     currentMessagesCount =
         Provider.of<ChatModel>(context, listen: false).getChatList().length;
 
-    // print('Previous message count: $previousMessagesCount');
-    // print('Current message count: $currentMessagesCount');
-
     if (newConversationStarted()) {
       // if the conversationCount is empty then
       final DocumentSnapshot getuserdoc =
@@ -116,7 +142,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       if (getuserdoc.exists == false) {
         messageID = 0;
       } else {
-        messageID = getuserdoc.data['messagesCount'];
+        messageID = getuserdoc.data()['messagesCount'];
       }
     }
 
@@ -124,7 +150,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void _handleSubmitted(String text) {
-    print('submitting');
+    setState(() {
+      botThinking = false;
+    });
     // if the inputted string is empty, don't do anything
     if (text == '') {
     } else {
@@ -184,6 +212,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
             Provider.of<ThemeModel>(context, listen: false).setTheme();
           },
         ),
+        IconButton(
+          icon: FaIcon(FontAwesomeIcons.signOutAlt),
+          color: Theme.of(context).dividerColor,
+          onPressed: () {
+            signOut();
+          },
+        ),
         Flexible(
           child: Consumer<ChatModel>(
             builder: (context, chat, child) {
@@ -192,87 +227,28 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                   reverse: true,
                   itemCount: chat.getChatList().length + 1,
                   itemBuilder: (_, index) {
-                    if (index == 0) {
-                      return ConstrainedBox(
-                          constraints: new BoxConstraints(minHeight: 140),
-                          child: Container(
-                              margin: EdgeInsets.only(top: 2.5),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.end,
-                                children: [
-                                  Container(
-                                    width: 100,
-                                    height: 140,
-                                    margin: EdgeInsets.only(right: 20),
-                                    child: new Image(
-                                      image: new AssetImage(
-                                          "assets/gifs/bot_transparent.gif"),
-                                      width: 100,
-                                      height: 140,
-                                    ),
-                                  ),
-                                  Consumer<ChatModel>(
-                                      builder: (context, chat, child) {
-                                    return (chat.getBotResponse() != null)
-                                        ? BotResponse(
-                                            text: chat.getBotResponse().text,
-                                            feedback:
-                                                chat.getBotResponse().feedback,
-                                            bubbleColor: Theme.of(context)
-                                                .colorScheme
-                                                .primaryVariant,
-                                            textStyle: Theme.of(context)
-                                                .textTheme
-                                                .bodyText2)
-                                        : Container();
-                                  })
-                                ],
-                              )));
-                    }
-                    return chat
-                        .getChatList()[chat.getChatList().length - index];
+                    return index == 0
+                        ? AvatarView(botThinking: botThinking)
+                        : chat.getChatList()[chat.getChatList().length - index];
                   });
             },
           ),
         ),
         Divider(height: 1.0),
-        TextComposer(
-          focusNode: myFocusNode,
-          handleSubmit: (text) {
-            _handleSubmitted(text);
+        Consumer<ChatState>(
+          builder: (context, state, child) {
+            return state.feedbackMode
+                ? FeedbackBar(selected: state.selected)
+                : TextComposer(
+                    focusNode: myFocusNode,
+                    handleSubmit: (text) {
+                      _handleSubmitted(text);
+                    },
+                    controller: _textController,
+                  );
           },
-          controller: _textController,
-        )
+        ),
       ]),
     );
   }
 }
-
-// Widget _buildTextComposer() {
-//     return IconTheme(
-//       data: IconThemeData(color: Theme.of(context).accentColor),
-//       child: Container(
-//         margin: const EdgeInsets.symmetric(horizontal: 8.0),
-//         child: Row(
-//           children: <Widget>[
-//             Flexible(
-//               child: TextField(
-//                 autofocus: true,
-//                 focusNode: myFocusNode,
-//                 controller: _textController,
-//                 onSubmitted: _handleSubmitted,
-//                 decoration:
-//                     InputDecoration.collapsed(hintText: "Send a message"),
-//               ),
-//             ),
-//             Container(
-//               margin: EdgeInsets.symmetric(horizontal: 4.0),
-//               child: IconButton(
-//                   icon: Icon(Icons.send),
-//                   onPressed: () => _handleSubmitted(_textController.text)),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }

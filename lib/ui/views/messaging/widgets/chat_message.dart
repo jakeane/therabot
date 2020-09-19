@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chatbot/assets/chat_nip.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/chat_nip.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
 
