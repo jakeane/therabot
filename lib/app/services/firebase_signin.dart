@@ -1,4 +1,3 @@
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
@@ -34,8 +33,17 @@ Future<String> signInWithGoogle() async {
   return null;
 }
 
-void signOutGoogle() async {
-  await googleSignIn.signOut();
+Future<void> signInAnonymously() async {
+  try {
+    await FirebaseAuth.instance.signInAnonymously();
+  } catch (e) {
+    print(e); // TODO: show dialog with error
+  }
+}
+
+void signOut() async {
+  // await googleSignIn.signOut();
+  await FirebaseAuth.instance.signOut();
 
   print("User Signed Out");
 }

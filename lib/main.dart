@@ -8,25 +8,26 @@ import 'app/services/firebase_auth_service.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(
-    /// Inject the [FirebaseAuthService]
-    /// and provide a stream of [User]
-    ///
-    /// This needs to be above [MaterialApp]
-    /// At the top of the widget tree, to
-    /// accomodate for navigations in the app
+  runApp(MyApp()
 
-    MultiProvider(
-      providers: [
-        Provider(
-          create: (_) => FirebaseAuthService(),
-        ),
-        StreamProvider(
-          create: (context) =>
-              context.read<FirebaseAuthService>().onAuthStateChanged,
-        ),
-      ],
-      child: MyApp(),
-    ),
-  );
+      /// Inject the [FirebaseAuthService]
+      /// and provide a stream of [User]
+      ///
+      /// This needs to be above [MaterialApp]
+      /// At the top of the widget tree, to
+      /// accomodate for navigations in the app
+
+      // MultiProvider(
+      //   providers: [
+      //     Provider(
+      //       create: (_) => FirebaseAuthService(),
+      //     ),
+      //     StreamProvider(
+      //       create: (context) =>
+      //           context.read<FirebaseAuthService>().onAuthStateChanged,
+      //     ),
+      //   ],
+      //   child: MyApp(),
+      // ),
+      );
 }

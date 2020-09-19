@@ -210,7 +210,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           color: Theme.of(context).dividerColor,
           onPressed: () {
             Provider.of<ThemeModel>(context, listen: false).setTheme();
-            signOutGoogle();
+          },
+        ),
+        IconButton(
+          icon: FaIcon(FontAwesomeIcons.signOutAlt),
+          color: Theme.of(context).dividerColor,
+          onPressed: () {
+            signOut();
           },
         ),
         Flexible(
