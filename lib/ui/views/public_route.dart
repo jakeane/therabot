@@ -14,8 +14,7 @@ class PublicRoute extends StatelessWidget {
         return route;
       } else {
         SchedulerBinding.instance.addPostFrameCallback((_) {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-              Strings.homeRoute, ModalRoute.withName(Strings.homeRoute));
+          Navigator.of(context).pushReplacementNamed(Strings.homeRoute);
         });
         return Scaffold(
           body: Center(

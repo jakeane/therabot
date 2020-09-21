@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
@@ -14,9 +16,8 @@ class PrivateRoute extends StatelessWidget {
         return route;
       } else {
         SchedulerBinding.instance.addPostFrameCallback((_) {
-          // Navigator.of(context)
-          //     .popUntil(ModalRoute.withName(Strings.homeRoute));
-          Navigator.of(context).pushReplacementNamed(Strings.signinRoute);
+          Navigator.of(context).pushNamedAndRemoveUntil(
+              Strings.signinRoute, (Route<dynamic> route) => false);
         });
         return Scaffold(
           body: Center(

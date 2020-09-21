@@ -10,6 +10,10 @@ class AuthService extends ChangeNotifier {
 
   bool get isNew => _isNew;
 
+  void changeIsNew() {
+    _isNew = !_isNew;
+  }
+
   User getUser() {
     return _auth.currentUser;
   }

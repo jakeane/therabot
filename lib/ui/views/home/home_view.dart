@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/services/firebase_signin.dart';
 import 'package:provider/provider.dart';
 
@@ -9,6 +10,12 @@ class HomeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<AuthService>(context, listen: false).isNew) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushNamed(context, Strings.onBoardingRoute);
+      });
+    }
+
     return Scaffold(
         body: SafeArea(
             child: Center(
