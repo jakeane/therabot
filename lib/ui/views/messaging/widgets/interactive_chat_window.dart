@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
@@ -216,7 +217,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           icon: FaIcon(FontAwesomeIcons.signOutAlt),
           color: Theme.of(context).dividerColor,
           onPressed: () {
-            signOut();
+            Provider.of<AuthService>(context, listen: false).signOut();
           },
         ),
         Flexible(
