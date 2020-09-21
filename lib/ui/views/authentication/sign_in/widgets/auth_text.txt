@@ -50,3 +50,41 @@ signInWithGoogle succeeded: User(
     tenantId: null,
     uid: k5rpXq7OSxMQACQcKfBsJ82EJ2k2
 )
+
+UserCredential(
+    additionalUserInfo: 
+        AdditionalUserInfo(
+            isNewUser: true,
+            profile: {
+                at_hash: cDRYIc2ec1nTOf821gPb6g,
+                exp: 1600662896,
+                azp: 792796736973-mrsljqgn0r3ub98kolqmtn0o25sjmg9n.apps.googleusercontent.com,
+                nonce: m4tBYtPyB4gd3y2xl76z8uN9BYATXe4Z19MpUTJ3eVQ,
+                picture: https://lh5.googleusercontent.com/-VnLwI3MKa9Q/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuckUZW52BhLComEY4cy_TJ-HlUiAWg/s96-c/photo.jpg,
+                locale: en,
+                iss: https://accounts.google.com,
+                email_verified: true,
+                sub: 103996689833126948876,
+                aud: 792796736973-mrsljqgn0r3ub98kolqmtn0o25sjmg9n.apps.googleusercontent.com,
+                family_name: Keane,
+                iat: 1600659296,
+                email: spam.jkeane@gmail.com,
+                name: Jack Keane,
+                given_name: Jack
+            },
+            providerId: google.com,
+            username: null
+        ),
+        credential: AuthCredential(
+            providerId: google.com,
+            signInMethod: google.com,
+            token: null
+        ),
+        user: User(
+            displayName: Jack Keane,
+            email: spam.jkeane@gmail.com,
+            emailVerified: true,
+            isAnonymous: false,
+            metadata: UserMetadata(
+                creationTime: 2020-09-20 23:34:56.845,
+                lastSignInTime<…>

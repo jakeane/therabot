@@ -3,7 +3,8 @@ class Strings {
   static const String appName = 'Flutter Generative Chatbot';
 
   // Routes
-  static const String landingRoute = '/';
+  static const String signinRoute = '/signin';
+  static const String homeRoute = '/home';
   static const String messagingViewRoute = '/chatwithbot';
   static const String onBoardingRoute = '/onboarding';
 

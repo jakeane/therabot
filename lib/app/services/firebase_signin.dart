@@ -6,6 +6,10 @@ class AuthService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
 
+  bool _isNew = false;
+
+  bool get isNew => _isNew;
+
   User getUser() {
     return _auth.currentUser;
   }
@@ -22,6 +26,8 @@ class AuthService extends ChangeNotifier {
 
     final UserCredential authResult =
         await _auth.signInWithCredential(credential);
+    _isNew = authResult.additionalUserInfo.isNewUser;
+
     final User user = authResult.user;
 
     if (user != null) {
@@ -31,7 +37,46 @@ class AuthService extends ChangeNotifier {
       final User currentUser = _auth.currentUser;
       assert(user.uid == currentUser.uid);
 
-      print('signInWithGoogle succeeded: $user');
+      // print('signInWithGoogle succeeded: $user');
+      notifyListeners();
+      return '$user';
+    }
+    notifyListeners();
+    return null;
+  }
+
+  Future<String> signInRegularAccount(String email, String password) async {
+    final UserCredential authResult = await _auth.signInWithEmailAndPassword(
+        email: email, password: password);
+    final User user = authResult.user;
+
+    if (user != null) {
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+      final User currentUser = _auth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      notifyListeners();
+      return '$user';
+    }
+    notifyListeners();
+    return null;
+  }
+
+  Future<String> createRegularAccount(String email, String password) async {
+    final UserCredential authResult = await _auth
+        .createUserWithEmailAndPassword(email: email, password: password);
+    final User user = authResult.user;
+
+    _isNew = true;
+
+    if (user != null) {
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+      final User currentUser = _auth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      print('regular signin succeeded: $user');
       notifyListeners();
       return '$user';
     }
@@ -41,7 +86,8 @@ class AuthService extends ChangeNotifier {
 
   Future<void> signInAnonymously() async {
     try {
-      await FirebaseAuth.instance.signInAnonymously();
+      final UserCredential authResult = await _auth.signInAnonymously();
+      _isNew = authResult.additionalUserInfo.isNewUser;
       notifyListeners();
     } catch (e) {
       print(e); // TODO: show dialog with error

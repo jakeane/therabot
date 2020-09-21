@@ -7,6 +7,7 @@ import 'package:flutter_chatbot/ui/views/home/home_view.dart';
 import 'package:flutter_chatbot/ui/views/home/landing_view.dart';
 import 'package:flutter_chatbot/ui/views/onboarding/onboard_pageview.dart';
 import 'package:flutter_chatbot/ui/views/private_route.dart';
+import 'package:flutter_chatbot/ui/views/public_route.dart';
 import 'package:provider/provider.dart';
 import '../app/constants/strings.dart';
 import '../ui/views/authentication/sign_in/sign_in_view.dart';
@@ -24,12 +25,13 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Chatbot App',
             theme: theme.getTheme(),
-            initialRoute: Strings.landingRoute,
+            initialRoute: Strings.signinRoute,
             routes: {
-              Strings.landingRoute: (context) => LandingView(),
-              Strings.messagingViewRoute: (context) =>
+              Strings.signinRoute: (_) => PublicRoute(route: SignInView()),
+              Strings.homeRoute: (_) => PrivateRoute(route: HomeView()),
+              Strings.messagingViewRoute: (_) =>
                   PrivateRoute(route: MessagingView()),
-              Strings.onBoardingRoute: (context) =>
+              Strings.onBoardingRoute: (_) =>
                   PrivateRoute(route: OnBoardPages()),
             },
           );
