@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
-import 'package:flutter_chatbot/app/services/firebase_signin.dart';
+import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/views/messaging/messaging_view.dart';
 import 'package:flutter_chatbot/ui/views/onboarding/pageview_placeholder.dart';
 import 'package:provider/provider.dart';

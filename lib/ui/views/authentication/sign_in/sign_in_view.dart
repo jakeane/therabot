@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chatbot/ui/views/onboarding/onboard_pageview.dart';
-import 'package:provider/provider.dart';
-
-import '../../../../app/constants/strings.dart';
-import 'sign_in_view_model.dart';
-import 'widgets/anonymous_sign_in_button.dart';
+import 'package:flutter_chatbot/ui/views/authentication/sign_in/widgets/anonymous_sign_in_button.dart';
+import 'package:flutter_svg/svg.dart';
 import 'widgets/google_sign_in_button.dart';
 
 class SignInView extends StatelessWidget {
@@ -12,82 +8,47 @@ class SignInView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<SignInViewModel>(
-      create: (_) => SignInViewModel(context.read),
-      builder: (_, child) {
-        return Container(
-          color: Theme.of(context).backgroundColor,
-          child: SafeArea(
-            child: Scaffold(
-              backgroundColor: Theme.of(context).backgroundColor,
-              body: SignInViewBody._(),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class SignInViewBody extends StatelessWidget {
-  const SignInViewBody._({Key key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    final isLoading =
-        context.select((SignInViewModel viewModel) => viewModel.isLoading);
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        mainAxisSize: MainAxisSize.max,
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Text(
-              Strings.signInMessage,
-              style: Theme.of(context).textTheme.button,
-            ),
-          ),
-          Expanded(
-            child: isLoading ? _loadingIndicator() : _signInButtons(context),
-          ),
-        ],
+    return Container(
+      color: Theme.of(context).backgroundColor,
+      child: SafeArea(
+        child: Scaffold(
+          backgroundColor: Theme.of(context).backgroundColor,
+          body: Center(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              SvgPicture.asset(
+                'assets/images/bot_logo.svg',
+              ),
+              SvgPicture.asset(
+                'assets/images/therabot.svg',
+              ),
+              GoogleSignInButton(),
+              // AnonymousSignInButton(),
+              Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                          color: Theme.of(context).colorScheme.secondary)),
+                  width: 300,
+                  child: TextField(
+                    style: Theme.of(context).textTheme.caption,
+                    decoration: InputDecoration.collapsed(hintText: "Email"),
+                  )),
+              Container(
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      border: Border.all(
+                          color: Theme.of(context).colorScheme.secondary)),
+                  width: 300,
+                  child: TextField(
+                    style: Theme.of(context).textTheme.caption,
+                    decoration: InputDecoration.collapsed(hintText: "Password"),
+                  ))
+            ],
+          )),
+        ),
       ),
     );
-  }
-
-  Center _loadingIndicator() {
-    return const Center(
-      child: CircularProgressIndicator(),
-    );
-  }
-
-  Column _signInButtons(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        const Spacer(),
-        const AnonymousSignInButton(),
-        const GoogleSignInButton(),
-        const Spacer(),
-        const OnBoardButton(),
-      ],
-    );
-  }
-}
-
-class OnBoardButton extends StatelessWidget {
-  const OnBoardButton({
-    Key key,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return RaisedButton(
-        onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => OnBoardPages()));
-        },
-        color: Colors.blue,
-        child: Text("onboard"));
   }
 }
