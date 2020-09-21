@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/services/firebase_signin.dart';
 import 'package:flutter_chatbot/ui/views/messaging/messaging_view.dart';
 import 'package:provider/provider.dart';
 
@@ -14,11 +15,7 @@ class AnonymousSignInButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return RaisedButton(
       onPressed: () {
-        context.read<SignInViewModel>().signInAnonymously();
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => MessagingView()),
-        );
+        signInAnonymously();
       },
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       color: Colors.red[900],
