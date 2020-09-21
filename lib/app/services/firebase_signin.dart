@@ -1,49 +1,107 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-final FirebaseAuth _auth = FirebaseAuth.instance;
-final GoogleSignIn googleSignIn = GoogleSignIn();
+class AuthService extends ChangeNotifier {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
-Future<String> signInWithGoogle() async {
-  final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
-  final GoogleSignInAuthentication googleSignInAuthentication =
-      await googleSignInAccount.authentication;
+  bool _isNew = false;
 
-  final AuthCredential credential = GoogleAuthProvider.credential(
-    accessToken: googleSignInAuthentication.accessToken,
-    idToken: googleSignInAuthentication.idToken,
-  );
+  bool get isNew => _isNew;
 
-  final UserCredential authResult =
-      await _auth.signInWithCredential(credential);
-  final User user = authResult.user;
-
-  if (user != null) {
-    assert(!user.isAnonymous);
-    assert(await user.getIdToken() != null);
-
-    final User currentUser = _auth.currentUser;
-    assert(user.uid == currentUser.uid);
-
-    print('signInWithGoogle succeeded: $user');
-
-    return '$user';
+  void changeIsNew() {
+    _isNew = !_isNew;
   }
 
-  return null;
-}
-
-Future<void> signInAnonymously() async {
-  try {
-    await FirebaseAuth.instance.signInAnonymously();
-  } catch (e) {
-    print(e); // TODO: show dialog with error
+  User getUser() {
+    return _auth.currentUser;
   }
-}
 
-void signOut() async {
-  // await googleSignIn.signOut();
-  await FirebaseAuth.instance.signOut();
+  Future<String> signInWithGoogle() async {
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
 
-  print("User Signed Out");
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    final UserCredential authResult =
+        await _auth.signInWithCredential(credential);
+    _isNew = authResult.additionalUserInfo.isNewUser;
+
+    final User user = authResult.user;
+
+    if (user != null) {
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+
+      final User currentUser = _auth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      // print('signInWithGoogle succeeded: $user');
+      notifyListeners();
+      return '$user';
+    }
+    notifyListeners();
+    return null;
+  }
+
+  Future<String> signInRegularAccount(String email, String password) async {
+    final UserCredential authResult = await _auth.signInWithEmailAndPassword(
+        email: email, password: password);
+    final User user = authResult.user;
+
+    if (user != null) {
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+      final User currentUser = _auth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      notifyListeners();
+      return '$user';
+    }
+    notifyListeners();
+    return null;
+  }
+
+  Future<String> createRegularAccount(String email, String password) async {
+    final UserCredential authResult = await _auth
+        .createUserWithEmailAndPassword(email: email, password: password);
+    final User user = authResult.user;
+
+    _isNew = true;
+
+    if (user != null) {
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+      final User currentUser = _auth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      print('regular signin succeeded: $user');
+      notifyListeners();
+      return '$user';
+    }
+    notifyListeners();
+    return null;
+  }
+
+  Future<void> signInAnonymously() async {
+    try {
+      final UserCredential authResult = await _auth.signInAnonymously();
+      _isNew = authResult.additionalUserInfo.isNewUser;
+      notifyListeners();
+    } catch (e) {
+      print(e); // TODO: show dialog with error
+    }
+  }
+
+  void signOut() async {
+    // await googleSignIn.signOut();
+    await FirebaseAuth.instance.signOut();
+    notifyListeners();
+    print("User Signed Out");
+  }
 }

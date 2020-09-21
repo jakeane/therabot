@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_auth_buttons/flutter_auth_buttons.dart' as buttons;
 import 'package:flutter_chatbot/app/services/firebase_signin.dart';
+import 'package:provider/provider.dart';
 
 class GoogleSignInButton extends StatelessWidget {
   const GoogleSignInButton({Key key}) : super(key: key);
@@ -9,7 +10,8 @@ class GoogleSignInButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return buttons.GoogleSignInButton(
       onPressed: () {
-        signInWithGoogle();
+        Provider.of<AuthService>(context, listen: false).signInWithGoogle();
+        ;
       },
       darkMode: true,
       textStyle: TextStyle(
