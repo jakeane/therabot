@@ -4,6 +4,7 @@ class Strings {
 
   // Routes
   static const String signinRoute = '/signin';
+  static const String createAccountRoute = '/createaccount';
   static const String homeRoute = '/home';
   static const String messagingViewRoute = '/chatwithbot';
   static const String onBoardingRoute = '/onboarding';

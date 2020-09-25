@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
+import 'package:flutter_chatbot/ui/views/authentication/sign_in/create_account_view.dart';
 import 'package:flutter_chatbot/ui/views/home/home_view.dart';
 import 'package:flutter_chatbot/ui/views/onboarding/onboard_pageview.dart';
 import 'package:flutter_chatbot/ui/views/private_route.dart';
@@ -26,6 +27,9 @@ class MyApp extends StatelessWidget {
             initialRoute: Strings.signinRoute,
             routes: {
               Strings.signinRoute: (_) => PublicRoute(route: SignInView()),
+              Strings.createAccountRoute: (_) => PublicRoute(
+                    route: CreateAccountView(),
+                  ),
               Strings.homeRoute: (_) => PrivateRoute(route: HomeView()),
               Strings.messagingViewRoute: (_) =>
                   PrivateRoute(route: MessagingView()),
