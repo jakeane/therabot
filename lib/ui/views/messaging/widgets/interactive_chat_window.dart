@@ -4,7 +4,7 @@ import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
-import 'package:flutter_chatbot/app/services/firebase_signin.dart';
+import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/app/state/chat_state.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/avatar_view.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/feedback_bar.dart';

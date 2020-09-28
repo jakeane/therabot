@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chatbot/app/services/firebase_signin.dart';
+import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:provider/provider.dart';
 
 import '../../../../../app/constants/strings.dart';
