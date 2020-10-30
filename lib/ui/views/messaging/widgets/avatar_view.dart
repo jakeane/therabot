@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/bot_response.dart';
@@ -21,6 +22,8 @@ class AvatarView extends StatelessWidget {
                   width: 100,
                   height: 140,
                   margin: EdgeInsets.only(right: 20),
+                  // child: Lottie.asset("assets/gifs/happy_idle.json",
+                  //     width: 100, height: 140)
                   child: new Image(
                     image: new AssetImage("assets/gifs/bot_transparent.gif"),
                     width: 100,

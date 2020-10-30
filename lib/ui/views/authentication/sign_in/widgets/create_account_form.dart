@@ -21,39 +21,43 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
           // Add TextFormFields and RaisedButton here.
           Container(
               padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-              margin: EdgeInsets.only(bottom: 10, top: 10),
+              margin: EdgeInsets.only(top: 80),
+
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                       color: Theme.of(context).colorScheme.secondary)),
               width: 300,
               child: TextFormField(
+                  textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.caption,
                   decoration: InputDecoration.collapsed(hintText: "Email"),
                   onSaved: (value) => email = value)),
 
           Container(
               padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-              margin: EdgeInsets.only(bottom: 10),
+              margin: EdgeInsets.only(top: 20),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                       color: Theme.of(context).colorScheme.secondary)),
               width: 300,
               child: TextFormField(
+                  textAlign: TextAlign.center,
                   obscureText: true,
                   style: Theme.of(context).textTheme.caption,
                   decoration: InputDecoration.collapsed(hintText: "Password"),
                   onSaved: (value) => password = value)),
           Container(
               padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-              margin: EdgeInsets.only(bottom: 10),
+              margin: EdgeInsets.only(top: 20),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                       color: Theme.of(context).colorScheme.secondary)),
               width: 300,
               child: TextFormField(
+                  textAlign: TextAlign.center,
                   obscureText: true,
                   style: Theme.of(context).textTheme.caption,
                   decoration:
@@ -61,6 +65,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                   onSaved: (value) => confirmPassword = value)),
           Container(
             width: 300,
+            margin: EdgeInsets.only(top: 50),
             child: FlatButton(
                 onPressed: () {
                   _formKey.currentState.save();
@@ -69,10 +74,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                 },
                 child: Text(
                   "Create Account",
-                  style: Theme.of(context)
-                      .textTheme
-                      .button
-                      .copyWith(color: Colors.white),
+                  style: Theme.of(context).textTheme.bodyText1,
                 ),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),

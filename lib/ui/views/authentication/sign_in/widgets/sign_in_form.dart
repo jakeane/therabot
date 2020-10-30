@@ -22,13 +22,15 @@ class _SignInFormState extends State<SignInForm> {
           // Add TextFormFields and RaisedButton here.
           Container(
               padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-              margin: EdgeInsets.only(bottom: 10, top: 10),
+              margin: EdgeInsets.only(top: 80),
+
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                       color: Theme.of(context).colorScheme.secondary)),
               width: 300,
               child: TextFormField(
+                textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.caption,
                 decoration: InputDecoration.collapsed(hintText: "Username"),
                 onSaved: (value) => email = value,
@@ -36,19 +38,21 @@ class _SignInFormState extends State<SignInForm> {
 
           Container(
               padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-              margin: EdgeInsets.only(bottom: 10),
+              margin: EdgeInsets.only(top: 20),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
                       color: Theme.of(context).colorScheme.secondary)),
               width: 300,
               child: TextFormField(
+                textAlign: TextAlign.center,
                 obscureText: true,
                 style: Theme.of(context).textTheme.caption,
                 decoration: InputDecoration.collapsed(hintText: "Password"),
                 onSaved: (value) => password = value,
               )),
           Container(
+            margin: EdgeInsets.only(top: 20),
             width: 300,
             child: FlatButton(
                 onPressed: () {
@@ -58,10 +62,7 @@ class _SignInFormState extends State<SignInForm> {
                 },
                 child: Text(
                   "Login",
-                  style: Theme.of(context)
-                      .textTheme
-                      .button
-                      .copyWith(color: Colors.white),
+                  style: Theme.of(context).textTheme.bodyText1,
                 ),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(50),

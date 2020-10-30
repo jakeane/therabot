@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/constants/strings.dart';
+import 'package:flutter_chatbot/ui/views/authentication/sign_in/widgets/auth_view_header.dart';
 import 'package:flutter_chatbot/ui/views/authentication/sign_in/widgets/create_account_form.dart';
-import 'package:flutter_chatbot/ui/views/authentication/sign_in/widgets/google_sign_in_button.dart';
-import 'package:flutter_chatbot/ui/views/authentication/sign_in/widgets/sign_in_form.dart';
+
 import 'package:flutter_svg/svg.dart';
 
 class CreateAccountView extends StatelessWidget {
@@ -13,16 +14,25 @@ class CreateAccountView extends StatelessWidget {
           backgroundColor: Theme.of(context).backgroundColor,
           body: Center(
               child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: [
-              SvgPicture.asset(
-                'assets/images/bot_logo.svg',
-              ),
-              SvgPicture.asset(
-                'assets/images/therabot.svg',
-              ),
-              GoogleSignInButton(),
-              CreateAccountForm()
+              AuthViewHeader(),
+              CreateAccountForm(),
+              Spacer(),
+              Container(
+                  margin: EdgeInsets.only(bottom: 20),
+                  child: FlatButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "Already have an account? Login",
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          .copyWith(color: Colors.grey),
+                    ),
+                  )),
             ],
           )),
         ),

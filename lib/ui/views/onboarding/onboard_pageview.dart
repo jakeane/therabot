@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
-import 'package:flutter_chatbot/ui/views/messaging/messaging_view.dart';
-import 'package:flutter_chatbot/ui/views/onboarding/pageview_placeholder.dart';
+import 'package:flutter_chatbot/ui/views/onboarding/onboard_page.dart';
 import 'package:provider/provider.dart';
 
 class OnBoardPages extends StatefulWidget {
@@ -14,10 +13,10 @@ class _OnBoardPagesState extends State<OnBoardPages> {
   int currentPageValue = 0;
   PageController _pageController;
   final List<Widget> onBoardPages = [
-    PageviewPlaceholder(pageNum: 0),
-    PageviewPlaceholder(pageNum: 1),
-    PageviewPlaceholder(pageNum: 2),
-    PageviewPlaceholder(pageNum: 3),
+    OnboardPage(pageNum: 0),
+    OnboardPage(pageNum: 1),
+    OnboardPage(pageNum: 2),
+    OnboardPage(pageNum: 3),
   ];
 
   @override
@@ -34,10 +33,10 @@ class _OnBoardPagesState extends State<OnBoardPages> {
 
   Widget circleBar(bool isActive) {
     return AnimatedContainer(
-      duration: Duration(milliseconds: 150),
+      duration: Duration(milliseconds: 250),
       margin: EdgeInsets.symmetric(horizontal: 8),
-      height: isActive ? 12 : 8,
-      width: isActive ? 12 : 8,
+      height: 10,
+      width: 10,
       decoration: BoxDecoration(
           color: isActive
               ? Theme.of(context).colorScheme.primary
@@ -74,7 +73,7 @@ class _OnBoardPagesState extends State<OnBoardPages> {
               alignment: AlignmentDirectional.bottomCenter,
               children: [
                 Container(
-                    margin: EdgeInsets.only(bottom: 100),
+                    margin: EdgeInsets.only(bottom: 75),
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -90,8 +89,9 @@ class _OnBoardPagesState extends State<OnBoardPages> {
                 visible:
                     currentPageValue == onBoardPages.length - 1 ? true : false,
                 child: Container(
-                  margin: EdgeInsets.only(bottom: 25),
-                  width: 200,
+                  margin: EdgeInsets.only(bottom: 58),
+                  width: 300,
+                  height: 40,
                   child: FloatingActionButton(
                     onPressed: () {
                       Provider.of<AuthService>(context, listen: false)
@@ -104,7 +104,10 @@ class _OnBoardPagesState extends State<OnBoardPages> {
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     child: Text(
                       "Start chatting",
-                      style: Theme.of(context).textTheme.button,
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          .copyWith(fontWeight: FontWeight.w700),
                     ),
                   ),
                 )),

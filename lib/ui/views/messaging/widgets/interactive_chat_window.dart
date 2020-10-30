@@ -15,9 +15,12 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
-const SERVER_IP = 'localhost';
-const SERVER_PORT = '10001';
-const URL = 'ws://$SERVER_IP:$SERVER_PORT/websocket';
+const LOCAL_IP = 'localhost';
+const LOCAL_PORT = '10001';
+const AWS_IP = 'ec2-34-221-3-104.us-west-2.compute.amazonaws.com';
+const AWS_PORT = '8080';
+const LOCAL_URL = 'ws://$LOCAL_IP:$LOCAL_PORT/websocket';
+const AWS_URL = 'ws://$AWS_IP:$AWS_PORT/websocket';
 
 // TODO
 // 1. Have settings button go to different view
@@ -39,7 +42,7 @@ class InteractiveChatWindow extends StatefulWidget {
 
   // Takes a single input which is the title of the chat window
   final String title;
-  final channel = WebSocketChannel.connect(Uri.parse(URL));
+  // final channel = WebSocketChannel.connect(Uri.parse(LOCAL_URL));
 
   @override
   _InteractiveChatWindow createState() => _InteractiveChatWindow();
@@ -47,7 +50,7 @@ class InteractiveChatWindow extends StatefulWidget {
 
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
-  final channel = WebSocketChannel.connect(Uri.parse(URL));
+  final channel = WebSocketChannel.connect(Uri.parse(AWS_URL));
 
   String currentUserID;
   int previousMessagesCount = 0;
