@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/ui/views/authentication/sign_in/widgets/auth_view_header.dart';
 import 'package:flutter_chatbot/ui/views/authentication/sign_in/widgets/create_account_form.dart';
+
 import 'package:flutter_svg/svg.dart';
 
 class CreateAccountView extends StatelessWidget {

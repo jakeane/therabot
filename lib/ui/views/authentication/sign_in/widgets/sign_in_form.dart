@@ -23,6 +23,7 @@ class _SignInFormState extends State<SignInForm> {
           Container(
               padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
               margin: EdgeInsets.only(top: 80),
+
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(

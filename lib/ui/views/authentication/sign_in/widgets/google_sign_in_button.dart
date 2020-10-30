@@ -37,6 +37,7 @@ class GoogleSignInButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(50),
               side: BorderSide(color: Theme.of(context).colorScheme.secondary)),
           color: Theme.of(context).backgroundColor),
+
     );
 
     // return buttons.GoogleSignInButton(
