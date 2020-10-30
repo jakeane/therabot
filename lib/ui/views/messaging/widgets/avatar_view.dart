@@ -25,7 +25,7 @@ class AvatarView extends StatelessWidget {
                   // child: Lottie.asset("assets/gifs/happy_idle.json",
                   //     width: 100, height: 140)
                   child: new Image(
-                    image: new AssetImage("assets/gifs/bot_transparent.gif"),
+                    image: new AssetImage("assets/bots/bot_transparent.gif"),
                     width: 100,
                     height: 140,
                   ),

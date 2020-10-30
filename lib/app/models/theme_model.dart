@@ -22,6 +22,8 @@ class ThemeModel extends ChangeNotifier {
 
   getTheme() => _isDark ? _themeDark : _themeLight;
 
+  getIsDark() => _isDark;
+
   setTheme() async {
     _isDark = !_isDark;
     notifyListeners();

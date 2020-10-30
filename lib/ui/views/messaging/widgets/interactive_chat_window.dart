@@ -1,13 +1,14 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
-import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/app/state/chat_state.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/avatar_view.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/feedback_bar.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/settings_overlay.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/text_composer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -50,7 +51,7 @@ class InteractiveChatWindow extends StatefulWidget {
 
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
-  final channel = WebSocketChannel.connect(Uri.parse(AWS_URL));
+  final channel = WebSocketChannel.connect(Uri.parse(LOCAL_URL));
 
   String currentUserID;
   int previousMessagesCount = 0;
@@ -58,6 +59,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   int messageID = 0;
 
   bool botThinking = false;
+  bool _settingsOpen = true;
 
   List<String> botInitPhrases = [
     "Welcome to the overworld for the ParlAI messenger chatbot demo. Please type \"begin\" to start.",
@@ -122,6 +124,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     channel.sink.close();
 
     super.dispose();
+  }
+
+  void setSettingsView() {
+    setState(() {
+      _settingsOpen = !_settingsOpen;
+    });
   }
 
   // Handles user message and generates response from bot
@@ -200,6 +208,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
   @override
   Widget build(BuildContext context) {
+    if (Provider.of<AuthService>(context, listen: false).isNew) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushNamed(context, Strings.onBoardingRoute);
+      });
+    }
+
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
       // appBar: AppBar(
@@ -208,51 +222,58 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       // ),
       // wrap in GestureDetector(onTap: () => FocusScope.of(context).unfocus())
       // For mobile this will remove the keyboard
-      body: Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-        IconButton(
-          icon: FaIcon(FontAwesomeIcons.cog),
-          color: Theme.of(context).dividerColor,
-          onPressed: () {
-            Provider.of<ThemeModel>(context, listen: false).setTheme();
-          },
-        ),
-        IconButton(
-          icon: FaIcon(FontAwesomeIcons.signOutAlt),
-          color: Theme.of(context).dividerColor,
-          onPressed: () {
-            Provider.of<AuthService>(context, listen: false).signOut();
-          },
-        ),
-        Flexible(
-          child: Consumer<ChatModel>(
-            builder: (context, chat, child) {
-              return ListView.builder(
-                  padding: EdgeInsets.symmetric(horizontal: 20.0),
-                  reverse: true,
-                  itemCount: chat.getChatList().length + 1,
-                  itemBuilder: (_, index) {
-                    return index == 0
-                        ? AvatarView(botThinking: botThinking)
-                        : chat.getChatList()[chat.getChatList().length - index];
-                  });
-            },
+      body: Stack(
+        children: [
+          Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+            Flexible(
+              child: Consumer<ChatModel>(
+                builder: (context, chat, child) {
+                  return ListView.builder(
+                      padding: EdgeInsets.symmetric(horizontal: 20.0),
+                      reverse: true,
+                      itemCount: chat.getChatList().length + 1,
+                      itemBuilder: (_, index) {
+                        return index == 0
+                            ? AvatarView(botThinking: botThinking)
+                            : chat.getChatList()[
+                                chat.getChatList().length - index];
+                      });
+                },
+              ),
+            ),
+            Divider(height: 1.0),
+            Consumer<ChatState>(
+              builder: (context, state, child) {
+                return state.feedbackMode
+                    ? FeedbackBar(selected: state.selected)
+                    : TextComposer(
+                        focusNode: myFocusNode,
+                        handleSubmit: (text) {
+                          _handleSubmitted(text);
+                        },
+                        controller: _textController,
+                      );
+              },
+            ),
+          ]),
+          Positioned(
+            top: 10,
+            right: 20,
+            child: IconButton(
+              icon: FaIcon(FontAwesomeIcons.cog),
+              color: Theme.of(context).dividerColor,
+              onPressed: () {
+                // Provider.of<ThemeModel>(context, listen: false).setTheme();
+                setSettingsView();
+              },
+            ),
           ),
-        ),
-        Divider(height: 1.0),
-        Consumer<ChatState>(
-          builder: (context, state, child) {
-            return state.feedbackMode
-                ? FeedbackBar(selected: state.selected)
-                : TextComposer(
-                    focusNode: myFocusNode,
-                    handleSubmit: (text) {
-                      _handleSubmitted(text);
-                    },
-                    controller: _textController,
-                  );
-          },
-        ),
-      ]),
+          if (_settingsOpen)
+            SettingsOverlay(
+              setSettingsView: setSettingsView,
+            )
+        ],
+      ),
     );
   }
 }
