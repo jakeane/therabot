@@ -6,9 +6,10 @@ import 'package:flutter_chatbot/ui/views/messaging/widgets/bot_response.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/typing_indicator.dart';
 
 class AvatarView extends StatelessWidget {
-  AvatarView({this.botThinking});
+  AvatarView({this.botThinking, this.setFeedbackView});
 
   final bool botThinking;
+  final Function(int) setFeedbackView;
 
   Widget build(BuildContext context) {
     return ConstrainedBox(
@@ -33,6 +34,7 @@ class AvatarView extends StatelessWidget {
                 Consumer<ChatModel>(builder: (context, chat, child) {
                   return (chat.getBotResponse() != null)
                       ? BotResponse(
+                          setFeedbackView: setFeedbackView,
                           text: chat.getBotResponse().text,
                           feedback: chat.getBotResponse().feedback,
                           bubbleColor:

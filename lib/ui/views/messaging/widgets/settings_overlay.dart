@@ -18,7 +18,6 @@ class SettingsOverlay extends StatelessWidget {
           )),
       Align(
           alignment: Alignment.center,
-          heightFactor: 4,
           child: Stack(
             overflow: Overflow.visible,
             children: [

@@ -66,8 +66,7 @@ class SettingsBox extends StatelessWidget {
             margin: EdgeInsets.only(bottom: 5),
             child: FlatButton(
               onPressed: () {
-                // Provider.of<AuthService>(context, listen: false).signOut();
-                print('log');
+                Provider.of<AuthService>(context, listen: false).signOut();
               },
               child:
                   Row(mainAxisAlignment: MainAxisAlignment.center, children: [

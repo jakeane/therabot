@@ -8,6 +8,7 @@ import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/app/state/chat_state.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/avatar_view.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/feedback_bar.dart';
+import 'package:flutter_chatbot/ui/views/messaging/widgets/feedback_overlay.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/settings_overlay.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/text_composer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -59,7 +60,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   int messageID = 0;
 
   bool botThinking = false;
-  bool _settingsOpen = true;
+  bool _settingsOpen = false;
+  bool _feedbackOpen = false;
 
   List<String> botInitPhrases = [
     "Welcome to the overworld for the ParlAI messenger chatbot demo. Please type \"begin\" to start.",
@@ -129,6 +131,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   void setSettingsView() {
     setState(() {
       _settingsOpen = !_settingsOpen;
+    });
+  }
+
+  void setFeedbackView(int feedback) {
+    print(feedback);
+    setState(() {
+      _feedbackOpen = !_feedbackOpen;
     });
   }
 
@@ -234,7 +243,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                       itemCount: chat.getChatList().length + 1,
                       itemBuilder: (_, index) {
                         return index == 0
-                            ? AvatarView(botThinking: botThinking)
+                            ? AvatarView(
+                                botThinking: botThinking,
+                                setFeedbackView: setFeedbackView)
                             : chat.getChatList()[
                                 chat.getChatList().length - index];
                       });
@@ -271,6 +282,10 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           if (_settingsOpen)
             SettingsOverlay(
               setSettingsView: setSettingsView,
+            ),
+          if (_feedbackOpen)
+            FeedbackOverlay(
+              setFeedbackView: setFeedbackView,
             )
         ],
       ),
