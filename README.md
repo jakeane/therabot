@@ -1,6 +1,6 @@
 # flutter_chatbot
 
-A flutter project for the deployment of a fine-tuned ParlAI Blenderbot language model developed by [Jack Keane] (https://github.com/jakeane), Dr. Michael Heinz, [Professor Nicholas Jacobson] (http://www.nicholasjacobson.com/), and [Jason Kim] (https://www.linkedin.com/feed/) at Dartmouth College. 
+A flutter project for the deployment of a fine-tuned ParlAI Blenderbot language model developed by [Jack Keane](https://github.com/jakeane), [Dr. Michael Heinz](http://michaelvheinz.com/), [Professor Nicholas Jacobson](http://www.nicholasjacobson.com/), and [Jason Kim](https://www.linkedin.com/feed/) at Dartmouth College. 
 
 ## Getting Started
 

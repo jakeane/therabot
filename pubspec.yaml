@@ -34,7 +34,8 @@ dependencies:
   bubble: ^1.1.9+1
   google_fonts: ^1.1.0
   intl: ^0.16.1
-  progress_indicators: ^0.1.5
+  flutter_svg: ^0.19.0
+  lottie: ^0.6.0
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -63,7 +64,15 @@ flutter:
   assets:
     - assets/images/dartmouth_logo.png
     - assets/credentials/simplechatbot-pkhufy-24d22513a231.json
-    - assets/gifs/bot_transparent.gif
+    - assets/bots/bot_transparent.gif
+    - assets/images/bot_logo.svg
+    - assets/images/therabot.svg
+    - assets/images/onboardDesign.png
+    - assets/images/onboardFeedback.png
+    - assets/images/onboardModes.png
+    - assets/images/onboardTalk.png
+    - assets/images/OR.svg
+    - assets/images/google.svg
   #   - images/a_dot_ham.jpeg
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

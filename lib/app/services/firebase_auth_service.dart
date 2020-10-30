@@ -1,54 +1,107 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../models/user.dart';
+class AuthService extends ChangeNotifier {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final GoogleSignIn googleSignIn = GoogleSignIn();
 
-class FirebaseAuthService {
-  final FirebaseAuth _firebaseAuth;
-  final GoogleSignIn _googleSignIn;
+  bool _isNew = false;
 
-  FirebaseAuthService({FirebaseAuth firebaseAuth, GoogleSignIn googleSignin})
-      : _firebaseAuth = firebaseAuth ?? FirebaseAuth.instance,
-        _googleSignIn = googleSignin ?? GoogleSignIn();
+  bool get isNew => _isNew;
 
-  ChatUser _userFromFirebase(User user) {
-    if (user == null) {
-      return null;
+  void changeIsNew() {
+    _isNew = !_isNew;
+  }
+
+  User getUser() {
+    return _auth.currentUser;
+  }
+
+  Future<String> signInWithGoogle() async {
+    final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
+    final GoogleSignInAuthentication googleSignInAuthentication =
+        await googleSignInAccount.authentication;
+
+    final AuthCredential credential = GoogleAuthProvider.credential(
+      accessToken: googleSignInAuthentication.accessToken,
+      idToken: googleSignInAuthentication.idToken,
+    );
+
+    final UserCredential authResult =
+        await _auth.signInWithCredential(credential);
+    _isNew = authResult.additionalUserInfo.isNewUser;
+
+    final User user = authResult.user;
+
+    if (user != null) {
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+
+      final User currentUser = _auth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      // print('signInWithGoogle succeeded: $user');
+      notifyListeners();
+      return '$user';
     }
-    return ChatUser(
-      uid: user.uid,
-      email: user.email,
-      displayName: user.displayName,
-      photoUrl: user.photoUrl,
-    );
+    notifyListeners();
+    return null;
   }
 
-  Stream<ChatUser> get onAuthStateChanged {
-    return _firebaseAuth.onAuthStateChanged.map(_userFromFirebase);
+  Future<String> signInRegularAccount(String email, String password) async {
+    final UserCredential authResult = await _auth.signInWithEmailAndPassword(
+        email: email, password: password);
+    final User user = authResult.user;
+
+    if (user != null) {
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+      final User currentUser = _auth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      notifyListeners();
+      return '$user';
+    }
+    notifyListeners();
+    return null;
   }
 
-  Future<ChatUser> signInAnonymously() async {
-    final authResult = await _firebaseAuth.signInAnonymously();
-    return _userFromFirebase(authResult.user);
+  Future<String> createRegularAccount(String email, String password) async {
+    final UserCredential authResult = await _auth
+        .createUserWithEmailAndPassword(email: email, password: password);
+    final User user = authResult.user;
+
+    _isNew = true;
+
+    if (user != null) {
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+      final User currentUser = _auth.currentUser;
+      assert(user.uid == currentUser.uid);
+
+      print('regular signin succeeded: $user');
+      notifyListeners();
+      return '$user';
+    }
+    notifyListeners();
+    return null;
   }
 
-  Future<ChatUser> signInWithGoogle() async {
-    final googleUser = await _googleSignIn.signIn();
-    final googleAuth = await googleUser.authentication;
-    final credential = GoogleAuthProvider.getCredential(
-      accessToken: googleAuth.accessToken,
-      idToken: googleAuth.idToken,
-    );
-    final authResult = await _firebaseAuth.signInWithCredential(credential);
-    return _userFromFirebase(authResult.user);
+  Future<void> signInAnonymously() async {
+    try {
+      final UserCredential authResult = await _auth.signInAnonymously();
+      _isNew = authResult.additionalUserInfo.isNewUser;
+      notifyListeners();
+    } catch (e) {
+      print(e); // TODO: show dialog with error
+    }
   }
 
-  Future<void> signOut() async {
-    return _firebaseAuth.signOut();
-  }
-
-  Future<ChatUser> currentUser() async {
-    final user = _firebaseAuth.currentUser;
-    return _userFromFirebase(user);
+  void signOut() async {
+    // await googleSignIn.signOut();
+    await FirebaseAuth.instance.signOut();
+    notifyListeners();
+    print("User Signed Out");
   }
 }
