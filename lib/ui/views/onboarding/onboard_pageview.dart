@@ -4,12 +4,12 @@ import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/views/onboarding/onboard_page.dart';
 import 'package:provider/provider.dart';
 
-class OnBoardPages extends StatefulWidget {
+class OnBoardPageview extends StatefulWidget {
   @override
-  _OnBoardPagesState createState() => _OnBoardPagesState();
+  _OnBoardPageviewState createState() => _OnBoardPageviewState();
 }
 
-class _OnBoardPagesState extends State<OnBoardPages> {
+class _OnBoardPageviewState extends State<OnBoardPageview> {
   int currentPageValue = 0;
   PageController _pageController;
   final List<Widget> onBoardPages = [
@@ -55,64 +55,77 @@ class _OnBoardPagesState extends State<OnBoardPages> {
     return Scaffold(
         backgroundColor: Theme.of(context).backgroundColor,
         body: SafeArea(
-            child: Stack(
-          alignment: AlignmentDirectional.bottomCenter,
-          children: [
-            PageView.builder(
-              physics: ClampingScrollPhysics(),
-              itemCount: onBoardPages.length,
-              onPageChanged: (int page) {
-                getChangedPageAndMoveBar(page);
-              },
-              controller: _pageController,
-              itemBuilder: (context, index) {
-                return onBoardPages[index];
-              },
-            ),
-            Stack(
-              alignment: AlignmentDirectional.bottomCenter,
-              children: [
-                Container(
-                    margin: EdgeInsets.only(bottom: 75),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      mainAxisAlignment: MainAxisAlignment.center,
+            child: SingleChildScrollView(
+                child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width,
+                        maxHeight: MediaQuery.of(context).size.height),
+                    child: Stack(
+                      alignment: AlignmentDirectional.bottomCenter,
                       children: [
-                        for (int i = 0; i < onBoardPages.length; i++)
-                          if (i == currentPageValue) ...[circleBar(true)] else
-                            circleBar(false),
+                        PageView.builder(
+                          physics: ClampingScrollPhysics(),
+                          itemCount: onBoardPages.length,
+                          onPageChanged: (int page) {
+                            getChangedPageAndMoveBar(page);
+                          },
+                          controller: _pageController,
+                          itemBuilder: (context, index) {
+                            return onBoardPages[index];
+                          },
+                        ),
+                        Stack(
+                          alignment: AlignmentDirectional.bottomCenter,
+                          children: [
+                            Container(
+                                margin: EdgeInsets.only(bottom: 75),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    for (int i = 0;
+                                        i < onBoardPages.length;
+                                        i++)
+                                      if (i == currentPageValue) ...[
+                                        circleBar(true)
+                                      ] else
+                                        circleBar(false),
+                                  ],
+                                ))
+                          ],
+                        ),
+                        Visibility(
+                            visible: currentPageValue == onBoardPages.length - 1
+                                ? true
+                                : false,
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 58),
+                              width: 300,
+                              height: 40,
+                              child: FloatingActionButton(
+                                onPressed: () {
+                                  Provider.of<AuthService>(context,
+                                          listen: false)
+                                      .changeIsNew();
+                                  Navigator.of(context).pushNamedAndRemoveUntil(
+                                      Strings.messagingViewRoute,
+                                      (Route<dynamic> route) => false);
+                                },
+                                shape: RoundedRectangleBorder(
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(26))),
+                                backgroundColor:
+                                    Theme.of(context).colorScheme.primary,
+                                child: Text(
+                                  "Start chatting",
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyText1
+                                      .copyWith(fontWeight: FontWeight.w700),
+                                ),
+                              ),
+                            )),
                       ],
-                    ))
-              ],
-            ),
-            Visibility(
-                visible:
-                    currentPageValue == onBoardPages.length - 1 ? true : false,
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 58),
-                  width: 300,
-                  height: 40,
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      Provider.of<AuthService>(context, listen: false)
-                          .changeIsNew();
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          Strings.messagingViewRoute,
-                          (Route<dynamic> route) => false);
-                    },
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(26))),
-                    backgroundColor: Theme.of(context).colorScheme.primary,
-                    child: Text(
-                      "Start chatting",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1
-                          .copyWith(fontWeight: FontWeight.w700),
-                    ),
-                  ),
-                )),
-          ],
-        )));
+                    )))));
   }
 }
