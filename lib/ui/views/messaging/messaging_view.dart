@@ -1,10 +1,8 @@
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/state/chat_state.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/interactive_chat_window.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/core/interactive_chat_window.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../app/models/chat_model.dart';
-import '../../../app/models/theme_model.dart';
 
 class MessagingView extends StatelessWidget {
   @override

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/bot_response.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/typing_indicator.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/bot_response.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/typing_indicator.dart';
 
 class AvatarView extends StatelessWidget {
   AvatarView({this.botThinking, this.setFeedbackView});

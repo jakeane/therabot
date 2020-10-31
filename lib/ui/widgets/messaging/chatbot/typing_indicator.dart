@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/chat_nip.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/message/chat_nip.dart';
 
 // BASED ON: https://github.com/wal33d006/progress_indicators
 

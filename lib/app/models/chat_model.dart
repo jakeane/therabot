@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/chat_message.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/message/chat_message.dart';
 
 class ChatModel extends ChangeNotifier {
   final List<ChatMessage> _chatList = [];
