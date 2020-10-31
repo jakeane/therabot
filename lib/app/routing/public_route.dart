@@ -14,7 +14,8 @@ class PublicRoute extends StatelessWidget {
         return route;
       } else {
         SchedulerBinding.instance.addPostFrameCallback((_) {
-          Navigator.of(context).pushReplacementNamed(Strings.onBoardingRoute);
+          Navigator.of(context)
+              .pushReplacementNamed(Strings.messagingViewRoute);
         });
         return Scaffold(
           body: Center(

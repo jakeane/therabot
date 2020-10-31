@@ -1,13 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/models/message_model.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/message/chat_message.dart';
 
 class ChatModel extends ChangeNotifier {
-  final List<ChatMessage> _chatList = [];
-  ChatMessage _botResponse;
+  final List<MessageModel> _chatList = [];
+  MessageModel _botResponse;
 
-  getChatList() => _chatList;
-  getBotResponse() => _botResponse;
+  List<MessageModel> getChatList() => _chatList;
+  MessageModel getBotResponse() => _botResponse;
 
   void addChat(String text, String name, bool type, int id) {
     if (_botResponse != null) {
@@ -17,7 +18,7 @@ class ChatModel extends ChangeNotifier {
     if (_chatList.length > 0 && _chatList.last.type) {
       _chatList.last.consecutive = true;
     }
-    ChatMessage message = createMessage(text, name, type, id);
+    MessageModel message = createMessage(text, name, type, id);
     _chatList.add(message);
     notifyListeners();
   }
@@ -31,8 +32,8 @@ class ChatModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  ChatMessage createMessage(String text, String name, bool type, int id) {
-    return ChatMessage(
+  MessageModel createMessage(String text, String name, bool type, int id) {
+    return MessageModel(
       text: text,
       name: name,
       type: type,

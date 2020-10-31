@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
+import 'package:flutter_chatbot/app/models/message_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/avatar_view.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/feedback/feedback_overlay.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/message/chat_message.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/settings/settings_overlay.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/core/text_composer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -231,17 +233,27 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                   onTap: () => FocusScope.of(context).unfocus(),
                   child: Consumer<ChatModel>(
                     builder: (context, chat, child) {
+                      List<MessageModel> chatList = chat.getChatList();
+
                       return ListView.builder(
                           padding: EdgeInsets.symmetric(horizontal: 20.0),
                           reverse: true,
-                          itemCount: chat.getChatList().length + 1,
+                          itemCount: chatList.length + 1,
                           itemBuilder: (_, index) {
                             return index == 0
                                 ? AvatarView(
                                     botThinking: botThinking,
                                     setFeedbackView: setFeedbackView)
-                                : chat.getChatList()[
-                                    chat.getChatList().length - index];
+                                : () {
+                                    MessageModel message =
+                                        chatList[chatList.length - index];
+                                    return ChatMessage(
+                                      text: message.text,
+                                      type: message.type,
+                                      feedback: message.feedback,
+                                      consecutive: message.consecutive,
+                                    );
+                                  }();
                           });
                     },
                   )),
