@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
 class PageBase extends StatelessWidget {
-  final Widget childWidget;
+  final Widget child;
 
-  PageBase({this.childWidget});
+  PageBase({this.child});
 
   Widget build(BuildContext context) {
     return Container(
@@ -14,6 +14,6 @@ class PageBase extends StatelessWidget {
                     constraints: BoxConstraints(
                         maxWidth: MediaQuery.of(context).size.width,
                         maxHeight: MediaQuery.of(context).size.height),
-                    child: SafeArea(child: childWidget)))));
+                    child: SafeArea(child: child)))));
   }
 }

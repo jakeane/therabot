@@ -11,7 +11,7 @@ class CreateAccountView extends StatelessWidget {
     }
 
     return PageBase(
-        childWidget: Center(
+        child: Center(
             child: Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
