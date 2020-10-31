@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
               Strings.messagingViewRoute: (_) =>
                   PrivateRoute(route: MessagingView()),
               Strings.onBoardingRoute: (_) =>
-                  PrivateRoute(route: OnBoardPages()),
+                  PrivateRoute(route: OnBoardPageview()),
             },
           );
         }));

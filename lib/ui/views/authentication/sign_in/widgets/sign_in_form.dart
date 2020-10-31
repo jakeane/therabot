@@ -22,8 +22,8 @@ class _SignInFormState extends State<SignInForm> {
           // Add TextFormFields and RaisedButton here.
           Container(
               padding: EdgeInsets.fromLTRB(15, 10, 15, 10),
-              margin: EdgeInsets.only(top: 80),
-
+              margin: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.04),
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(

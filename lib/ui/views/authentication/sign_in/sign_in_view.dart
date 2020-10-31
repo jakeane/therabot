@@ -12,37 +12,43 @@ class SignInView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).backgroundColor,
-      child: SafeArea(
-        child: Scaffold(
-          backgroundColor: Theme.of(context).backgroundColor,
-          body: Center(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              AuthViewHeader(),
-              SignInForm(),
-              Container(
-                margin: EdgeInsets.only(top: 20),
-                child: SvgPicture.asset("assets/images/OR.svg"),
-              ),
-              GoogleSignInButton(),
-              Spacer(),
-              Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  child: FlatButton(
-                    onPressed: () {
-                      Navigator.pushNamed(context, Strings.createAccountRoute);
-                    },
-                    child: Text(
-                      "New user? Create an account",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1
-                          .copyWith(color: Colors.grey),
-                    ),
-                  )),
-            ],
-          )),
+      child: Scaffold(
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: SingleChildScrollView(
+          child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width,
+                  maxHeight: MediaQuery.of(context).size.height),
+              child: SafeArea(
+                  child: Center(
+                      child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  AuthViewHeader(),
+                  SignInForm(),
+                  Container(
+                    margin: EdgeInsets.only(top: 20),
+                    child: SvgPicture.asset("assets/images/OR.svg"),
+                  ),
+                  GoogleSignInButton(),
+                  Spacer(),
+                  Container(
+                      margin: EdgeInsets.only(bottom: 20),
+                      child: FlatButton(
+                        onPressed: () {
+                          Navigator.pushNamed(
+                              context, Strings.createAccountRoute);
+                        },
+                        child: Text(
+                          "New user? Create an account",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              .copyWith(color: Colors.grey),
+                        ),
+                      )),
+                ],
+              )))),
         ),
       ),
     );

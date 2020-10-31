@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/bot_response.dart';

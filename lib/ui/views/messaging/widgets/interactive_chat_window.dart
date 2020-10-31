@@ -235,22 +235,24 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         children: [
           Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
             Flexible(
-              child: Consumer<ChatModel>(
-                builder: (context, chat, child) {
-                  return ListView.builder(
-                      padding: EdgeInsets.symmetric(horizontal: 20.0),
-                      reverse: true,
-                      itemCount: chat.getChatList().length + 1,
-                      itemBuilder: (_, index) {
-                        return index == 0
-                            ? AvatarView(
-                                botThinking: botThinking,
-                                setFeedbackView: setFeedbackView)
-                            : chat.getChatList()[
-                                chat.getChatList().length - index];
-                      });
-                },
-              ),
+              child: GestureDetector(
+                  onTap: () => FocusScope.of(context).unfocus(),
+                  child: Consumer<ChatModel>(
+                    builder: (context, chat, child) {
+                      return ListView.builder(
+                          padding: EdgeInsets.symmetric(horizontal: 20.0),
+                          reverse: true,
+                          itemCount: chat.getChatList().length + 1,
+                          itemBuilder: (_, index) {
+                            return index == 0
+                                ? AvatarView(
+                                    botThinking: botThinking,
+                                    setFeedbackView: setFeedbackView)
+                                : chat.getChatList()[
+                                    chat.getChatList().length - index];
+                          });
+                    },
+                  )),
             ),
             Divider(height: 1.0),
             Consumer<ChatState>(
@@ -274,7 +276,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
               icon: FaIcon(FontAwesomeIcons.cog),
               color: Theme.of(context).dividerColor,
               onPressed: () {
-                // Provider.of<ThemeModel>(context, listen: false).setTheme();
                 setSettingsView();
               },
             ),

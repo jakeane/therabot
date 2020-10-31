@@ -9,32 +9,37 @@ class CreateAccountView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).backgroundColor,
-      child: SafeArea(
-        child: Scaffold(
-          backgroundColor: Theme.of(context).backgroundColor,
-          body: Center(
-              child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: [
-              AuthViewHeader(),
-              CreateAccountForm(),
-              Spacer(),
-              Container(
-                  margin: EdgeInsets.only(bottom: 20),
-                  child: FlatButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: Text(
-                      "Already have an account? Login",
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1
-                          .copyWith(color: Colors.grey),
-                    ),
-                  )),
-            ],
-          )),
+      child: Scaffold(
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: SingleChildScrollView(
+          child: ConstrainedBox(
+              constraints: BoxConstraints(
+                  maxWidth: MediaQuery.of(context).size.width,
+                  maxHeight: MediaQuery.of(context).size.height),
+              child: SafeArea(
+                  child: Center(
+                      child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  AuthViewHeader(),
+                  CreateAccountForm(),
+                  Spacer(),
+                  Container(
+                      margin: EdgeInsets.only(bottom: 20),
+                      child: FlatButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Already have an account? Login",
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodyText1
+                              .copyWith(color: Colors.grey),
+                        ),
+                      )),
+                ],
+              )))),
         ),
       ),
     );
