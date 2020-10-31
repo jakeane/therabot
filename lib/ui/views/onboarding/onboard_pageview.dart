@@ -96,8 +96,9 @@ class _OnBoardPagesState extends State<OnBoardPages> {
                     onPressed: () {
                       Provider.of<AuthService>(context, listen: false)
                           .changeIsNew();
-                      Navigator.pushReplacementNamed(
-                          context, Strings.messagingViewRoute);
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          Strings.messagingViewRoute,
+                          (Route<dynamic> route) => false);
                     },
                     shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(26))),

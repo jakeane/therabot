@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
-import 'package:flutter_chatbot/app/state/chat_state.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/chat_nip.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/message_bubble.dart';
 import 'package:provider/provider.dart';
 
 class BotResponse extends StatelessWidget {
-  BotResponse({this.text, this.feedback, this.bubbleColor, this.textStyle});
+  BotResponse(
+      {this.setFeedbackView,
+      this.text,
+      this.feedback,
+      this.bubbleColor,
+      this.textStyle});
+  final Function(int) setFeedbackView;
   final String text;
   final int feedback;
   final Color bubbleColor;
   final TextStyle textStyle;
-
-  final bool comment = true;
 
   Widget build(BuildContext context) {
     return Container(
@@ -70,19 +73,8 @@ class BotResponse extends StatelessWidget {
               overflow: Overflow.visible,
             ),
             feedback != -1
-                ? comment
-                    ? IconButton(
-                        icon: Icon(Cb.feedbackcomment),
-                        iconSize: 40,
-                        color: Theme.of(context).colorScheme.secondaryVariant,
-                        padding: const EdgeInsets.all(0.0),
-                        onPressed: () {
-                          print('comment');
-                          Provider.of<ChatState>(context, listen: false)
-                              .changeFeedbackState();
-                        },
-                      )
-                    : Container(width: 100, height: 100, color: Colors.red)
+                ? Container(
+                    height: 48, color: Theme.of(context).backgroundColor)
                 : Row(
                     children: [
                       IconButton(
@@ -91,7 +83,6 @@ class BotResponse extends StatelessWidget {
                         color: Theme.of(context).colorScheme.secondaryVariant,
                         padding: const EdgeInsets.all(0.0),
                         onPressed: () {
-                          print('check');
                           Provider.of<ChatModel>(context, listen: false)
                               .giveFeedback(-1, 1);
                         },
@@ -102,9 +93,9 @@ class BotResponse extends StatelessWidget {
                         color: Theme.of(context).colorScheme.secondaryVariant,
                         padding: const EdgeInsets.all(0.0),
                         onPressed: () {
-                          print('ecks');
                           Provider.of<ChatModel>(context, listen: false)
                               .giveFeedback(-1, 0);
+                          setFeedbackView(-1);
                         },
                       )
                     ],
