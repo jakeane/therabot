@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/settings_box.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/settings/settings_box.dart';
 
 class SettingsOverlay extends StatelessWidget {
   SettingsOverlay({this.setSettingsView});

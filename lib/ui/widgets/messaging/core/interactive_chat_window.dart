@@ -5,11 +5,9 @@ import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
-import 'package:flutter_chatbot/app/state/chat_state.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/avatar_view.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/feedback_bar.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/feedback_overlay.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/settings_overlay.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/feedback/feedback_overlay.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/settings/settings_overlay.dart';
 import 'package:flutter_chatbot/ui/views/messaging/widgets/text_composer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
@@ -225,12 +223,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     return Scaffold(
       backgroundColor: Theme.of(context).backgroundColor,
-      // appBar: AppBar(
-      //   centerTitle: true,
-      //   title: Text("CBT Chatbot"),
-      // ),
-      // wrap in GestureDetector(onTap: () => FocusScope.of(context).unfocus())
-      // For mobile this will remove the keyboard
       body: Stack(
         children: [
           Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
@@ -255,19 +247,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
                   )),
             ),
             Divider(height: 1.0),
-            Consumer<ChatState>(
-              builder: (context, state, child) {
-                return state.feedbackMode
-                    ? FeedbackBar(selected: state.selected)
-                    : TextComposer(
-                        focusNode: myFocusNode,
-                        handleSubmit: (text) {
-                          _handleSubmitted(text);
-                        },
-                        controller: _textController,
-                      );
+            TextComposer(
+              focusNode: myFocusNode,
+              handleSubmit: (text) {
+                _handleSubmitted(text);
               },
-            ),
+              controller: _textController,
+            )
           ]),
           Positioned(
             top: 10,

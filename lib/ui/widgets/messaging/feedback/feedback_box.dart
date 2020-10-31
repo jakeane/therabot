@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chatbot/ui/views/messaging/widgets/feedback_item.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/feedback/feedback_item.dart';
 
 class FeedbackBox extends StatelessWidget {
   final Function(int) setFeedbackView;

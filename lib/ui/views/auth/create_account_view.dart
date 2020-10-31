@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
-import 'package:flutter_chatbot/ui/views/authentication/sign_in/widgets/auth_view_header.dart';
-import 'package:flutter_chatbot/ui/views/authentication/sign_in/widgets/sign_in_form.dart';
+import 'package:flutter_chatbot/ui/widgets/auth/core/auth_view_header.dart';
+import 'package:flutter_chatbot/ui/widgets/auth/forms/create_account_form.dart';
+
 import 'package:flutter_svg/svg.dart';
-import 'widgets/google_sign_in_button.dart';
 
-class SignInView extends StatelessWidget {
-  const SignInView({Key key}) : super(key: key);
-
-  @override
+class CreateAccountView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Theme.of(context).backgroundColor,
@@ -25,22 +22,16 @@ class SignInView extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   AuthViewHeader(),
-                  SignInForm(),
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: SvgPicture.asset("assets/images/OR.svg"),
-                  ),
-                  GoogleSignInButton(),
+                  CreateAccountForm(),
                   Spacer(),
                   Container(
                       margin: EdgeInsets.only(bottom: 20),
                       child: FlatButton(
                         onPressed: () {
-                          Navigator.pushNamed(
-                              context, Strings.createAccountRoute);
+                          Navigator.pop(context);
                         },
                         child: Text(
-                          "New user? Create an account",
+                          "Already have an account? Login",
                           style: Theme.of(context)
                               .textTheme
                               .bodyText1
