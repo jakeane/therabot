@@ -20,7 +20,7 @@ class TextComposer extends StatelessWidget {
                   Border.all(color: Theme.of(context).colorScheme.secondary)),
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.end,
-            children: <Widget>[
+            children: [
               Expanded(
                   flex: 1,
                   child: Container(

@@ -1,35 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/animation.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/pulsing_dot.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/message/chat_nip.dart';
 
-// BASED ON: https://github.com/wal33d006/progress_indicators
+// // BASED ON: https://github.com/wal33d006/progress_indicators
 
-/// Adds a horizontal list of variable number of jumping dots
-///
-/// The animation is a smooth up/down continuous animation of each dot.
-/// This animation can be used where a text is being expected from an async call
-/// The below class is a private [AnimatedWidget] class which is called in the
-/// [StatefulWidget].
-class _PulsingDot extends AnimatedWidget {
-  _PulsingDot({Key key, Animation<Color> animation})
-      : super(key: key, listenable: animation);
-
-  Widget build(BuildContext context) {
-    final Animation<Color> animation = listenable;
-    return Container(
-      child: Container(
-          width: 14,
-          height: 14,
-          decoration: BoxDecoration(
-              color: animation.value, borderRadius: BorderRadius.circular(10))),
-    );
-  }
-}
-
-/// Creates a list with [numberOfDots] text dots, with 3 dots as default
-/// default [fontSize] of 10.0, default [color] as black, [dotSpacing] (gap
-/// between each dot) as 0.0 and default time for one cycle of animation
-/// [milliseconds] as 250.
+/// Creates a list with [numberOfDots] text dots, with 3 dots as default.
 /// One cycle of animation is one complete round of a dot animating up and back
 /// to its original position.
 class TypingIndicator extends StatefulWidget {
@@ -77,7 +53,7 @@ class _TypingIndicatorState extends State<TypingIndicator>
     _widgets.add(
       Padding(
         padding: EdgeInsets.only(right: index != 2 ? 3 : 0),
-        child: _PulsingDot(
+        child: PulsingDot(
           animation: animations[index],
         ),
       ),
