@@ -6,8 +6,7 @@ class AuthViewHeader extends StatelessWidget {
     return Column(
       children: [
         Container(
-          margin:
-              EdgeInsets.only(top: MediaQuery.of(context).size.height * 0.03),
+          margin: EdgeInsets.only(top: 20),
           child: SvgPicture.asset(
             'assets/images/bot_logo.svg',
           ),

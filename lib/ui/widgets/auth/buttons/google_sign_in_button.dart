@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_auth_buttons/flutter_auth_buttons.dart' as buttons;
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
@@ -37,19 +36,6 @@ class GoogleSignInButton extends StatelessWidget {
               borderRadius: BorderRadius.circular(50),
               side: BorderSide(color: Theme.of(context).colorScheme.secondary)),
           color: Theme.of(context).backgroundColor),
-
     );
-
-    // return buttons.GoogleSignInButton(
-    //   onPressed: () {
-    //     Provider.of<AuthService>(context, listen: false).signInWithGoogle();
-    //     ;
-    //   },
-    //   darkMode: true,
-    //   textStyle: TextStyle(
-    //     fontSize: 14,
-    //     color: Colors.white,
-    //   ),
-    // );
   }
 }

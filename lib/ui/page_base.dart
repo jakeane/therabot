@@ -6,14 +6,15 @@ class PageBase extends StatelessWidget {
   PageBase({this.child});
 
   Widget build(BuildContext context) {
-    return Container(
-        child: Scaffold(
-            backgroundColor: Theme.of(context).backgroundColor,
-            body: SingleChildScrollView(
-                child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                        maxWidth: MediaQuery.of(context).size.width,
-                        maxHeight: MediaQuery.of(context).size.height),
-                    child: SafeArea(child: child)))));
+    return Scaffold(
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Theme.of(context).backgroundColor,
+        body: SingleChildScrollView(
+            physics: NeverScrollableScrollPhysics(),
+            child: ConstrainedBox(
+                constraints: BoxConstraints(
+                    maxWidth: MediaQuery.of(context).size.width,
+                    maxHeight: MediaQuery.of(context).size.height),
+                child: SafeArea(child: child))));
   }
 }

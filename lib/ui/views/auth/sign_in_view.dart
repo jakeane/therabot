@@ -19,16 +19,17 @@ class SignInView extends StatelessWidget {
     return PageBase(
         child: Center(
             child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AuthViewHeader(),
-        SignInForm(),
-        Container(
-          margin: EdgeInsets.only(top: 20),
-          child: SvgPicture.asset("assets/images/OR.svg"),
-        ),
-        GoogleSignInButton(),
-        Spacer(),
+        Column(children: [
+          SignInForm(),
+          Container(
+            margin: EdgeInsets.only(top: 20),
+            child: SvgPicture.asset("assets/images/OR.svg"),
+          ),
+          GoogleSignInButton(),
+        ]),
         GoToButton(
           message: "New user? Create an account.",
           navigate: navigate,

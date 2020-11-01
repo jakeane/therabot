@@ -13,11 +13,10 @@ class CreateAccountView extends StatelessWidget {
     return PageBase(
         child: Center(
             child: Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         AuthViewHeader(),
         CreateAccountForm(),
-        Spacer(),
         GoToButton(
           message: "Already have an account? Login.",
           navigate: navigate,

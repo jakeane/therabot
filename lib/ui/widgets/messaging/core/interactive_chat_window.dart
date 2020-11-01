@@ -3,12 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
-import 'package:flutter_chatbot/app/models/message_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
-import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/avatar_view.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/core/message_feed.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/feedback/feedback_overlay.dart';
-import 'package:flutter_chatbot/ui/widgets/messaging/message/chat_message.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/settings/settings_overlay.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/core/text_composer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -24,27 +22,19 @@ const AWS_PORT = '8080';
 const LOCAL_URL = 'ws://$LOCAL_IP:$LOCAL_PORT/websocket';
 const AWS_URL = 'ws://$AWS_IP:$AWS_PORT/websocket';
 
+// ignore: todo
 // TODO
-// 1. Have settings button go to different view
-// 2. Add message bubble spacing logic
-// 3. Add feedback flow
-// 4. Login page
-// 5. New user flow vs. returning user
-// 6. Set up backend with dialogue model and emotions
-// 7. Placeholder GIFs for chatbot avatar
+// 1. Add message bubble spacing logic
+// 2. Set up backend with dialogue model and emotions
+// 3. Placeholder GIFs for chatbot avatar
 //      - Parse user's text
 //      - Query for emotion with nrcLEX
-
-// BUGS
-// 1. Websocket error on Android
-// 2. Press enter to send message
 
 class InteractiveChatWindow extends StatefulWidget {
   InteractiveChatWindow({Key key, this.title}) : super(key: key);
 
   // Takes a single input which is the title of the chat window
   final String title;
-  // final channel = WebSocketChannel.connect(Uri.parse(LOCAL_URL));
 
   @override
   _InteractiveChatWindow createState() => _InteractiveChatWindow();
@@ -135,7 +125,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void setFeedbackView(int feedback) {
-    print(feedback);
     setState(() {
       _feedbackOpen = !_feedbackOpen;
     });
@@ -144,6 +133,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   // Handles user message and generates response from bot
   void response(query) async {
     if (currentUserID == null) {
+      // Should be Firebase Auth?
       currentUserID = await FirebaseDbService.getCurrentUserID();
     }
 
@@ -175,8 +165,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       botThinking = false;
     });
     // if the inputted string is empty, don't do anything
-    if (text == '') {
-    } else {
+    if (text != '') {
       _textController.clear();
       messageID += 1;
       Provider.of<ChatModel>(context, listen: false)
@@ -223,71 +212,40 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       });
     }
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).backgroundColor,
-      body: Stack(
-        children: [
-          Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-            Flexible(
-              child: GestureDetector(
-                  onTap: () => FocusScope.of(context).unfocus(),
-                  child: Consumer<ChatModel>(
-                    builder: (context, chat, child) {
-                      List<MessageModel> chatList = chat.getChatList();
-
-                      return ListView.builder(
-                          padding: EdgeInsets.symmetric(horizontal: 20.0),
-                          reverse: true,
-                          itemCount: chatList.length + 1,
-                          itemBuilder: (_, index) {
-                            return index == 0
-                                ? AvatarView(
-                                    botThinking: botThinking,
-                                    setFeedbackView: setFeedbackView)
-                                : () {
-                                    MessageModel message =
-                                        chatList[chatList.length - index];
-                                    return ChatMessage(
-                                      text: message.text,
-                                      type: message.type,
-                                      feedback: message.feedback,
-                                      consecutive: message.consecutive,
-                                    );
-                                  }();
-                          });
-                    },
-                  )),
-            ),
-            Divider(height: 1.0),
-            TextComposer(
-              focusNode: myFocusNode,
-              handleSubmit: (text) {
-                _handleSubmitted(text);
-              },
-              controller: _textController,
-            )
-          ]),
-          Positioned(
-            top: 10,
-            right: 20,
-            child: IconButton(
-              icon: FaIcon(FontAwesomeIcons.cog),
-              color: Theme.of(context).dividerColor,
-              onPressed: () {
-                setSettingsView();
-              },
-            ),
+    return Stack(
+      children: [
+        Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+          MessageFeed(
+              botThinking: botThinking, setFeedbackView: setFeedbackView),
+          Divider(height: 1.0),
+          TextComposer(
+            focusNode: myFocusNode,
+            handleSubmit: (text) {
+              _handleSubmitted(text);
+            },
+            controller: _textController,
+          )
+        ]),
+        Positioned(
+          top: 10,
+          right: 20,
+          child: IconButton(
+            icon: FaIcon(FontAwesomeIcons.cog),
+            color: Theme.of(context).dividerColor,
+            onPressed: () {
+              setSettingsView();
+            },
           ),
-          if (_settingsOpen)
-            SettingsOverlay(
-              setSettingsView: setSettingsView,
-            ),
-          if (_feedbackOpen)
-            FeedbackOverlay(
-              setFeedbackView: setFeedbackView,
-            )
-        ],
-      ),
+        ),
+        if (_settingsOpen)
+          SettingsOverlay(
+            setSettingsView: setSettingsView,
+          ),
+        if (_feedbackOpen)
+          FeedbackOverlay(
+            setFeedbackView: setFeedbackView,
+          )
+      ],
     );
   }
 }
