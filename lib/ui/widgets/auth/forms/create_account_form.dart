@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/widgets/auth/forms/entry_field.dart';
-import 'package:flutter_chatbot/ui/widgets/auth/forms/submit_button.dart';
+import 'package:flutter_chatbot/ui/widgets/auth/forms/form_submit.dart';
 import 'package:provider/provider.dart';
 
 // Need error handling design
@@ -47,7 +47,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
               topMargin: 20,
               obscureText: true,
               saveValue: saveConfirmPassword),
-          SubmitButton(
+          FormSubmit(
             topMargin: 50,
             text: "Create Account",
             onSubmit: onSubmit,

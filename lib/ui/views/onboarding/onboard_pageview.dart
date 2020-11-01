@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/ui/page_base.dart';
-import 'package:flutter_chatbot/ui/views/onboarding/onboard_page.dart';
+import 'package:flutter_chatbot/ui/widgets/onboarding/core/onboard_page.dart';
 import 'package:flutter_chatbot/ui/widgets/onboarding/buttons/start_chatting_button.dart';
 import 'package:flutter_chatbot/ui/widgets/onboarding/indicator/page_indicator.dart';
 

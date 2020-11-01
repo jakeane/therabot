@@ -10,6 +10,7 @@ class FeedbackItem extends StatelessWidget {
   Widget build(BuildContext context) {
     Color buttonColor = Theme.of(context).textTheme.bodyText2.color;
 
+    // Increase spacing between items and make buttons smaller
     return Container(
         margin: EdgeInsets.symmetric(vertical: 5),
         child: Row(children: [

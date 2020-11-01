@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chatbot/app/models/chat_model.dart';
-import 'package:flutter_chatbot/assets/assets.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/feedback_buttons.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/message/active_feedback_icon.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/message/decorated_bubble.dart';
-import 'package:provider/provider.dart';
 
 class BotResponse extends StatelessWidget {
   BotResponse(

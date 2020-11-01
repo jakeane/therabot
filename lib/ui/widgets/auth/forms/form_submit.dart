@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class SubmitButton extends StatelessWidget {
+class FormSubmit extends StatelessWidget {
   final double topMargin;
   final String text;
   final void Function() onSubmit;
 
-  SubmitButton({this.topMargin, this.text, this.onSubmit});
+  FormSubmit({this.topMargin, this.text, this.onSubmit});
 
   @override
   Widget build(BuildContext context) {
