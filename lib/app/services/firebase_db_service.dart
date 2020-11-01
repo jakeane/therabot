@@ -5,10 +5,10 @@ import 'package:firebase_auth/firebase_auth.dart';
 class FirebaseDbService {
   static final firestoreInstance = FirebaseFirestore.instance;
 
-  static Future<String> getCurrentUserID() async {
-    var user = FirebaseAuth.instance.currentUser;
-    return user.uid;
-  }
+  // static Future<String> get getCurrentUserID async {
+  //   var user = FirebaseAuth.instance.currentUser;
+  //   return user.uid;
+  // }
 
   static Future<DocumentSnapshot> getUserDoc(String userID) async {
     var userDoc = await firestoreInstance.collection('users').doc(userID).get();

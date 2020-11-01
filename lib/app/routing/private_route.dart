@@ -20,6 +20,7 @@ class PrivateRoute extends StatelessWidget {
               Strings.signinRoute, (Route<dynamic> route) => false);
         });
         return Scaffold(
+          backgroundColor: Theme.of(context).backgroundColor,
           body: Center(
             child: CircularProgressIndicator(),
           ),

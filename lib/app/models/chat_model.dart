@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/message_model.dart';
-import 'package:flutter_chatbot/ui/widgets/messaging/message/chat_message.dart';
 
 class ChatModel extends ChangeNotifier {
   final List<MessageModel> _chatList = [];
@@ -15,11 +14,14 @@ class ChatModel extends ChangeNotifier {
       _chatList.add(_botResponse);
       _botResponse = null;
     }
-    if (_chatList.length > 0 && _chatList.last.type) {
+
+    if (_chatList.length > 0 && _chatList.last.type == type) {
       _chatList.last.consecutive = true;
     }
+
     MessageModel message = createMessage(text, name, type, id);
     _chatList.add(message);
+
     notifyListeners();
   }
 
@@ -28,7 +30,9 @@ class ChatModel extends ChangeNotifier {
       _chatList.add(_botResponse);
       _botResponse = null;
     }
+
     _botResponse = createMessage(text, name, type, id);
+
     notifyListeners();
   }
 
@@ -54,18 +58,6 @@ class ChatModel extends ChangeNotifier {
       _chatList[index].feedback = feedback;
     }
     notifyListeners();
-  }
-
-  void addComment(int index) {
-    _chatList[index].comment = "hi";
-    notifyListeners();
-  }
-
-  void changeSelected(int index) {
-    if (index != _chatList.length - 1) {
-      _chatList[index].selected = !_chatList[index].selected;
-      notifyListeners();
-    }
   }
 
   Map<String, Object> getLastMessage() {

@@ -29,6 +29,10 @@ const AWS_URL = 'ws://$AWS_IP:$AWS_PORT/websocket';
 // 3. Placeholder GIFs for chatbot avatar
 //      - Parse user's text
 //      - Query for emotion with nrcLEX
+// 4. Save local data
+//      - Theme
+//      - UserID?
+//      - Also current conversation?
 
 class InteractiveChatWindow extends StatefulWidget {
   InteractiveChatWindow({Key key, this.title}) : super(key: key);
@@ -64,6 +68,10 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   @override
   void initState() {
     super.initState();
+
+    currentUserID =
+        Provider.of<AuthService>(context, listen: false).getUserID();
+
     channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
@@ -132,11 +140,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
   // Handles user message and generates response from bot
   void response(query) async {
-    if (currentUserID == null) {
-      // Should be Firebase Auth?
-      currentUserID = await FirebaseDbService.getCurrentUserID();
-    }
-
     String jsonStringified = '{"text": "$query"}';
     channel.sink.add(jsonStringified);
 
@@ -160,7 +163,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     handleMessageData(currentUserID, messageID, query);
   }
 
-  void _handleSubmitted(String text) {
+  void handleSubmitted(String text) {
     setState(() {
       botThinking = false;
     });
@@ -183,6 +186,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         result = true;
       }
     }
+
+    print(result);
     return result;
   }
 
@@ -220,9 +225,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           Divider(height: 1.0),
           TextComposer(
             focusNode: myFocusNode,
-            handleSubmit: (text) {
-              _handleSubmitted(text);
-            },
+            handleSubmit: handleSubmitted,
             controller: _textController,
           )
         ]),

@@ -18,6 +18,10 @@ class AuthService extends ChangeNotifier {
     return _auth.currentUser;
   }
 
+  String getUserID() {
+    return getUser().uid;
+  }
+
   Future<String> signInWithGoogle() async {
     final GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
     final GoogleSignInAuthentication googleSignInAuthentication =
@@ -80,7 +84,7 @@ class AuthService extends ChangeNotifier {
       final User currentUser = _auth.currentUser;
       assert(user.uid == currentUser.uid);
 
-      print('regular signin succeeded: $user');
+      // print('regular signin succeeded: $user');
       notifyListeners();
       return '$user';
     }
@@ -88,20 +92,9 @@ class AuthService extends ChangeNotifier {
     return null;
   }
 
-  Future<void> signInAnonymously() async {
-    try {
-      final UserCredential authResult = await _auth.signInAnonymously();
-      _isNew = authResult.additionalUserInfo.isNewUser;
-      notifyListeners();
-    } catch (e) {
-      print(e); // TODO: show dialog with error
-    }
-  }
-
   void signOut() async {
     // await googleSignIn.signOut();
     await FirebaseAuth.instance.signOut();
     notifyListeners();
-    print("User Signed Out");
   }
 }

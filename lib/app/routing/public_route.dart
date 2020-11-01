@@ -18,6 +18,7 @@ class PublicRoute extends StatelessWidget {
               .pushReplacementNamed(Strings.messagingViewRoute);
         });
         return Scaffold(
+          backgroundColor: Theme.of(context).backgroundColor,
           body: Center(
             child: CircularProgressIndicator(),
           ),
