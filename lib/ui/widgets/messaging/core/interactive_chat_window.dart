@@ -33,6 +33,8 @@ const AWS_URL = 'ws://$AWS_IP:$AWS_PORT/websocket';
 //      - Theme
 //      - UserID?
 //      - Also current conversation?
+// 5. Prevent user message consecutively
+// 6. User cannot send without providing feedback
 
 class InteractiveChatWindow extends StatefulWidget {
   InteractiveChatWindow({Key key, this.title}) : super(key: key);

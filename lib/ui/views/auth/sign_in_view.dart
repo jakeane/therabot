@@ -19,7 +19,7 @@ class SignInView extends StatelessWidget {
     return PageBase(
         child: Center(
             child: Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         AuthViewHeader(),
         Column(children: [
@@ -30,6 +30,7 @@ class SignInView extends StatelessWidget {
           ),
           GoogleSignInButton(),
         ]),
+        Spacer(),
         GoToButton(
           message: "New user? Create an account.",
           navigate: navigate,

@@ -3,16 +3,20 @@ import 'package:flutter_svg/svg.dart';
 
 class AuthViewHeader extends StatelessWidget {
   Widget build(BuildContext context) {
+    double bottomMargin = MediaQuery.of(context).size.height * 0.28 - 170;
+
+    print(bottomMargin);
+
     return Column(
       children: [
         Container(
-          margin: EdgeInsets.only(top: 20),
+          margin: EdgeInsets.only(top: 15),
           child: SvgPicture.asset(
             'assets/images/bot_logo.svg',
           ),
         ),
         Container(
-          margin: EdgeInsets.only(top: 10),
+          margin: EdgeInsets.only(top: 5, bottom: bottomMargin),
           child: RichText(
               text: TextSpan(
                   style: Theme.of(context)
