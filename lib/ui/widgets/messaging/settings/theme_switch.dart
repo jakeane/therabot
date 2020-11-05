@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/models/theme_model.dart';
+import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:provider/provider.dart';
 
 class ThemeSwitch extends StatelessWidget {
@@ -21,8 +22,9 @@ class ThemeSwitch extends StatelessWidget {
             ),
             Switch(
                 value: !theme.getIsDark(),
-                onChanged: (value) {
-                  theme.setTheme();
+                onChanged: (_) {
+                  theme.toggleTheme();
+                  FirebaseDbService.saveTheme(theme.getIsDark());
                 },
                 activeColor: Theme.of(context).colorScheme.primary),
             Text(

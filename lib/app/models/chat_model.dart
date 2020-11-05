@@ -9,7 +9,7 @@ class ChatModel extends ChangeNotifier {
   List<MessageModel> getChatList() => _chatList;
   MessageModel getBotResponse() => _botResponse;
 
-  void addChat(String text, String name, bool type, int id) {
+  void addChat(String text, String name, bool type) {
     if (_botResponse != null) {
       _chatList.add(_botResponse);
       _botResponse = null;
@@ -19,31 +19,31 @@ class ChatModel extends ChangeNotifier {
       _chatList.last.consecutive = true;
     }
 
-    MessageModel message = createMessage(text, name, type, id);
+    MessageModel message = createMessage(text, name, type);
     _chatList.add(message);
 
     notifyListeners();
   }
 
-  void addBotResponse(String text, String name, bool type, int id) {
+  void addBotResponse(String text, String name, bool type) {
     if (_botResponse != null) {
       _chatList.add(_botResponse);
       _botResponse = null;
     }
 
-    _botResponse = createMessage(text, name, type, id);
+    _botResponse = createMessage(text, name, type);
 
     notifyListeners();
   }
 
-  MessageModel createMessage(String text, String name, bool type, int id) {
+  MessageModel createMessage(String text, String name, bool type) {
     return MessageModel(
       text: text,
       name: name,
       type: type,
-      id: id,
       index: _chatList.length,
       feedback: -1,
+      detail: -1,
       timestamp: FieldValue.serverTimestamp(),
       comment: "",
       selected: false,
@@ -60,12 +60,31 @@ class ChatModel extends ChangeNotifier {
     notifyListeners();
   }
 
+  void feedbackDetail(int index, int detail) {
+    if (index == -1) {
+      _botResponse.detail = detail;
+    } else {
+      _chatList[index].detail = detail;
+    }
+  }
+
   Map<String, Object> getLastMessage() {
     return {
-      "text": _chatList.last.text,
-      "name": _chatList.last.name,
+      "index": _chatList.last.index,
       "type": _chatList.last.type,
+      "text": _chatList.last.text,
       "timestamp": _chatList.last.timestamp,
+    };
+  }
+
+  Map<String, Object> getBotMessage() {
+    return {
+      "index": _botResponse.index,
+      "type": _botResponse.type,
+      "text": _botResponse.text,
+      "feedback": _botResponse.feedback,
+      "detail": _botResponse.detail,
+      "timestamp": _botResponse.timestamp,
     };
   }
 }

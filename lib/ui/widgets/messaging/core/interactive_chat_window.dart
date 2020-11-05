@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
+import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/core/message_feed.dart';
@@ -11,8 +12,8 @@ import 'package:flutter_chatbot/ui/widgets/messaging/settings/settings_overlay.d
 import 'package:flutter_chatbot/ui/widgets/messaging/core/text_composer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:intl/intl.dart';
 
 const LOCAL_IP = 'localhost';
@@ -50,16 +51,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
   final channel = WebSocketChannel.connect(Uri.parse(LOCAL_URL));
 
-  String currentUserID;
-  int previousMessagesCount = 0;
-  int currentMessagesCount = 0;
-  int messageID = 0;
-
+  String convoID;
   bool botThinking = false;
   bool _settingsOpen = false;
   bool _feedbackOpen = false;
 
-  List<String> botInitPhrases = [
+  final List<String> botInitPhrases = [
     "Welcome to the overworld for the ParlAI messenger chatbot demo. Please type \"begin\" to start.",
     "Welcome to the ParlAI Chatbot demo. You are now paired with a bot - feel free to send a message.Type [DONE] to finish the chat."
   ];
@@ -71,20 +68,25 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   void initState() {
     super.initState();
 
-    currentUserID =
-        Provider.of<AuthService>(context, listen: false).getUserID();
+    if (Provider.of<ChatModel>(context, listen: false).getChatList().isEmpty) {
+      convoID = Uuid().v4();
+      FirebaseDbService.updateConvoID(convoID);
+    } else {
+      FirebaseDbService.getUserData().then((data) async {
+        if (data != null) {
+          // Provider.of<ThemeModel>(context, listen: false)
+          //     .setTheme(data["isDark"]);
+          convoID = data["convoID"];
+        }
+      });
+    }
 
     channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
 
       // Could turn this into helper?
-      text = text.toString().replaceAll(" .", ".");
-      text = text.toString().replaceAll(" ?", "?");
-      text = text.toString().replaceAll(" '", "'");
-      text = text.toString().replaceAll("' ", "'");
-      text = text.toString().replaceAll(" , ", ", ");
-      text = toBeginningOfSentenceCase(text);
+      text = processBotText(text);
 
       if (!botInitPhrases.contains(text)) {
         await Future.delayed(Duration(seconds: 1));
@@ -98,7 +100,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
         await Future.delayed(Duration(milliseconds: waitTime));
         Provider.of<ChatModel>(context, listen: false)
-            .addBotResponse(text, "Covid Bot", false, messageID);
+            .addBotResponse(text, "Covid Bot", false);
       }
 
       print("channel text: " + text);
@@ -109,6 +111,15 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     myFocusNode = FocusNode();
   }
 
+  String processBotText(String text) {
+    text = text.toString().replaceAll(" .", ".");
+    text = text.toString().replaceAll(" ?", "?");
+    text = text.toString().replaceAll(" '", "'");
+    text = text.toString().replaceAll("' ", "'");
+    text = text.toString().replaceAll(" , ", ", ");
+    return toBeginningOfSentenceCase(text);
+  }
+
   void initializeChat() async {
     await Future.delayed(Duration(milliseconds: 100));
 
@@ -117,7 +128,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     String welcomeMessage =
         "Hi! I am TheraBot. I am here to talk to you about any mental health problems you might be having.";
     Provider.of<ChatModel>(context, listen: false)
-        .addBotResponse(welcomeMessage, "Covid Bot", false, messageID);
+        .addBotResponse(welcomeMessage, "Covid Bot", false);
   }
 
   @override
@@ -134,35 +145,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     });
   }
 
-  void setFeedbackView(int feedback) {
+  void setFeedbackView(int detail) {
     setState(() {
       _feedbackOpen = !_feedbackOpen;
     });
-  }
-
-  // Handles user message and generates response from bot
-  void response(query) async {
-    String jsonStringified = '{"text": "$query"}';
-    channel.sink.add(jsonStringified);
-
-    // Get the conversation number
-    previousMessagesCount = currentMessagesCount;
-    currentMessagesCount =
-        Provider.of<ChatModel>(context, listen: false).getChatList().length;
-
-    if (newConversationStarted()) {
-      // if the conversationCount is empty then
-      final DocumentSnapshot getuserdoc =
-          await FirebaseDbService.getUserDoc(currentUserID);
-
-      if (getuserdoc.exists == false) {
-        messageID = 0;
-      } else {
-        messageID = getuserdoc.data()['messagesCount'];
-      }
-    }
-
-    handleMessageData(currentUserID, messageID, query);
+    Provider.of<ChatModel>(context, listen: false).feedbackDetail(-1, detail);
   }
 
   void handleSubmitted(String text) {
@@ -172,41 +159,31 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     // if the inputted string is empty, don't do anything
     if (text != '') {
       _textController.clear();
-      messageID += 1;
-      Provider.of<ChatModel>(context, listen: false)
-          .addChat(text, "User", true, messageID);
 
-      response(text);
+      handleResponse(text);
     }
   }
 
-  bool newConversationStarted() {
-    bool result = false;
+  // Handles user message and generates response from bot
+  void handleResponse(String text) async {
+    Map<String, Object> botMessage =
+        Provider.of<ChatModel>(context, listen: false).getBotMessage();
+    botMessage["convoID"] = convoID;
+    FirebaseDbService.addMessageData(botMessage);
 
-    if (previousMessagesCount == 0) {
-      if (currentMessagesCount > 0) {
-        result = true;
-      }
-    }
+    print("Data: $botMessage\n--------");
 
-    print(result);
-    return result;
-  }
+    Provider.of<ChatModel>(context, listen: false).addChat(text, "User", true);
 
-  // Called by response()
-  void handleMessageData(String userID, int messageID, String query) async {
-    FirebaseDbService.addMessageCount(userID, messageID);
+    String jsonStringified = '{"text": "$text"}';
+    channel.sink.add(jsonStringified);
 
-    var userMessage =
+    Map<String, Object> userMessage =
         Provider.of<ChatModel>(context, listen: false).getLastMessage();
-    FirebaseDbService.addMessageData(userID, messageID, userMessage);
+    userMessage["convoID"] = convoID;
+    FirebaseDbService.addMessageData(userMessage);
 
-    FirebaseDbService.addMessageCount(currentUserID, messageID);
-
-    var botMessage =
-        Provider.of<ChatModel>(context, listen: false).getLastMessage();
-
-    FirebaseDbService.addMessageData(currentUserID, messageID, botMessage);
+    print("Data: $userMessage\n--------");
 
     myFocusNode.requestFocus();
   }

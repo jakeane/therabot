@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
@@ -11,7 +9,7 @@ class PrivateRoute extends StatelessWidget {
   final Widget route;
 
   Widget build(BuildContext context) {
-    return Consumer<AuthService>(builder: (context, auth, child) {
+    return Consumer<AuthService>(builder: (_, auth, child) {
       if (auth.getUser() != null) {
         return route;
       } else {

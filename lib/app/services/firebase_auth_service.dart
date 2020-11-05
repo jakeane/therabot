@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService extends ChangeNotifier {
@@ -46,6 +47,8 @@ class AuthService extends ChangeNotifier {
       assert(user.uid == currentUser.uid);
 
       // print('signInWithGoogle succeeded: $user');
+      if (_isNew) FirebaseDbService.initUserData(user.uid);
+
       notifyListeners();
       return '$user';
     }
@@ -85,6 +88,8 @@ class AuthService extends ChangeNotifier {
       assert(user.uid == currentUser.uid);
 
       // print('regular signin succeeded: $user');
+      FirebaseDbService.initUserData(user.uid);
+
       notifyListeners();
       return '$user';
     }

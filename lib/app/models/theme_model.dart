@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 // Theme Schema:
@@ -20,14 +21,21 @@ import 'package:google_fonts/google_fonts.dart';
 class ThemeModel extends ChangeNotifier {
   bool _isDark = true;
 
-  getTheme() => _isDark ? _themeDark : _themeLight;
+  ThemeData getTheme() => _isDark ? _themeDark : _themeLight;
 
-  getIsDark() => _isDark;
+  bool getIsDark() => _isDark;
 
-  setTheme() async {
+  void toggleTheme() {
     _isDark = !_isDark;
     notifyListeners();
   }
+
+  void setTheme(bool isDark) {
+    _isDark = isDark;
+    // notifyListeners();
+  }
+
+  void notify() => notifyListeners();
 
   final _themeDark = ThemeData.dark().copyWith(
     visualDensity: VisualDensity.adaptivePlatformDensity,

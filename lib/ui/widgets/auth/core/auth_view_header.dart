@@ -5,8 +5,6 @@ class AuthViewHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     double bottomMargin = MediaQuery.of(context).size.height * 0.28 - 170;
 
-    print(bottomMargin);
-
     return Column(
       children: [
         Container(
@@ -21,7 +19,7 @@ class AuthViewHeader extends StatelessWidget {
               text: TextSpan(
                   style: Theme.of(context)
                       .textTheme
-                      .bodyText1
+                      .bodyText2
                       .copyWith(fontSize: 64),
                   children: [
                 TextSpan(

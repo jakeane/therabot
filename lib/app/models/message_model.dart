@@ -5,9 +5,9 @@ class MessageModel {
       {this.text,
       this.name,
       this.type,
-      this.id,
       this.index,
       this.feedback,
+      this.detail,
       this.timestamp,
       this.comment,
       this.selected,
@@ -15,10 +15,10 @@ class MessageModel {
   String text;
   String name;
   bool type;
-  int id;
   int index;
   FieldValue timestamp;
   int feedback;
+  int detail;
   String comment;
   bool selected;
   bool consecutive;
