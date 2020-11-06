@@ -76,7 +76,14 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       // Could turn this into helper?
       text = processBotText(text);
 
-      if (!botInitPhrases.contains(text)) {
+      if (botInitPhrases.indexOf(text) == 0) {
+        await Future.delayed(Duration(milliseconds: 2000));
+        channel.sink.add('{"text": "Begin"}');
+        String welcomeMessage =
+            "Hi! I am TheraBot. I am here to talk to you about any mental health problems you might be having.";
+        Provider.of<ChatModel>(context, listen: false)
+            .addBotResponse(welcomeMessage, "Covid Bot", false);
+      } else if (!botInitPhrases.contains(text)) {
         await Future.delayed(Duration(seconds: 1));
 
         setState(() {
@@ -112,7 +119,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       //     initializeChat();
       //   });
       // } else {}
-      initializeChat(false);
+      initializeChat();
     }
   }
 
@@ -125,20 +132,15 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     return toBeginningOfSentenceCase(text);
   }
 
-  void initializeChat(bool restart) async {
+  void initializeChat() async {
     convoID = Uuid().v4();
     FirebaseDbService.updateConvoID(convoID);
 
-    if (!restart) {
-      await Future.delayed(Duration(milliseconds: 250));
-      channel.sink.add('{"text": "Hi"}');
-    }
-    await Future.delayed(Duration(milliseconds: 2000));
-    channel.sink.add('{"text": "Begin"}');
-    String welcomeMessage =
-        "Hi! I am TheraBot. I am here to talk to you about any mental health problems you might be having.";
-    Provider.of<ChatModel>(context, listen: false)
-        .addBotResponse(welcomeMessage, "Covid Bot", false);
+    await Future.delayed(Duration(milliseconds: 250));
+    channel.sink.add('{"text": "Hi"}');
+
+    // await Future.delayed(Duration(milliseconds: 2000));
+    // channel.sink.add('{"text": "Begin"}');
   }
 
   @override
@@ -164,12 +166,16 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void restartConvo() {
-    channel.sink.add('{"text": "[DONE]"}');
-    Provider.of<ChatModel>(context, listen: false).restartConvo();
-    setState(() {
-      botThinking = true;
+    // channel.sink.add('{"text": "[DONE]"}');
+    // Provider.of<ChatModel>(context, listen: false).restartConvo();
+    // setState(() {
+    //   botThinking = true;
+    // });
+    // convoID = Uuid().v4();
+    // FirebaseDbService.updateConvoID(convoID);
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      Navigator.of(context).pushReplacementNamed(Strings.messagingViewRoute);
     });
-    initializeChat(true);
   }
 
   void handleSubmitted(String text) {
