@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/widgets/auth/forms/entry_field.dart';
 import 'package:flutter_chatbot/ui/widgets/auth/forms/form_submit.dart';
@@ -22,13 +23,6 @@ class _SignInFormState extends State<SignInForm> {
     "user-not-found"
   ];
 
-  final List<String> errors = [
-    "The email address is badly formatted.",
-    "The password is invalid or the user does not have a password.",
-    "There is no user record corresponding to this identifier. The user may have been deleted.",
-    "Email or password was wrong. Please try again."
-  ];
-
   void saveEmail(String newValue) => email = newValue;
   void savePassword(String newValue) => password = newValue;
 
@@ -40,7 +34,6 @@ class _SignInFormState extends State<SignInForm> {
     Provider.of<AuthService>(context, listen: false)
         .signInRegularAccount(email, password)
         .then((res) {
-      print(res);
       if (res != "Success.") {
         setState(() {
           errorMessage = "Email or password was wrong. Please try again.";

@@ -20,6 +20,22 @@ import 'package:google_fonts/google_fonts.dart';
 
 class ThemeModel extends ChangeNotifier {
   bool _isDark = true;
+  bool _initTheme = false;
+
+  bool fetchTheme() {
+    if (_initTheme) {
+      return false;
+    } else {
+      _initTheme = true;
+      return true;
+    }
+  }
+
+  void resetTheme() {
+    _isDark = true;
+    _initTheme = false;
+    // notifyListeners();
+  }
 
   ThemeData getTheme() => _isDark ? _themeDark : _themeLight;
 
@@ -32,10 +48,8 @@ class ThemeModel extends ChangeNotifier {
 
   void setTheme(bool isDark) {
     _isDark = isDark;
-    // notifyListeners();
+    notifyListeners();
   }
-
-  void notify() => notifyListeners();
 
   final _themeDark = ThemeData.dark().copyWith(
     visualDensity: VisualDensity.adaptivePlatformDensity,

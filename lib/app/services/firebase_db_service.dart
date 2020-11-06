@@ -8,23 +8,10 @@ class FirebaseDbService {
   static final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
   static final authInstance = FirebaseAuth.instance;
 
-  // static Future<String> get getCurrentUserID async {
-  //   var user = FirebaseAuth.instance.currentUser;
-  //   return user.uid;
-  // }
-
   static Future<DocumentSnapshot> getUserDoc(String userID) async {
     var userDoc = await firestoreInstance.collection('users').doc(userID).get();
     return userDoc;
   }
-
-  // static void addMessageCount(String userID, int messageID) {
-  //   firestoreInstance
-  //       .collection('users')
-  //       .doc(userID)
-  //       .set(json.decode('{"messagesCount": $messageID}'))
-  //       .then((_) => print("messageCount set to $messageID"));
-  // }
 
   static void addMessageData(Map<String, Object> messageData) {
     messageData["userID"] = authInstance.currentUser.uid;

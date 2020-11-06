@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
-import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/core/message_feed.dart';
@@ -68,19 +67,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   void initState() {
     super.initState();
 
-    // if (Provider.of<ChatModel>(context, listen: false).getChatList().isEmpty) {
-    //   convoID = Uuid().v4();
-    //   FirebaseDbService.updateConvoID(convoID);
-    // } else {
-    //   FirebaseDbService.getUserData().then((data) async {
-    //     if (data != null) {
-    //       // Provider.of<ThemeModel>(context, listen: false)
-    //       //     .setTheme(data["isDark"]);
-    //       convoID = data["convoID"];
-    //     }
-    //   });
-    // }
-
     channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
@@ -96,19 +82,36 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         });
 
         int waitTime = text.length * 30 + 2000;
-        print('waittime: $waitTime');
+        // print('waittime: $waitTime');
 
         await Future.delayed(Duration(milliseconds: waitTime));
         Provider.of<ChatModel>(context, listen: false)
             .addBotResponse(text, "Covid Bot", false);
       }
 
-      print("channel text: " + text);
+      // print("channel text: " + text);
     });
 
-    initializeChat();
-
     myFocusNode = FocusNode();
+
+    if (Provider.of<AuthService>(context, listen: false).isNew) {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        Navigator.pushNamed(context, Strings.onBoardingRoute);
+      });
+    } else {
+      // if (Provider.of<ThemeModel>(context, listen: false).fetchTheme()) {
+      //   FirebaseDbService.getUserData().then((data) async {
+      //     if (data != null) {
+      //       Provider.of<ThemeModel>(context, listen: false)
+      //           .setTheme(data["isDark"]);
+      // print(data);
+      //       // convoID = data["convoID"];
+      //     }
+      //     initializeChat();
+      //   });
+      // } else {}
+      initializeChat();
+    }
   }
 
   String processBotText(String text) {
@@ -186,7 +189,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     botMessage["convoID"] = convoID;
     FirebaseDbService.addMessageData(botMessage);
 
-    print("Data: $botMessage\n--------");
+    // print("Data: $botMessage\n--------");
 
     Provider.of<ChatModel>(context, listen: false).addChat(text, "User", true);
 
@@ -198,19 +201,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     userMessage["convoID"] = convoID;
     FirebaseDbService.addMessageData(userMessage);
 
-    print("Data: $userMessage\n--------");
+    // print("Data: $userMessage\n--------");
 
     myFocusNode.requestFocus();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (Provider.of<AuthService>(context, listen: false).isNew) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushNamed(context, Strings.onBoardingRoute);
-      });
-    }
-
     return Stack(
       children: [
         Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[

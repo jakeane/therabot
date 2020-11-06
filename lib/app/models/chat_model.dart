@@ -64,7 +64,6 @@ class ChatModel extends ChangeNotifier {
   void feedbackDetail(int index, int detail) {
     if (index == -1) {
       _botResponse.detail = detail;
-      print(_botResponse.detail);
     } else {
       _chatList[index].detail = detail;
     }
@@ -95,6 +94,8 @@ class ChatModel extends ChangeNotifier {
       "index": _chatList.last.index,
       "type": _chatList.last.type,
       "text": _chatList.last.text,
+      "feedback": null,
+      "detail": null,
       "timestamp": _chatList.last.timestamp,
     };
   }
