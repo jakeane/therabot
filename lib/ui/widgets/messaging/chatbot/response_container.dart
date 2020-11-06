@@ -4,6 +4,7 @@ import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/bot_response.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/typing_indicator.dart';
 import 'package:provider/provider.dart';
 
+// Parent: AvatarView
 class ResponseContainer extends StatelessWidget {
   final bool botThinking;
   final Function(int) setFeedbackView;

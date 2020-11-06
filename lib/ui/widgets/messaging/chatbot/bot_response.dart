@@ -3,6 +3,7 @@ import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/feedback_buttons.da
 import 'package:flutter_chatbot/ui/widgets/messaging/message/active_feedback_icon.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/message/decorated_bubble.dart';
 
+// Parent: ResponseContainer
 class BotResponse extends StatelessWidget {
   BotResponse(
       {this.setFeedbackView,

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
+import 'package:flutter_chatbot/app/models/message_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/core/message_feed.dart';
@@ -49,10 +50,10 @@ class InteractiveChatWindow extends StatefulWidget {
 
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
-  final channel = WebSocketChannel.connect(Uri.parse(LOCAL_URL));
+  final channel = WebSocketChannel.connect(Uri.parse(AWS_URL));
 
   String convoID;
-  bool botThinking = false;
+  bool botThinking = true;
   bool _settingsOpen = false;
   bool _feedbackOpen = false;
 
@@ -90,7 +91,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
             .addBotResponse(text, "Covid Bot", false);
       }
 
-      // print("channel text: " + text);
+      print("channel text: " + text);
     });
 
     myFocusNode = FocusNode();
@@ -111,7 +112,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       //     initializeChat();
       //   });
       // } else {}
-      initializeChat();
+      initializeChat(false);
     }
   }
 
@@ -124,13 +125,15 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     return toBeginningOfSentenceCase(text);
   }
 
-  void initializeChat() async {
+  void initializeChat(bool restart) async {
     convoID = Uuid().v4();
     FirebaseDbService.updateConvoID(convoID);
 
-    await Future.delayed(Duration(milliseconds: 100));
-    channel.sink.add('{"text": "Hi"}');
-    await Future.delayed(Duration(milliseconds: 500));
+    if (!restart) {
+      await Future.delayed(Duration(milliseconds: 250));
+      channel.sink.add('{"text": "Hi"}');
+    }
+    await Future.delayed(Duration(milliseconds: 2000));
     channel.sink.add('{"text": "Begin"}');
     String welcomeMessage =
         "Hi! I am TheraBot. I am here to talk to you about any mental health problems you might be having.";
@@ -163,7 +166,10 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   void restartConvo() {
     channel.sink.add('{"text": "[DONE]"}');
     Provider.of<ChatModel>(context, listen: false).restartConvo();
-    initializeChat();
+    setState(() {
+      botThinking = true;
+    });
+    initializeChat(true);
   }
 
   void handleSubmitted(String text) {
@@ -172,8 +178,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     });
 
     bool waiting = Provider.of<ChatModel>(context, listen: false).isWaiting();
+    MessageModel response =
+        Provider.of<ChatModel>(context, listen: false).getBotResponse();
+
     if (waiting) {
       Provider.of<ChatModel>(context, listen: false).setWaitingMessage();
+    } else if (response != null && response.feedback == -1) {
+      Provider.of<ChatModel>(context, listen: false).runHighlightFeedback();
     }
     // if the inputted string is empty, don't do anything
     else if (text != '') {

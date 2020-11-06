@@ -6,9 +6,11 @@ class ChatModel extends ChangeNotifier {
   final List<MessageModel> _chatList = [];
   MessageModel _botResponse;
   bool waiting = false;
+  bool _highlightFeedback = false;
 
   List<MessageModel> getChatList() => _chatList;
   MessageModel getBotResponse() => _botResponse;
+  bool getHighlightFeedback() => _highlightFeedback;
 
   void addChat(String text, String name, bool type) {
     if (_botResponse != null) {
@@ -82,11 +84,21 @@ class ChatModel extends ChangeNotifier {
   void setWaitingMessage() async {
     waiting = true;
     _botResponse = createMessage("Hold on, I'm thinking...", "Waiting", false);
+    notifyListeners();
 
     await Future.delayed(Duration(milliseconds: 1000));
 
     _botResponse = null;
     waiting = false;
+    notifyListeners();
+  }
+
+  void runHighlightFeedback() async {
+    _highlightFeedback = true;
+    notifyListeners();
+    await Future.delayed(Duration(milliseconds: 1000));
+    _highlightFeedback = false;
+    notifyListeners();
   }
 
   Map<String, Object> getLastMessage() {
