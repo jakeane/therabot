@@ -88,6 +88,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
                 .bodyText1
                 .copyWith(fontSize: 12, color: Color(0xFFEB5757)),
           ),
+          // Make entry type email
           EntryField(
               hintText: "Email",
               topMargin: 10,

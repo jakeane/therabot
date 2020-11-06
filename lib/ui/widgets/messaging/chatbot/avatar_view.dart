@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/response_container.dart';
 
+// Parent: MessageFeed
 class AvatarView extends StatelessWidget {
   AvatarView({this.botThinking, this.setFeedbackView});
 
