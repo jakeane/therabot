@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class AuthService extends ChangeNotifier {
@@ -16,6 +17,10 @@ class AuthService extends ChangeNotifier {
 
   User getUser() {
     return _auth.currentUser;
+  }
+
+  String getUserID() {
+    return getUser().uid;
   }
 
   Future<String> signInWithGoogle() async {
@@ -42,6 +47,8 @@ class AuthService extends ChangeNotifier {
       assert(user.uid == currentUser.uid);
 
       // print('signInWithGoogle succeeded: $user');
+      if (_isNew) FirebaseDbService.initUserData(user.uid);
+
       notifyListeners();
       return '$user';
     }
@@ -50,51 +57,52 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<String> signInRegularAccount(String email, String password) async {
-    final UserCredential authResult = await _auth.signInWithEmailAndPassword(
-        email: email, password: password);
-    final User user = authResult.user;
+    try {
+      final UserCredential authResult = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      final User user = authResult.user;
 
-    if (user != null) {
-      assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
-      final User currentUser = _auth.currentUser;
-      assert(user.uid == currentUser.uid);
+      if (user != null) {
+        assert(!user.isAnonymous);
+        assert(await user.getIdToken() != null);
+        final User currentUser = _auth.currentUser;
+        assert(user.uid == currentUser.uid);
 
-      notifyListeners();
-      return '$user';
+        notifyListeners();
+        return "Success.";
+      }
+      return "An issue occured. Please try again.";
+    } on FirebaseAuthException catch (e) {
+      // print('Failed with error code: ${e.code}');
+      // print(e.message);
+      return e.code;
     }
-    notifyListeners();
-    return null;
   }
 
   Future<String> createRegularAccount(String email, String password) async {
-    final UserCredential authResult = await _auth
-        .createUserWithEmailAndPassword(email: email, password: password);
-    final User user = authResult.user;
-
-    _isNew = true;
-
-    if (user != null) {
-      assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
-      final User currentUser = _auth.currentUser;
-      assert(user.uid == currentUser.uid);
-
-      print('regular signin succeeded: $user');
-      notifyListeners();
-      return '$user';
-    }
-    notifyListeners();
-    return null;
-  }
-
-  Future<void> signInAnonymously() async {
     try {
-      final UserCredential authResult = await _auth.signInAnonymously();
-      _isNew = authResult.additionalUserInfo.isNewUser;
+      final UserCredential authResult = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      final User user = authResult.user;
+
+      _isNew = true;
+
+      if (user != null) {
+        assert(!user.isAnonymous);
+        assert(await user.getIdToken() != null);
+        final User currentUser = _auth.currentUser;
+        assert(user.uid == currentUser.uid);
+
+        // print('regular signin succeeded: $user');
+        FirebaseDbService.initUserData(user.uid);
+
+        notifyListeners();
+        return "Success.";
+      }
       notifyListeners();
-    } catch (e) {
-      print(e); // TODO: show dialog with error
+      return "An error occured. Please try again.";
+    } on FirebaseAuthException catch (e) {
+      return e.code;
     }
   }
 
@@ -102,6 +110,5 @@ class AuthService extends ChangeNotifier {
     // await googleSignIn.signOut();
     await FirebaseAuth.instance.signOut();
     notifyListeners();
-    print("User Signed Out");
   }
 }
