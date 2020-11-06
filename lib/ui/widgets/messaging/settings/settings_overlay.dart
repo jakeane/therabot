@@ -3,9 +3,10 @@ import 'package:flutter_chatbot/assets/assets.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/settings/settings_box.dart';
 
 class SettingsOverlay extends StatelessWidget {
-  SettingsOverlay({this.setSettingsView});
-
   final Function setSettingsView;
+  final Function restartConvo;
+
+  SettingsOverlay({this.setSettingsView, this.restartConvo});
 
   Widget build(BuildContext context) {
     return Stack(children: [
@@ -21,7 +22,9 @@ class SettingsOverlay extends StatelessWidget {
           child: Stack(
             overflow: Overflow.visible,
             children: [
-              SettingsBox(),
+              SettingsBox(
+                restartConvo: restartConvo,
+              ),
               Positioned(
                   top: -5,
                   right: -5,
@@ -39,7 +42,7 @@ class SettingsOverlay extends StatelessWidget {
                   child: IconButton(
                       icon: Icon(Cb.feedbackexpressed),
                       iconSize: 25,
-                      color: Theme.of(context).colorScheme.primary,
+                      color: Theme.of(context).colorScheme.secondary,
                       padding: const EdgeInsets.all(0.0),
                       onPressed: () {
                         setSettingsView();

@@ -57,44 +57,53 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<String> signInRegularAccount(String email, String password) async {
-    final UserCredential authResult = await _auth.signInWithEmailAndPassword(
-        email: email, password: password);
-    final User user = authResult.user;
+    try {
+      final UserCredential authResult = await _auth.signInWithEmailAndPassword(
+          email: email, password: password);
+      final User user = authResult.user;
 
-    if (user != null) {
-      assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
-      final User currentUser = _auth.currentUser;
-      assert(user.uid == currentUser.uid);
+      if (user != null) {
+        assert(!user.isAnonymous);
+        assert(await user.getIdToken() != null);
+        final User currentUser = _auth.currentUser;
+        assert(user.uid == currentUser.uid);
 
-      notifyListeners();
-      return '$user';
+        notifyListeners();
+        return "Success.";
+      }
+      return "An issue occured. Please try again.";
+    } on FirebaseAuthException catch (e) {
+      // print('Failed with error code: ${e.code}');
+      // print(e.message);
+      return e.code;
     }
-    notifyListeners();
-    return null;
   }
 
   Future<String> createRegularAccount(String email, String password) async {
-    final UserCredential authResult = await _auth
-        .createUserWithEmailAndPassword(email: email, password: password);
-    final User user = authResult.user;
+    try {
+      final UserCredential authResult = await _auth
+          .createUserWithEmailAndPassword(email: email, password: password);
+      final User user = authResult.user;
 
-    _isNew = true;
+      _isNew = true;
 
-    if (user != null) {
-      assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
-      final User currentUser = _auth.currentUser;
-      assert(user.uid == currentUser.uid);
+      if (user != null) {
+        assert(!user.isAnonymous);
+        assert(await user.getIdToken() != null);
+        final User currentUser = _auth.currentUser;
+        assert(user.uid == currentUser.uid);
 
-      // print('regular signin succeeded: $user');
-      FirebaseDbService.initUserData(user.uid);
+        // print('regular signin succeeded: $user');
+        FirebaseDbService.initUserData(user.uid);
 
+        notifyListeners();
+        return "Success.";
+      }
       notifyListeners();
-      return '$user';
+      return "An error occured. Please try again.";
+    } on FirebaseAuthException catch (e) {
+      return e.code;
     }
-    notifyListeners();
-    return null;
   }
 
   void signOut() async {

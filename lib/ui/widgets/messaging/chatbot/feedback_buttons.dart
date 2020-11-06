@@ -15,7 +15,7 @@ class FeedbackButtons extends StatelessWidget {
           icon: Icon(Cb.feedbackcheck),
           iconSize: 40,
           color: Theme.of(context).colorScheme.secondaryVariant,
-          padding: const EdgeInsets.all(0.0),
+          padding: const EdgeInsets.only(right: 0, top: 8),
           onPressed: () {
             Provider.of<ChatModel>(context, listen: false).giveFeedback(-1, 1);
           },
@@ -24,7 +24,7 @@ class FeedbackButtons extends StatelessWidget {
           icon: Icon(Cb.feedbackex),
           iconSize: 40,
           color: Theme.of(context).colorScheme.secondaryVariant,
-          padding: const EdgeInsets.all(0.0),
+          padding: const EdgeInsets.only(left: 0, top: 8),
           onPressed: () {
             Provider.of<ChatModel>(context, listen: false).giveFeedback(-1, 0);
             setFeedbackView(-1);

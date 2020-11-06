@@ -13,9 +13,9 @@ class TextComposer extends StatelessWidget {
         padding: EdgeInsets.all(20),
         color: Theme.of(context).backgroundColor,
         child: Container(
-          padding: EdgeInsets.only(left: 15),
+          padding: EdgeInsets.only(left: 20),
           decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(20),
+              borderRadius: BorderRadius.circular(25),
               border:
                   Border.all(color: Theme.of(context).colorScheme.secondary)),
           child: Row(

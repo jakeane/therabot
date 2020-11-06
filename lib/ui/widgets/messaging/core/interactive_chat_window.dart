@@ -68,18 +68,18 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   void initState() {
     super.initState();
 
-    if (Provider.of<ChatModel>(context, listen: false).getChatList().isEmpty) {
-      convoID = Uuid().v4();
-      FirebaseDbService.updateConvoID(convoID);
-    } else {
-      FirebaseDbService.getUserData().then((data) async {
-        if (data != null) {
-          // Provider.of<ThemeModel>(context, listen: false)
-          //     .setTheme(data["isDark"]);
-          convoID = data["convoID"];
-        }
-      });
-    }
+    // if (Provider.of<ChatModel>(context, listen: false).getChatList().isEmpty) {
+    //   convoID = Uuid().v4();
+    //   FirebaseDbService.updateConvoID(convoID);
+    // } else {
+    //   FirebaseDbService.getUserData().then((data) async {
+    //     if (data != null) {
+    //       // Provider.of<ThemeModel>(context, listen: false)
+    //       //     .setTheme(data["isDark"]);
+    //       convoID = data["convoID"];
+    //     }
+    //   });
+    // }
 
     channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
@@ -121,9 +121,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void initializeChat() async {
-    await Future.delayed(Duration(milliseconds: 100));
+    convoID = Uuid().v4();
+    FirebaseDbService.updateConvoID(convoID);
 
+    await Future.delayed(Duration(milliseconds: 100));
     channel.sink.add('{"text": "Hi"}');
+    await Future.delayed(Duration(milliseconds: 500));
     channel.sink.add('{"text": "Begin"}');
     String welcomeMessage =
         "Hi! I am TheraBot. I am here to talk to you about any mental health problems you might be having.";
@@ -145,19 +148,31 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     });
   }
 
-  void setFeedbackView(int detail) {
+  void setFeedbackView(int detail) async {
+    Provider.of<ChatModel>(context, listen: false).feedbackDetail(-1, detail);
+    if (detail != -1) await Future.delayed(Duration(milliseconds: 300));
     setState(() {
       _feedbackOpen = !_feedbackOpen;
     });
-    Provider.of<ChatModel>(context, listen: false).feedbackDetail(-1, detail);
+  }
+
+  void restartConvo() {
+    channel.sink.add('{"text": "[DONE]"}');
+    Provider.of<ChatModel>(context, listen: false).restartConvo();
+    initializeChat();
   }
 
   void handleSubmitted(String text) {
     setState(() {
       botThinking = false;
     });
+
+    bool waiting = Provider.of<ChatModel>(context, listen: false).isWaiting();
+    if (waiting) {
+      Provider.of<ChatModel>(context, listen: false).setWaitingMessage();
+    }
     // if the inputted string is empty, don't do anything
-    if (text != '') {
+    else if (text != '') {
       _textController.clear();
 
       handleResponse(text);
@@ -222,6 +237,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         if (_settingsOpen)
           SettingsOverlay(
             setSettingsView: setSettingsView,
+            restartConvo: restartConvo,
           ),
         if (_feedbackOpen)
           FeedbackOverlay(

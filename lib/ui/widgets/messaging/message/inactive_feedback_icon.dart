@@ -13,7 +13,7 @@ class InactiveFeedbackIcon extends StatelessWidget {
       child: Icon(
         feedback == 1 ? Cb.feedbackcheckpressed : Cb.feedbackexpressed,
         size: 25,
-        color: Theme.of(context).colorScheme.primary,
+        color: Theme.of(context).colorScheme.secondary,
       ),
     );
   }

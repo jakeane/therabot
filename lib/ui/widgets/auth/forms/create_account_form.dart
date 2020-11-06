@@ -15,15 +15,64 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
 
   String email, password, confirmPassword;
 
+  String errorMessage = "";
+
+  final List<String> errorCodes = ["invalid-email", "email-already-in-use"];
+
+  final List<String> errorMessages = [
+    "Invalid email.",
+    "Email already in use.",
+    "Password must have at least 8 characters.",
+    "Passwords do not match.",
+    "Some error occured. Please try again."
+  ];
+
   void saveEmail(String newValue) => email = newValue;
   void savePassword(String newValue) => password = newValue;
   void saveConfirmPassword(String newValue) => confirmPassword = newValue;
 
   void onSubmit() {
+    setState(() {
+      errorMessage = "";
+    });
     _formKey.currentState.save();
-    if (password == confirmPassword) {
+    if (password.length < 8) {
+      setState(() {
+        errorMessage = errorMessages[2];
+      });
+    } else if (password != confirmPassword) {
+      setState(() {
+        errorMessage = errorMessages[3];
+      });
+    } else {
       Provider.of<AuthService>(context, listen: false)
-          .createRegularAccount(email, password);
+          .createRegularAccount(email, password)
+          .then((res) {
+        if (res != "Success.") {
+          switch (errorCodes.indexOf(res)) {
+            case 0:
+              {
+                setState(() {
+                  errorMessage = errorMessages[0];
+                });
+              }
+              break;
+            case 1:
+              {
+                setState(() {
+                  errorMessage = errorMessages[1];
+                });
+              }
+              break;
+            case -1:
+              {
+                setState(() {
+                  errorMessage = errorMessages[4];
+                });
+              }
+          }
+        }
+      });
     }
   }
 
@@ -32,9 +81,16 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
     return Form(
         key: _formKey,
         child: Column(children: <Widget>[
+          Text(
+            errorMessage,
+            style: Theme.of(context)
+                .textTheme
+                .bodyText1
+                .copyWith(fontSize: 12, color: Color(0xFFEB5757)),
+          ),
           EntryField(
               hintText: "Email",
-              topMargin: 0,
+              topMargin: 10,
               obscureText: false,
               saveValue: saveEmail),
           EntryField(

@@ -17,7 +17,7 @@ class ActiveFeedbackIcon extends StatelessWidget {
                 ? Icon(Cb.feedbackcheckpressed)
                 : Icon(Cb.feedbackexpressed),
             iconSize: 25,
-            color: Theme.of(context).colorScheme.primary,
+            color: Theme.of(context).colorScheme.secondary,
             padding: const EdgeInsets.all(0.0),
             onPressed: () {
               Provider.of<ChatModel>(context, listen: false)

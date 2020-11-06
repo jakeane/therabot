@@ -17,6 +17,8 @@ class BotResponse extends StatelessWidget {
   final TextStyle textStyle;
 
   Widget build(BuildContext context) {
+    bool isWaiting = text == "Hold on, I'm thinking...";
+
     return Container(
         margin: EdgeInsets.only(bottom: 40),
         child: Column(
@@ -28,7 +30,7 @@ class BotResponse extends StatelessWidget {
               feedback: feedback,
               feedbackIcon: ActiveFeedbackIcon(feedback: feedback),
             ),
-            feedback != -1
+            feedback != -1 || isWaiting
                 ? Container(
                     height: 48, color: Theme.of(context).backgroundColor)
                 : FeedbackButtons(

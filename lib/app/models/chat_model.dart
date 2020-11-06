@@ -5,6 +5,7 @@ import 'package:flutter_chatbot/app/models/message_model.dart';
 class ChatModel extends ChangeNotifier {
   final List<MessageModel> _chatList = [];
   MessageModel _botResponse;
+  bool waiting = false;
 
   List<MessageModel> getChatList() => _chatList;
   MessageModel getBotResponse() => _botResponse;
@@ -63,9 +64,30 @@ class ChatModel extends ChangeNotifier {
   void feedbackDetail(int index, int detail) {
     if (index == -1) {
       _botResponse.detail = detail;
+      print(_botResponse.detail);
     } else {
       _chatList[index].detail = detail;
     }
+    notifyListeners();
+  }
+
+  void restartConvo() {
+    _chatList.clear();
+    _botResponse = null;
+  }
+
+  bool isWaiting() {
+    return _botResponse == null || waiting;
+  }
+
+  void setWaitingMessage() async {
+    waiting = true;
+    _botResponse = createMessage("Hold on, I'm thinking...", "Waiting", false);
+
+    await Future.delayed(Duration(milliseconds: 1000));
+
+    _botResponse = null;
+    waiting = false;
   }
 
   Map<String, Object> getLastMessage() {
@@ -78,13 +100,16 @@ class ChatModel extends ChangeNotifier {
   }
 
   Map<String, Object> getBotMessage() {
-    return {
-      "index": _botResponse.index,
-      "type": _botResponse.type,
-      "text": _botResponse.text,
-      "feedback": _botResponse.feedback,
-      "detail": _botResponse.detail,
-      "timestamp": _botResponse.timestamp,
-    };
+    if (_botResponse != null) {
+      return {
+        "index": _botResponse.index,
+        "type": _botResponse.type,
+        "text": _botResponse.text,
+        "feedback": _botResponse.feedback,
+        "detail": _botResponse.detail,
+        "timestamp": _botResponse.timestamp,
+      };
+    }
+    return null;
   }
 }

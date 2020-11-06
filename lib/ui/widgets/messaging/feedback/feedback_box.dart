@@ -16,7 +16,7 @@ class FeedbackBox extends StatelessWidget {
         ),
         child: ListView.builder(
             shrinkWrap: true,
-            padding: EdgeInsets.symmetric(vertical: 15, horizontal: 20),
+            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
             itemCount: FeedbackOptions.options.length,
             itemBuilder: (context, index) {
               return FeedbackItem(

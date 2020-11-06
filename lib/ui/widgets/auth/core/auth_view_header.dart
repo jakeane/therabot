@@ -3,7 +3,7 @@ import 'package:flutter_svg/svg.dart';
 
 class AuthViewHeader extends StatelessWidget {
   Widget build(BuildContext context) {
-    double bottomMargin = MediaQuery.of(context).size.height * 0.28 - 170;
+    double bottomMargin = MediaQuery.of(context).size.height * 0.28 - 185;
 
     return Column(
       children: [

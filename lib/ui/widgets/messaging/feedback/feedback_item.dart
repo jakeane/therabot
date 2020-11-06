@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/models/chat_model.dart';
+import 'package:provider/provider.dart';
 
 class FeedbackItem extends StatelessWidget {
   final String optionText;
@@ -8,15 +10,19 @@ class FeedbackItem extends StatelessWidget {
   FeedbackItem({this.optionText, this.optionNum, this.setFeedbackView});
 
   Widget build(BuildContext context) {
-    Color buttonColor = Theme.of(context).textTheme.bodyText2.color;
+    int detail = Provider.of<ChatModel>(context).getBotResponse().detail;
+
+    Color buttonColor = detail == optionNum
+        ? Theme.of(context).colorScheme.primary
+        : Theme.of(context).textTheme.bodyText2.color;
 
     // Increase spacing between items and make buttons smaller
     return Container(
-        margin: EdgeInsets.symmetric(vertical: 5),
+        margin: EdgeInsets.symmetric(vertical: 10),
         child: Row(children: [
           Container(
-            width: 60,
-            height: 40,
+            width: 50,
+            height: 35,
             margin: EdgeInsets.only(right: 15),
             child: FlatButton(
               child: Text(
@@ -39,7 +45,10 @@ class FeedbackItem extends StatelessWidget {
             child: Text(
               optionText,
               softWrap: true,
-              style: Theme.of(context).textTheme.bodyText2,
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyText2
+                  .copyWith(color: buttonColor),
             ),
           )
         ]));
