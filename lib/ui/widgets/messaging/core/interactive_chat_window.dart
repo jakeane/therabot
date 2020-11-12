@@ -165,7 +165,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     });
   }
 
-  void restartConvo() {
+  void newConvo() {
     // channel.sink.add('{"text": "[DONE]"}');
     // Provider.of<ChatModel>(context, listen: false).restartConvo();
     // setState(() {
@@ -189,7 +189,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     if (waiting) {
       Provider.of<ChatModel>(context, listen: false).setWaitingMessage();
-    } else if (response != null && response.feedback == -1) {
+    } else if (response != null &&
+        response.feedback == -1 &&
+        response.index != 0) {
       Provider.of<ChatModel>(context, listen: false).runHighlightFeedback();
     }
     // if the inputted string is empty, don't do anything
@@ -252,7 +254,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         if (_settingsOpen)
           SettingsOverlay(
             setSettingsView: setSettingsView,
-            restartConvo: restartConvo,
+            newConvo: newConvo,
           ),
         if (_feedbackOpen)
           FeedbackOverlay(

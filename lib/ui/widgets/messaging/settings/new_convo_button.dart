@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
-class RestartConvoButton extends StatelessWidget {
-  final Function restartConvo;
+class NewConvoButton extends StatelessWidget {
+  final Function newConvo;
 
-  RestartConvoButton({this.restartConvo});
+  NewConvoButton({this.newConvo});
 
   @override
   Widget build(BuildContext context) {
@@ -13,17 +13,17 @@ class RestartConvoButton extends StatelessWidget {
       margin: EdgeInsets.only(bottom: 5),
       child: FlatButton(
         onPressed: () {
-          restartConvo();
+          newConvo();
         },
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           FaIcon(
-            FontAwesomeIcons.undoAlt,
+            FontAwesomeIcons.solidPlusSquare,
             color: Theme.of(context).textTheme.bodyText2.color,
           ),
           Container(
             margin: EdgeInsets.only(left: 5),
             child: Text(
-              "Restart Conversation",
+              "New Conversation",
               style:
                   Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 18),
             ),

@@ -5,8 +5,14 @@ class EntryField extends StatelessWidget {
   final double topMargin;
   final bool obscureText;
   final void Function(String) saveValue;
+  final TextInputType textInputType;
 
-  EntryField({this.hintText, this.topMargin, this.obscureText, this.saveValue});
+  EntryField(
+      {this.hintText,
+      this.topMargin,
+      this.obscureText,
+      this.saveValue,
+      this.textInputType});
 
   @override
   Widget build(BuildContext context) {
@@ -19,6 +25,7 @@ class EntryField extends StatelessWidget {
         width: 300,
         child: TextFormField(
           textAlign: TextAlign.center,
+          keyboardType: textInputType,
           obscureText: obscureText,
           style: Theme.of(context).textTheme.caption,
           decoration: InputDecoration.collapsed(hintText: hintText),

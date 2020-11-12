@@ -38,7 +38,6 @@ class _TypingIndicatorState extends State<TypingIndicator>
       _addListOfDots(i);
     }
 
-    controllers[0].forward();
     for (int i = 0; i < numberOfDots; i++) {
       controllers[i].forward();
     }

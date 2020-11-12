@@ -96,7 +96,7 @@ class ChatModel extends ChangeNotifier {
   void runHighlightFeedback() async {
     _highlightFeedback = true;
     notifyListeners();
-    await Future.delayed(Duration(milliseconds: 1000));
+    await Future.delayed(Duration(milliseconds: 100));
     _highlightFeedback = false;
     notifyListeners();
   }

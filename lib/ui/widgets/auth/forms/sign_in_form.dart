@@ -59,12 +59,14 @@ class _SignInFormState extends State<SignInForm> {
               hintText: "Email",
               topMargin: 10,
               obscureText: false,
-              saveValue: saveEmail),
+              saveValue: saveEmail,
+              textInputType: TextInputType.emailAddress),
           EntryField(
               hintText: "Password",
               topMargin: 20,
               obscureText: true,
-              saveValue: savePassword),
+              saveValue: savePassword,
+              textInputType: TextInputType.visiblePassword),
           FormSubmit(
             topMargin: 20,
             text: "Login",

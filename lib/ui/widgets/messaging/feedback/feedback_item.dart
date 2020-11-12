@@ -19,17 +19,19 @@ class FeedbackItem extends StatelessWidget {
     // Increase spacing between items and make buttons smaller
     return Container(
         margin: EdgeInsets.symmetric(vertical: 10),
-        child: Row(children: [
-          Container(
-            width: 50,
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          Expanded(
+              child: Container(
             height: 35,
-            margin: EdgeInsets.only(right: 15),
+
+            // margin: EdgeInsets.only(right: 15),
             child: FlatButton(
               child: Text(
-                optionNum.toString(),
+                optionText,
+                // optionNum.toString(),
                 style: Theme.of(context)
                     .textTheme
-                    .button
+                    .bodyText2
                     .copyWith(color: buttonColor),
               ),
               shape: RoundedRectangleBorder(
@@ -40,17 +42,17 @@ class FeedbackItem extends StatelessWidget {
                 setFeedbackView(optionNum);
               },
             ),
-          ),
-          Expanded(
-            child: Text(
-              optionText,
-              softWrap: true,
-              style: Theme.of(context)
-                  .textTheme
-                  .bodyText2
-                  .copyWith(color: buttonColor),
-            ),
-          )
+          ))
+          // Expanded(
+          //   child: Text(
+          //     optionText,
+          //     softWrap: true,
+          //     style: Theme.of(context)
+          //         .textTheme
+          //         .bodyText2
+          //         .copyWith(color: buttonColor),
+          //   ),
+          // )
         ]));
   }
 }

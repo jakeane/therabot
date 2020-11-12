@@ -1,9 +1,10 @@
 class FeedbackOptions {
   static const List<String> options = [
-    "Harmful or abusive",
+    "Nonsensical or illogical",
+    "Overly vague or generic",
     "Irrelevant or off topic",
     "Inappropriate or offensive",
-    "Ending conversation abruptly",
-    "Other",
+    "Ends conversation abruptly",
+    "Other"
   ];
 }
