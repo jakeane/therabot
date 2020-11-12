@@ -191,7 +191,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       Provider.of<ChatModel>(context, listen: false).setWaitingMessage();
     } else if (response != null &&
         response.feedback == -1 &&
-        response.index != -1) {
+        response.index != 0) {
       Provider.of<ChatModel>(context, listen: false).runHighlightFeedback();
     }
     // if the inputted string is empty, don't do anything

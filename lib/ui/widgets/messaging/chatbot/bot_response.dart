@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/feedback_buttons.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/shake_container.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/message/active_feedback_icon.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/message/decorated_bubble.dart';
 
@@ -19,7 +19,7 @@ class BotResponse extends StatelessWidget {
 
   final List<String> suppressFeedbackText = [
     "Hold on, I'm thinking...",
-    // "Hi! I am TheraBot. I am here to talk to you about any mental health problems you might be having."
+    "Hi! I am TheraBot. I am here to talk to you about any mental health problems you might be having."
   ];
 
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class BotResponse extends StatelessWidget {
             feedback != -1 || suppressFeedback
                 ? Container(
                     height: 48, color: Theme.of(context).backgroundColor)
-                : FeedbackButtons(
+                : ShakeContainer(
                     setFeedbackView: setFeedbackView,
                   )
           ],
