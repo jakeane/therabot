@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
 
 class TextComposer extends StatelessWidget {
@@ -40,6 +41,10 @@ class TextComposer extends StatelessWidget {
                         decoration: InputDecoration.collapsed(
                           hintText: "Type message here",
                         ),
+                        inputFormatters: [
+                          FilteringTextInputFormatter.deny(RegExp(
+                              r"(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])"))
+                        ],
                       ))),
               IconButton(
                 icon: Icon(Cb.send),

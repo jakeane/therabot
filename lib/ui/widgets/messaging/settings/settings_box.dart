@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/settings/log_out_button.dart';
-import 'package:flutter_chatbot/ui/widgets/messaging/settings/restart_convo_button.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/settings/new_convo_button.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/settings/theme_switch.dart';
 
 class SettingsBox extends StatelessWidget {
-  final Function restartConvo;
+  final Function newConvo;
 
-  SettingsBox({this.restartConvo});
+  SettingsBox({this.newConvo});
 
   Widget build(BuildContext context) {
     return Container(
@@ -29,8 +29,8 @@ class SettingsBox extends StatelessWidget {
         ),
         Column(mainAxisAlignment: MainAxisAlignment.center, children: [
           ThemeSwitch(),
-          RestartConvoButton(
-            restartConvo: restartConvo,
+          NewConvoButton(
+            newConvo: newConvo,
           ),
           LogOutButton()
         ])
