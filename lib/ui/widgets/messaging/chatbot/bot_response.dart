@@ -17,8 +17,13 @@ class BotResponse extends StatelessWidget {
   final Color bubbleColor;
   final TextStyle textStyle;
 
+  final List<String> suppressFeedbackText = [
+    "Hold on, I'm thinking...",
+    // "Hi! I am TheraBot. I am here to talk to you about any mental health problems you might be having."
+  ];
+
   Widget build(BuildContext context) {
-    bool isWaiting = text == "Hold on, I'm thinking...";
+    bool suppressFeedback = suppressFeedbackText.contains(text);
 
     return Container(
         margin: EdgeInsets.only(bottom: 40),
@@ -31,7 +36,7 @@ class BotResponse extends StatelessWidget {
               feedback: feedback,
               feedbackIcon: ActiveFeedbackIcon(feedback: feedback),
             ),
-            feedback != -1 || isWaiting
+            feedback != -1 || suppressFeedback
                 ? Container(
                     height: 48, color: Theme.of(context).backgroundColor)
                 : FeedbackButtons(

@@ -17,13 +17,13 @@ class RestartConvoButton extends StatelessWidget {
         },
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           FaIcon(
-            FontAwesomeIcons.undoAlt,
+            FontAwesomeIcons.solidPlusSquare,
             color: Theme.of(context).textTheme.bodyText2.color,
           ),
           Container(
             margin: EdgeInsets.only(left: 5),
             child: Text(
-              "Restart Conversation",
+              "New Conversation",
               style:
                   Theme.of(context).textTheme.bodyText2.copyWith(fontSize: 18),
             ),
