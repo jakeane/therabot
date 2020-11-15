@@ -35,8 +35,8 @@ class _ShakeContainerState extends State<ShakeContainer>
 
   @override
   void dispose() {
-    super.dispose();
     _controller.dispose();
+    super.dispose();
   }
 
   @override

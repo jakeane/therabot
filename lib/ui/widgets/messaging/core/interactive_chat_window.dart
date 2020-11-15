@@ -75,6 +75,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       text = processBotText(text);
 
       if (MessagingStrings.botInitPhrases.indexOf(text) == 0) {
+        convoID = Uuid().v4();
+        FirebaseDbService.updateConvoID(convoID);
         await Future.delayed(Duration(milliseconds: 2000));
         channel.sink.add(MessagingStrings.convoBegin);
         Provider.of<ChatModel>(context, listen: false)
@@ -143,8 +145,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void initializeChat() async {
-    convoID = Uuid().v4();
-    FirebaseDbService.updateConvoID(convoID);
+    // convoID = Uuid().v4();
+    // FirebaseDbService.updateConvoID(convoID);
 
     await Future.delayed(Duration(milliseconds: 250));
     channel.sink.add(MessagingStrings.convoInit);
@@ -156,6 +158,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   @override
   void dispose() {
     myFocusNode.dispose();
+    channel.sink.add(MessagingStrings.convoEnd);
     channel.sink.close();
 
     super.dispose();
@@ -201,7 +204,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       Provider.of<ChatModel>(context, listen: false).setWaitingMessage();
     } else if (response != null &&
         response.feedback == -1 &&
-        response.index != 0) {
+        response.text != MessagingStrings.welcomeMessage) {
       Provider.of<ChatModel>(context, listen: false).runHighlightFeedback();
     }
     // if the inputted string is empty, don't do anything
