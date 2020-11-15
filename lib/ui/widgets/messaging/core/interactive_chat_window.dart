@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:flutter_chatbot/app/constants/messaging_strings.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/models/message_model.dart';
@@ -50,17 +51,14 @@ class InteractiveChatWindow extends StatefulWidget {
 
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
-  final channel = WebSocketChannel.connect(Uri.parse(AWS_URL));
+  final channel = WebSocketChannel.connect(Uri.parse(LOCAL_URL));
+
+  final breakMode = true;
 
   String convoID;
   bool botThinking = true;
   bool _settingsOpen = false;
   bool _feedbackOpen = false;
-
-  final List<String> botInitPhrases = [
-    "Welcome to the overworld for the ParlAI messenger chatbot demo. Please type \"begin\" to start.",
-    "Welcome to the ParlAI Chatbot demo. You are now paired with a bot - feel free to send a message.Type [DONE] to finish the chat."
-  ];
 
   // Creates a focus node to autofocus the text controller when the chatbot responds
   FocusNode myFocusNode;
@@ -76,14 +74,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       // Could turn this into helper?
       text = processBotText(text);
 
-      if (botInitPhrases.indexOf(text) == 0) {
+      if (MessagingStrings.botInitPhrases.indexOf(text) == 0) {
         await Future.delayed(Duration(milliseconds: 2000));
-        channel.sink.add('{"text": "Begin"}');
-        String welcomeMessage =
-            "Hi! I am TheraBot. I am here to talk to you about any mental health problems you might be having.";
+        channel.sink.add(MessagingStrings.convoBegin);
         Provider.of<ChatModel>(context, listen: false)
-            .addBotResponse(welcomeMessage, "Covid Bot", false);
-      } else if (!botInitPhrases.contains(text)) {
+            .addBotResponse(MessagingStrings.welcomeMessage, false);
+      } else if (!MessagingStrings.botInitPhrases.contains(text)) {
         await Future.delayed(Duration(seconds: 1));
 
         setState(() {
@@ -95,10 +91,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
         await Future.delayed(Duration(milliseconds: waitTime));
         Provider.of<ChatModel>(context, listen: false)
-            .addBotResponse(text, "Covid Bot", false);
+            .addBotResponse(text, false);
       }
-
-      print("channel text: " + text);
     });
 
     myFocusNode = FocusNode();
@@ -124,12 +118,28 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   String processBotText(String text) {
-    text = text.toString().replaceAll(" .", ".");
-    text = text.toString().replaceAll(" ?", "?");
-    text = text.toString().replaceAll(" '", "'");
-    text = text.toString().replaceAll("' ", "'");
-    text = text.toString().replaceAll(" , ", ", ");
-    return toBeginningOfSentenceCase(text);
+    print("Pre-process:  $text");
+
+    String result = text
+        .split(" . ")
+        .map((sent) => toBeginningOfSentenceCase(sent))
+        .join(". ")
+        .split(" ! ")
+        .map((sent) => toBeginningOfSentenceCase(sent))
+        .join("! ")
+        .split(" ? ")
+        .map((sent) => toBeginningOfSentenceCase(sent))
+        .join("? ")
+        .replaceAll(" i ", " I ")
+        .replaceAll(" ?", "?")
+        .replaceAll(" .", ".")
+        .replaceAll(" !", "!")
+        .replaceAll(" ’", "’")
+        .replaceAll("’ ", "’")
+        .replaceAll(" , ", ", ");
+
+    print("Post-process: $result");
+    return result;
   }
 
   void initializeChat() async {
@@ -137,7 +147,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     FirebaseDbService.updateConvoID(convoID);
 
     await Future.delayed(Duration(milliseconds: 250));
-    channel.sink.add('{"text": "Hi"}');
+    channel.sink.add(MessagingStrings.convoInit);
 
     // await Future.delayed(Duration(milliseconds: 2000));
     // channel.sink.add('{"text": "Begin"}');
@@ -207,11 +217,15 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     Map<String, Object> botMessage =
         Provider.of<ChatModel>(context, listen: false).getBotMessage();
     botMessage["convoID"] = convoID;
-    FirebaseDbService.addMessageData(botMessage);
+    if (!breakMode) {
+      FirebaseDbService.addMessageData(botMessage);
+    } else {
+      print(botMessage);
+    }
 
     // print("Data: $botMessage\n--------");
 
-    Provider.of<ChatModel>(context, listen: false).addChat(text, "User", true);
+    Provider.of<ChatModel>(context, listen: false).addChat(text, true);
 
     String jsonStringified = '{"text": "$text"}';
     channel.sink.add(jsonStringified);
@@ -219,7 +233,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     Map<String, Object> userMessage =
         Provider.of<ChatModel>(context, listen: false).getLastMessage();
     userMessage["convoID"] = convoID;
-    FirebaseDbService.addMessageData(userMessage);
+    if (!breakMode) {
+      FirebaseDbService.addMessageData(userMessage);
+    } else {
+      print(userMessage);
+    }
 
     // print("Data: $userMessage\n--------");
 

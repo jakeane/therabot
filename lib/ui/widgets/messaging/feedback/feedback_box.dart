@@ -16,12 +16,14 @@ class FeedbackBox extends StatelessWidget {
         ),
         child: ListView.builder(
             shrinkWrap: true,
-            padding: EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+            padding: EdgeInsets.symmetric(vertical: 25, horizontal: 25),
             itemCount: FeedbackOptions.options.length,
             itemBuilder: (context, index) {
+              List<int> keys = FeedbackOptions.options.keys.toList();
+
               return FeedbackItem(
-                  optionText: FeedbackOptions.options[index],
-                  optionNum: index + 1,
+                  optionText: FeedbackOptions.options[keys[index]],
+                  optionNum: keys[index],
                   setFeedbackView: setFeedbackView);
             }));
   }

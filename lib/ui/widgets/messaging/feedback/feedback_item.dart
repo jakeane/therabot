@@ -43,16 +43,6 @@ class FeedbackItem extends StatelessWidget {
               },
             ),
           ))
-          // Expanded(
-          //   child: Text(
-          //     optionText,
-          //     softWrap: true,
-          //     style: Theme.of(context)
-          //         .textTheme
-          //         .bodyText2
-          //         .copyWith(color: buttonColor),
-          //   ),
-          // )
         ]));
   }
 }

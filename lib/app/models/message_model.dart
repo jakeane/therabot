@@ -3,7 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class MessageModel {
   MessageModel(
       {this.text,
-      this.name,
       this.type,
       this.index,
       this.feedback,
@@ -13,7 +12,6 @@ class MessageModel {
       this.selected,
       this.consecutive});
   String text;
-  String name;
   bool type;
   int index;
   FieldValue timestamp;
