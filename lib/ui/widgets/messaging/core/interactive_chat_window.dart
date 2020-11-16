@@ -51,8 +51,9 @@ class InteractiveChatWindow extends StatefulWidget {
 
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
-  final channel = WebSocketChannel.connect(Uri.parse(LOCAL_URL));
+  final channel = WebSocketChannel.connect(Uri.parse(AWS_URL));
 
+  // SET FALSE BEFORE DEPLOYMENT
   final breakMode = true;
 
   String convoID;
@@ -120,7 +121,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   String processBotText(String text) {
-    print("Pre-process:  $text");
+    // print("Pre-process:  $text");
 
     String result = text
         .split(" . ")
@@ -140,7 +141,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         .replaceAll("’ ", "’")
         .replaceAll(" , ", ", ");
 
-    print("Post-process: $result");
+    // print("Post-process: $result");
     return result;
   }
 
@@ -158,7 +159,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   @override
   void dispose() {
     myFocusNode.dispose();
-    channel.sink.add(MessagingStrings.convoEnd);
+    channel.sink.add(MessagingStrings.convoExit);
     channel.sink.close();
 
     super.dispose();

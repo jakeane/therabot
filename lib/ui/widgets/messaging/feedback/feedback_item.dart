@@ -28,6 +28,7 @@ class FeedbackItem extends StatelessWidget {
             child: FlatButton(
               child: Text(
                 optionText,
+                softWrap: false,
                 // optionNum.toString(),
                 style: Theme.of(context)
                     .textTheme
