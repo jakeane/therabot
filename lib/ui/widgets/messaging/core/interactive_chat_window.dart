@@ -54,7 +54,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final channel = WebSocketChannel.connect(Uri.parse(AWS_URL));
 
   // SET FALSE BEFORE DEPLOYMENT
-  final breakMode = true;
+  final breakMode = false;
 
   String convoID;
   bool botThinking = true;
@@ -159,7 +159,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   @override
   void dispose() {
     myFocusNode.dispose();
-    channel.sink.add(MessagingStrings.convoExit);
+    channel.sink.add(MessagingStrings.convoDone);
     channel.sink.close();
 
     super.dispose();
@@ -212,7 +212,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     else if (text != '') {
       _textController.clear();
 
-      handleResponse(text);
+      handleResponse(text.trim());
     }
   }
 
