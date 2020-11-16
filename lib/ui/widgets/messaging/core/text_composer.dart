@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_chatbot/app/constants/messaging_strings.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
 
 class TextComposer extends StatelessWidget {
@@ -30,7 +31,7 @@ class TextComposer extends StatelessWidget {
                         controller: controller,
                         autofocus: true,
                         focusNode: focusNode,
-                        style: Theme.of(context).textTheme.caption,
+                        style: Theme.of(context).textTheme.bodyText2,
                         textCapitalization: TextCapitalization.sentences,
                         keyboardType: TextInputType.multiline,
                         minLines: 1,
@@ -42,8 +43,8 @@ class TextComposer extends StatelessWidget {
                           hintText: "Type message here",
                         ),
                         inputFormatters: [
-                          FilteringTextInputFormatter.deny(RegExp(
-                              r"(\u00a9|\u00ae|[\u2028-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])"))
+                          FilteringTextInputFormatter.deny(
+                              RegExp(MessagingStrings.emojiFilter))
                         ],
                       ))),
               IconButton(

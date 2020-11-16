@@ -12,7 +12,7 @@ class ChatModel extends ChangeNotifier {
   MessageModel getBotResponse() => _botResponse;
   bool getHighlightFeedback() => _highlightFeedback;
 
-  void addChat(String text, String name, bool type) {
+  void addChat(String text, bool type) {
     if (_botResponse != null) {
       _chatList.add(_botResponse);
       _botResponse = null;
@@ -22,27 +22,26 @@ class ChatModel extends ChangeNotifier {
       _chatList.last.consecutive = true;
     }
 
-    MessageModel message = createMessage(text, name, type);
+    MessageModel message = createMessage(text, type);
     _chatList.add(message);
 
     notifyListeners();
   }
 
-  void addBotResponse(String text, String name, bool type) {
+  void addBotResponse(String text, bool type) {
     if (_botResponse != null) {
       _chatList.add(_botResponse);
       _botResponse = null;
     }
 
-    _botResponse = createMessage(text, name, type);
+    _botResponse = createMessage(text, type);
 
     notifyListeners();
   }
 
-  MessageModel createMessage(String text, String name, bool type) {
+  MessageModel createMessage(String text, bool type) {
     return MessageModel(
       text: text,
-      name: name,
       type: type,
       index: _chatList.length,
       feedback: -1,
@@ -83,7 +82,7 @@ class ChatModel extends ChangeNotifier {
 
   void setWaitingMessage() async {
     waiting = true;
-    _botResponse = createMessage("Hold on, I'm thinking...", "Waiting", false);
+    _botResponse = createMessage("Hold on, I'm thinking...", false);
     notifyListeners();
 
     await Future.delayed(Duration(milliseconds: 1000));

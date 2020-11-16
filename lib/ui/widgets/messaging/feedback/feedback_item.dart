@@ -28,6 +28,7 @@ class FeedbackItem extends StatelessWidget {
             child: FlatButton(
               child: Text(
                 optionText,
+                softWrap: false,
                 // optionNum.toString(),
                 style: Theme.of(context)
                     .textTheme
@@ -43,16 +44,6 @@ class FeedbackItem extends StatelessWidget {
               },
             ),
           ))
-          // Expanded(
-          //   child: Text(
-          //     optionText,
-          //     softWrap: true,
-          //     style: Theme.of(context)
-          //         .textTheme
-          //         .bodyText2
-          //         .copyWith(color: buttonColor),
-          //   ),
-          // )
         ]));
   }
 }

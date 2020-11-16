@@ -17,12 +17,6 @@ class _SignInFormState extends State<SignInForm> {
   String email, password;
   String errorMessage = "";
 
-  final List<String> errorCodes = [
-    "invalid-email",
-    "wrong-password",
-    "user-not-found"
-  ];
-
   void saveEmail(String newValue) => email = newValue;
   void savePassword(String newValue) => password = newValue;
 
