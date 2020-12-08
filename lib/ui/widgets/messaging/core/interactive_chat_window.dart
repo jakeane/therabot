@@ -275,6 +275,17 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
             },
           ),
         ),
+        Positioned(
+          top: 10,
+          left: 20,
+          child: IconButton(
+            icon: FaIcon(FontAwesomeIcons.redoAlt),
+            color: Theme.of(context).dividerColor,
+            onPressed: () {
+              newConvo();
+            },
+          ),
+        ),
         if (_settingsOpen)
           SettingsOverlay(
             setSettingsView: setSettingsView,
