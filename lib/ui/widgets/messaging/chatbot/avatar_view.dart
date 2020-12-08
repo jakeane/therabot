@@ -21,7 +21,7 @@ class AvatarView extends StatelessWidget {
                   height: 140,
                   margin: EdgeInsets.only(right: 20),
                   child: Image(
-                    image: AssetImage("assets/bots/bot_transparent.gif"),
+                    image: AssetImage("assets/bots/bot_transparent1.gif"),
                     width: 100,
                     height: 140,
                   ),

@@ -71,6 +71,7 @@ flutter:
     - assets/images/dartmouth_logo.png
     - assets/credentials/simplechatbot-pkhufy-24d22513a231.json
     - assets/bots/bot_transparent.gif
+    - assets/bots/bot_transparent1.gif
     - assets/images/bot_logo.svg
     - assets/images/therabot.svg
     - assets/images/onboardDesign.png

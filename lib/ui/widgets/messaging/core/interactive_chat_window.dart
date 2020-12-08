@@ -54,7 +54,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final channel = WebSocketChannel.connect(Uri.parse(AWS_URL));
 
   // SET FALSE BEFORE DEPLOYMENT
-  final breakMode = false;
+  final breakMode = true;
 
   String convoID;
   bool botThinking = true;
@@ -139,6 +139,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         .replaceAll(" !", "!")
         .replaceAll(" ’", "’")
         .replaceAll("’ ", "’")
+        .replaceAll(" '", "'")
+        .replaceAll("' ", "'")
         .replaceAll(" , ", ", ");
 
     // print("Post-process: $result");
