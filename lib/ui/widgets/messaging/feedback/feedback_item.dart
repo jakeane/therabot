@@ -10,7 +10,7 @@ class FeedbackItem extends StatelessWidget {
   FeedbackItem({this.optionText, this.optionNum, this.setFeedbackView});
 
   Widget build(BuildContext context) {
-    int detail = Provider.of<ChatModel>(context).getBotResponse().detail;
+    int detail = Provider.of<ChatModel>(context).getBotMessage()['detail'];
 
     Color buttonColor = detail == optionNum
         ? Theme.of(context).colorScheme.primary

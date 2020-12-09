@@ -62,8 +62,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   bool _settingsOpen = false;
   bool _feedbackOpen = false;
 
-  // Contains consecutive messages
-  List<String> _messages = new List<String>();
+  // Waits until user has not typed for 5 seconds to send message
   RestartableTimer _timer;
 
   // Creates a focus node to autofocus the text controller when the chatbot responds
@@ -203,11 +202,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void handleSubmitted(String text) {
-    // setState(() {
-    //   botThinking = false;
-    // });
-
-    bool waiting = Provider.of<ChatModel>(context, listen: false).isWaiting();
     BubbleModel response =
         Provider.of<ChatModel>(context, listen: false).getBotResponse();
 
@@ -239,18 +233,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       } else {
         print(botMessage);
       }
+
+      _timer = new RestartableTimer(Duration(seconds: 5), sendMessage);
     }
 
     Provider.of<ChatModel>(context, listen: false).addChat(text, true);
-
-    if (_messages.isEmpty) {
-      print("starting timer");
-      _timer = new RestartableTimer(Duration(seconds: 5), sendMessage);
-    }
-    _messages.add(text);
-
-    // String jsonStringified = '{"text": "$text"}';
-    // channel.sink.add(jsonStringified);
 
     myFocusNode.requestFocus();
   }
@@ -260,14 +247,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       botThinking = true;
     });
 
-    String composedMessage = _messages.join(" ");
-    print("Message sent: $composedMessage");
-    String jsonStringified = '{"text": "$composedMessage"}';
-    channel.sink.add(jsonStringified);
-    _messages.clear();
-
     Map<String, Object> userMessage =
         Provider.of<ChatModel>(context, listen: false).getLastMessage();
+
+    String jsonStringified = '{"text": "${userMessage['text']}"}';
+    channel.sink.add(jsonStringified);
 
     if (!breakMode) {
       FirebaseDbService.addMessageData(userMessage);

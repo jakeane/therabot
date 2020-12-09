@@ -10,8 +10,6 @@ class ChatModel extends ChangeNotifier {
   bool waiting = false;
   bool _highlightFeedback = false;
 
-  int convoSize = 0;
-
   List<BubbleModel> getChatList() => _bubbleList;
   BubbleModel getBotResponse() => _botResponse;
   bool getHighlightFeedback() => _highlightFeedback;
@@ -20,7 +18,6 @@ class ChatModel extends ChangeNotifier {
     if (_botResponse != null) {
       _bubbleList.add(_botResponse);
       _botResponse = null;
-      convoSize += 1;
     }
 
     BubbleModel bubble = createBubble(text, type);
@@ -56,13 +53,7 @@ class ChatModel extends ChangeNotifier {
 
   BubbleModel createBubble(String text, bool type) {
     return BubbleModel(
-        text: text,
-        type: type,
-        index: _messageList.length,
-        feedback: -1,
-        detail: -1,
-        consecutive: false,
-        timestamp: FieldValue.serverTimestamp());
+        text: text, type: type, feedback: -1, consecutive: false);
   }
 
   MessageModel createMessage(String text, bool type) {
@@ -79,7 +70,7 @@ class ChatModel extends ChangeNotifier {
     if (index == -1) {
       _botResponse.feedback = feedback;
       if (feedback == -1) {
-        _botResponse.detail = -1;
+        _messageList.last.detail = -1;
       }
     } else {
       _bubbleList[index].feedback = feedback;
@@ -89,9 +80,9 @@ class ChatModel extends ChangeNotifier {
 
   void feedbackDetail(int index, int detail) {
     if (index == -1) {
-      _botResponse.detail = detail;
+      _messageList.last.detail = detail;
     } else {
-      _bubbleList[index].detail = detail;
+      _messageList[index].detail = detail;
     }
     notifyListeners();
   }
@@ -139,12 +130,12 @@ class ChatModel extends ChangeNotifier {
   Map<String, Object> getBotMessage() {
     if (_botResponse != null) {
       return {
-        "index": _botResponse.index,
-        "type": _botResponse.type,
-        "text": _botResponse.text,
+        "index": _messageList.last.index,
+        "type": _messageList.last.type,
+        "text": _messageList.last.text,
         "feedback": _botResponse.feedback,
-        "detail": _botResponse.detail,
-        "timestamp": _botResponse.timestamp,
+        "detail": _messageList.last.detail,
+        "timestamp": _messageList.last.timestamp,
       };
     }
     return null;
