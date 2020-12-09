@@ -16,7 +16,7 @@ class UserPrompt extends StatelessWidget {
         textStyle.copyWith(decoration: TextDecoration.underline);
 
     return Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
+        padding: EdgeInsets.symmetric(vertical: textStyle.fontSize * 2),
         child: Text.rich(
           TextSpan(style: textStyle, children: [
             TextSpan(text: "You are a "),
