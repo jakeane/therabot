@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/constants/messaging_strings.dart';
@@ -60,6 +61,10 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   bool botThinking = true;
   bool _settingsOpen = false;
   bool _feedbackOpen = false;
+
+  // Contains consecutive messages
+  List<String> _messages = new List<String>();
+  RestartableTimer _timer;
 
   // Creates a focus node to autofocus the text controller when the chatbot responds
   FocusNode myFocusNode;
@@ -195,24 +200,27 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void handleSubmitted(String text) {
-    setState(() {
-      botThinking = false;
-    });
+    // setState(() {
+    //   botThinking = false;
+    // });
 
     bool waiting = Provider.of<ChatModel>(context, listen: false).isWaiting();
     MessageModel response =
         Provider.of<ChatModel>(context, listen: false).getBotResponse();
 
-    if (waiting) {
-      Provider.of<ChatModel>(context, listen: false).setWaitingMessage();
-    } else if (response != null &&
+    // if (waiting) {
+    //   Provider.of<ChatModel>(context, listen: false).setWaitingMessage();
+    // } else
+    if (response != null &&
         response.feedback == -1 &&
         response.text != MessagingStrings.welcomeMessage) {
       Provider.of<ChatModel>(context, listen: false).runHighlightFeedback();
-    }
-    // if the inputted string is empty, don't do anything
-    else if (text != '') {
+    } else if (text != '') {
       _textController.clear();
+
+      setState(() {
+        botThinking = false;
+      });
 
       handleResponse(text.trim());
     }
@@ -222,32 +230,54 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   void handleResponse(String text) async {
     Map<String, Object> botMessage =
         Provider.of<ChatModel>(context, listen: false).getBotMessage();
-    botMessage["convoID"] = convoID;
-    if (!breakMode) {
-      FirebaseDbService.addMessageData(botMessage);
-    } else {
-      print(botMessage);
-    }
 
-    // print("Data: $botMessage\n--------");
+    if (botMessage != null) {
+      if (!breakMode) {
+        FirebaseDbService.addMessageData(botMessage);
+      } else {
+        print(botMessage);
+      }
+    }
 
     Provider.of<ChatModel>(context, listen: false).addChat(text, true);
 
-    String jsonStringified = '{"text": "$text"}';
+    if (_messages.isEmpty) {
+      print("starting timer");
+      _timer = new RestartableTimer(Duration(seconds: 5), sendMessage);
+    }
+    _messages.add(text);
+
+    // String jsonStringified = '{"text": "$text"}';
+    // channel.sink.add(jsonStringified);
+
+    myFocusNode.requestFocus();
+  }
+
+  void sendMessage() {
+    setState(() {
+      botThinking = true;
+    });
+
+    String composedMessage = _messages.join(" ");
+    print("Message sent: $composedMessage");
+    String jsonStringified = '{"text": "$composedMessage"}';
     channel.sink.add(jsonStringified);
+    _messages.clear();
 
     Map<String, Object> userMessage =
         Provider.of<ChatModel>(context, listen: false).getLastMessage();
-    userMessage["convoID"] = convoID;
+
     if (!breakMode) {
       FirebaseDbService.addMessageData(userMessage);
     } else {
       print(userMessage);
     }
+  }
 
-    // print("Data: $userMessage\n--------");
-
-    myFocusNode.requestFocus();
+  void resetTimer() {
+    if (_timer != null && _timer.isActive) {
+      _timer.reset();
+    }
   }
 
   @override
@@ -261,6 +291,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           TextComposer(
             focusNode: myFocusNode,
             handleSubmit: handleSubmitted,
+            resetTimer: resetTimer,
             controller: _textController,
           )
         ]),
