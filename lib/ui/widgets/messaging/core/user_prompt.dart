@@ -15,16 +15,18 @@ class UserPrompt extends StatelessWidget {
     TextStyle underlinedStyle =
         textStyle.copyWith(decoration: TextDecoration.underline);
 
-    return Text.rich(
-      TextSpan(style: textStyle, children: [
-        TextSpan(text: "You are a "),
-        TextSpan(text: "$age year old", style: underlinedStyle),
-        TextSpan(text: " "),
-        TextSpan(text: gender, style: underlinedStyle),
-        TextSpan(text: " with "),
-        TextSpan(text: issue, style: underlinedStyle)
-      ]),
-      textAlign: TextAlign.center,
-    );
+    return Container(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: Text.rich(
+          TextSpan(style: textStyle, children: [
+            TextSpan(text: "You are a "),
+            TextSpan(text: "$age year old", style: underlinedStyle),
+            TextSpan(text: " "),
+            TextSpan(text: gender, style: underlinedStyle),
+            TextSpan(text: " with "),
+            TextSpan(text: issue, style: underlinedStyle)
+          ]),
+          textAlign: TextAlign.center,
+        ));
   }
 }
