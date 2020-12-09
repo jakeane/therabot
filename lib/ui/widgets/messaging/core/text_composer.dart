@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_chatbot/app/constants/messaging_strings.dart';
+import 'package:flutter_chatbot/app/models/queue_model.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
+import 'package:provider/provider.dart';
 
 class TextComposer extends StatelessWidget {
   TextComposer({this.focusNode, this.handleSubmit, this.controller});
@@ -36,7 +38,13 @@ class TextComposer extends StatelessWidget {
                         keyboardType: TextInputType.multiline,
                         minLines: 1,
                         maxLines: 15,
+                        onChanged: (value) {
+                          Provider.of<QueueModel>(context, listen: false)
+                              .resetTimer();
+                        },
                         onSubmitted: (value) {
+                          Provider.of<QueueModel>(context, listen: false)
+                              .addMessage(value);
                           handleSubmit(value);
                         },
                         decoration: InputDecoration.collapsed(
@@ -53,6 +61,8 @@ class TextComposer extends StatelessWidget {
                 color: Theme.of(context).colorScheme.primary,
                 padding: const EdgeInsets.all(0.0),
                 onPressed: () {
+                  Provider.of<QueueModel>(context, listen: false)
+                      .addMessage(controller.text);
                   handleSubmit(controller.text);
                 },
               )
