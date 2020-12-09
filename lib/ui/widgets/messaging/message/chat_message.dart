@@ -56,7 +56,7 @@ class ChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10.0),
+      margin: EdgeInsets.only(bottom: consecutive ? 5 : 15),
       child: type ? myMessage(context) : otherMessage(context),
     );
   }
