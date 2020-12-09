@@ -25,8 +25,16 @@ class ChatModel extends ChangeNotifier {
 
     BubbleModel bubble = createBubble(text, type);
 
-    if (_bubbleList.length > 0 && _bubbleList.last.type == type) {
+    if (!(text.endsWith(".") || text.endsWith("!") || text.endsWith("?"))) {
+      text += ".";
+    }
+
+    if (_messageList.length > 0 && _messageList.last.type == type) {
       _bubbleList.last.consecutive = true;
+
+      _messageList.last.text += " $text";
+    } else {
+      _messageList.add(createMessage(text, type));
     }
 
     _bubbleList.add(bubble);
@@ -41,23 +49,38 @@ class ChatModel extends ChangeNotifier {
     }
 
     _botResponse = createBubble(text, type);
+    _messageList.add(createMessage(text, type));
 
     notifyListeners();
   }
 
   BubbleModel createBubble(String text, bool type) {
     return BubbleModel(
-      text: text,
-      type: type,
-      index: convoSize,
-      feedback: -1,
-      consecutive: false,
-    );
+        text: text,
+        type: type,
+        index: _messageList.length,
+        feedback: -1,
+        detail: -1,
+        consecutive: false,
+        timestamp: FieldValue.serverTimestamp());
+  }
+
+  MessageModel createMessage(String text, bool type) {
+    return MessageModel(
+        text: text,
+        type: type,
+        index: _messageList.length,
+        feedback: -1,
+        detail: -1,
+        timestamp: FieldValue.serverTimestamp());
   }
 
   void giveFeedback(int index, int feedback) {
     if (index == -1) {
       _botResponse.feedback = feedback;
+      if (feedback == -1) {
+        _botResponse.detail = -1;
+      }
     } else {
       _bubbleList[index].feedback = feedback;
     }

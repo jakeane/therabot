@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/constants/messaging_strings.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
+import 'package:flutter_chatbot/app/models/bubble_model.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
-import 'package:flutter_chatbot/app/models/message_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/core/message_feed.dart';
@@ -87,19 +87,22 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         channel.sink.add(MessagingStrings.convoBegin);
         Provider.of<ChatModel>(context, listen: false)
             .addBotResponse(MessagingStrings.welcomeMessage, false);
+        setState(() {
+          botThinking = false;
+        });
       } else if (!MessagingStrings.botInitPhrases.contains(text)) {
         await Future.delayed(Duration(seconds: 1));
 
-        setState(() {
-          botThinking = true;
-        });
-
-        int waitTime = text.length * 30 + 2000;
+        int waitTime = text.length * 30;
         // print('waittime: $waitTime');
 
         await Future.delayed(Duration(milliseconds: waitTime));
         Provider.of<ChatModel>(context, listen: false)
             .addBotResponse(text, false);
+
+        setState(() {
+          botThinking = false;
+        });
       }
     });
 
@@ -205,13 +208,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     // });
 
     bool waiting = Provider.of<ChatModel>(context, listen: false).isWaiting();
-    MessageModel response =
+    BubbleModel response =
         Provider.of<ChatModel>(context, listen: false).getBotResponse();
 
-    // if (waiting) {
-    //   Provider.of<ChatModel>(context, listen: false).setWaitingMessage();
-    // } else
-    if (response != null &&
+    if (botThinking) {
+      Provider.of<ChatModel>(context, listen: false).setWaitingMessage();
+    } else if (response != null &&
         response.feedback == -1 &&
         response.text != MessagingStrings.welcomeMessage) {
       Provider.of<ChatModel>(context, listen: false).runHighlightFeedback();
