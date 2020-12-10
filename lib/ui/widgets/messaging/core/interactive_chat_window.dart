@@ -6,6 +6,7 @@ import 'package:flutter_chatbot/app/constants/messaging_strings.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/bubble_model.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
+import 'package:flutter_chatbot/app/models/therabot_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/core/message_feed.dart';
@@ -13,6 +14,7 @@ import 'package:flutter_chatbot/ui/widgets/messaging/feedback/feedback_overlay.d
 import 'package:flutter_chatbot/ui/widgets/messaging/settings/settings_overlay.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/core/text_composer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -25,6 +27,8 @@ const AWS_IP = '52.24.20.184';
 const AWS_PORT = '8080';
 const LOCAL_URL = 'ws://$LOCAL_IP:$LOCAL_PORT/websocket';
 const AWS_URL = 'ws://$AWS_IP:$AWS_PORT/websocket';
+const NRCLEX_URL =
+    'https://gabho7ma71.execute-api.us-west-2.amazonaws.com/default/NRC_Lex';
 
 // ignore: todo
 // TODO
@@ -250,8 +254,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     Map<String, Object> userMessage =
         Provider.of<ChatModel>(context, listen: false).getLastMessage();
 
-    String jsonStringified = '{"text": "${userMessage['text']}"}';
-    channel.sink.add(jsonStringified);
+    String textJSON = jsonEncode(<String, String>{'text': userMessage['text']});
+
+    Provider.of<TherabotModel>(context, listen: false)
+        .calculateEmotion(textJSON);
+
+    channel.sink.add(textJSON);
 
     if (!breakMode) {
       FirebaseDbService.addMessageData(userMessage);
