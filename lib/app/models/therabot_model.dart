@@ -40,7 +40,8 @@ class TherabotModel extends ChangeNotifier {
       }
     }
 
-    int result = topEmot[Random.secure().nextInt(topEmot.length)];
+    int result =
+        topEmotVal == 0 ? 4 : topEmot[Random.secure().nextInt(topEmot.length)];
 
     return emotions[result];
   }

@@ -26,7 +26,6 @@ class _AvatarAnimationState extends State<AvatarAnimation>
     _animation = IntTween(begin: 1, end: 72).animate(_controller)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
-          print("animation done");
           setState(() {
             if (currentAnimation == "idle2") {
               currentAnimation = "idle1";
