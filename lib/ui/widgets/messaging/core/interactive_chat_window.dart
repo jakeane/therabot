@@ -88,7 +88,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       if (MessagingStrings.botInitPhrases.indexOf(text) == 0) {
         convoID = Uuid().v4();
         FirebaseDbService.updateConvoID(convoID);
-        prompt = PromptsData.getContext();
+        setState(() {
+          prompt = PromptsData.getContext();
+        });
         await Future.delayed(Duration(milliseconds: 2000));
         channel.sink.add(MessagingStrings.convoBegin);
         Provider.of<ChatModel>(context, listen: false)
