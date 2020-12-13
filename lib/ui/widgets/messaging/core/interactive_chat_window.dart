@@ -3,6 +3,7 @@ import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_chatbot/app/constants/messaging_strings.dart';
+import 'package:flutter_chatbot/app/constants/prompts_data.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/bubble_model.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
@@ -14,7 +15,6 @@ import 'package:flutter_chatbot/ui/widgets/messaging/feedback/feedback_overlay.d
 import 'package:flutter_chatbot/ui/widgets/messaging/settings/settings_overlay.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/core/text_composer.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:http/http.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -66,6 +66,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   bool _settingsOpen = false;
   bool _feedbackOpen = false;
 
+  List<TextSpan> prompt;
+
   // Waits until user has not typed for 5 seconds to send message
   RestartableTimer _timer;
 
@@ -86,6 +88,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       if (MessagingStrings.botInitPhrases.indexOf(text) == 0) {
         convoID = Uuid().v4();
         FirebaseDbService.updateConvoID(convoID);
+        prompt = PromptsData.getContext();
         await Future.delayed(Duration(milliseconds: 2000));
         channel.sink.add(MessagingStrings.convoBegin);
         Provider.of<ChatModel>(context, listen: false)
@@ -280,7 +283,10 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       children: [
         Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
           MessageFeed(
-              botThinking: botThinking, setFeedbackView: setFeedbackView),
+            botThinking: botThinking,
+            setFeedbackView: setFeedbackView,
+            prompt: prompt,
+          ),
           Divider(height: 1.0),
           TextComposer(
             focusNode: myFocusNode,

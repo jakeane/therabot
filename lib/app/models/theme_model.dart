@@ -19,7 +19,7 @@ import 'package:google_fonts/google_fonts.dart';
 //    Feedback Buttons -> textTheme.button
 
 class ThemeModel extends ChangeNotifier {
-  bool _isDark = true;
+  static bool _isDark = true;
   bool _initTheme = false;
 
   bool fetchTheme() {
@@ -39,6 +39,8 @@ class ThemeModel extends ChangeNotifier {
 
   ThemeData getTheme() => _isDark ? _themeDark : _themeLight;
 
+  static ThemeData getThemeStatic() => _isDark ? _themeDark : _themeLight;
+
   bool getIsDark() => _isDark;
 
   void toggleTheme() {
@@ -51,7 +53,7 @@ class ThemeModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  final _themeDark = ThemeData.dark().copyWith(
+  static final _themeDark = ThemeData.dark().copyWith(
     visualDensity: VisualDensity.adaptivePlatformDensity,
     dividerColor: Color(0xFF3D403F),
     backgroundColor: Color(0xFF161A19),
@@ -72,7 +74,7 @@ class ThemeModel extends ChangeNotifier {
     ),
   );
 
-  final _themeLight = ThemeData.light().copyWith(
+  static final _themeLight = ThemeData.light().copyWith(
     visualDensity: VisualDensity.adaptivePlatformDensity,
     dividerColor: Color(0xFFD2D9D7),
     backgroundColor: Color(0xFFF5F5F5),

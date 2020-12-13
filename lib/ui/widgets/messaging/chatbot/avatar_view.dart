@@ -22,17 +22,17 @@ class AvatarView extends StatelessWidget {
                 Column(
                   children: [
                     Text(Provider.of<TherabotModel>(context).getEmotion()),
-                    // AvatarAnimation()
-                    Container(
-                      width: 100,
-                      height: 140,
-                      margin: EdgeInsets.only(right: 20),
-                      child: Image(
-                        image: AssetImage("assets/bots/bot_transparent1.gif"),
-                        width: 100,
-                        height: 140,
-                      ),
-                    )
+                    AvatarAnimation()
+                    // Container(
+                    //   width: 100,
+                    //   height: 140,
+                    //   margin: EdgeInsets.only(right: 20),
+                    //   child: Image(
+                    //     image: AssetImage("assets/bots/bot_transparent1.gif"),
+                    //     width: 100,
+                    //     height: 140,
+                    //   ),
+                    // )
                   ],
                 ),
                 ResponseContainer(

@@ -8,6 +8,7 @@ class AvatarAnimation extends StatefulWidget {
 class _AvatarAnimationState extends State<AvatarAnimation>
     with TickerProviderStateMixin {
   AnimationController _controller;
+  IntTween _intTween;
   Animation<int> _animation;
 
   String currentAnimation = "idle2";
@@ -23,16 +24,21 @@ class _AvatarAnimationState extends State<AvatarAnimation>
     _controller =
         AnimationController(vsync: this, duration: Duration(seconds: 3));
 
-    _animation = IntTween(begin: 1, end: 72).animate(_controller)
+    _intTween = IntTween(begin: 1, end: 72);
+
+    _animation = _intTween.animate(_controller)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           setState(() {
             if (currentAnimation == "idle2") {
               currentAnimation = "idle1";
+              _intTween.end = 72;
             } else {
               currentAnimation = "idle2";
+              _intTween.end = 88;
             }
           });
+
           _controller.reset();
           _controller.forward();
         }

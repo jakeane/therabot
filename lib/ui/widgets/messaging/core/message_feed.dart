@@ -10,8 +10,9 @@ import 'package:provider/provider.dart';
 class MessageFeed extends StatelessWidget {
   final bool botThinking;
   final Function setFeedbackView;
+  final List<TextSpan> prompt;
 
-  MessageFeed({this.botThinking, this.setFeedbackView});
+  MessageFeed({this.botThinking, this.setFeedbackView, this.prompt});
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +33,9 @@ class MessageFeed extends StatelessWidget {
                           botThinking: botThinking,
                           setFeedbackView: setFeedbackView);
                     } else if (index == chatList.length + 1) {
-                      return UserPrompt();
+                      return UserPrompt(
+                        prompt: prompt,
+                      );
                     } else {
                       BubbleModel message = chatList[chatList.length - index];
                       return ChatMessage(
