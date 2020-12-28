@@ -55,7 +55,8 @@ class PromptsData {
           text:
               "You are a ${20 + Random.secure().nextInt(16)} year old who just had a ",
           style: textStyle),
-      TextSpan(text: "bad break up with his girlfriend.", style: boldStyle),
+      TextSpan(
+          text: "bad break up with his significant other.", style: boldStyle),
       TextSpan(text: " You are feeling ", style: textStyle),
       TextSpan(text: "suicidal and hopeless.", style: boldStyle),
     ],
@@ -407,7 +408,7 @@ class PromptsData {
           text: "You are a ${18 + Random.secure().nextInt(18)} year old who ",
           style: textStyle),
       TextSpan(
-          text: "has fights with you friends and family,", style: boldStyle),
+          text: "has fights with their friends and family,", style: boldStyle),
       TextSpan(text: " and you feel like ", style: textStyle),
       TextSpan(
           text: "you don't have any control over your emotions.",
