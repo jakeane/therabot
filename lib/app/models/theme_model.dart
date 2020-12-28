@@ -41,6 +41,9 @@ class ThemeModel extends ChangeNotifier {
 
   static ThemeData getThemeStatic() => _isDark ? _themeDark : _themeLight;
 
+  ThemeData getDark() => _themeDark;
+  ThemeData getLight() => _themeLight;
+
   bool getIsDark() => _isDark;
 
   void toggleTheme() {

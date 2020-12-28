@@ -84,7 +84,7 @@ class _AvatarAnimationState extends State<AvatarAnimation>
                 .getAnimation();
             currentAnimation = animations[currentEmotion]
                 [Random.secure().nextInt(animations[currentEmotion].length)];
-            print("Next animation: $currentAnimation");
+            // print("Next animation: $currentAnimation");
             _intTween.end = animationLengths[currentAnimation] - 1;
             _controller.duration =
                 Duration(milliseconds: (_intTween.end / 24 * 1000).round());

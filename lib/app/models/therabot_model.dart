@@ -10,7 +10,7 @@ class TherabotModel extends ChangeNotifier {
   static const double CONF_THRESHOLD = 0.1;
 
   static const Map<String, List<double>> tempEmotions = {
-    'happy': [8.47, 6.05, 7.21],
+    'happy': [7.47, 6.05, 7.21],
     'sad': [2.4, 2.81, 3.84]
   };
 
@@ -72,7 +72,7 @@ class TherabotModel extends ChangeNotifier {
           1.75;
     }).toList();
 
-    print(currEmotion);
+    // print(currEmotion);
     return closestEmotion(currEmotion);
   }
 
@@ -86,7 +86,7 @@ class TherabotModel extends ChangeNotifier {
           1.75;
     }).toList();
 
-    print(currEmotion);
+    // print(currEmotion);
     return closestAnimation(currEmotion);
   }
 
@@ -159,6 +159,5 @@ class TherabotModel extends ChangeNotifier {
   void addEmotion(List<double> emotion) {
     emotionHist.removeLast();
     emotionHist.addFirst(emotion);
-    notifyListeners();
   }
 }

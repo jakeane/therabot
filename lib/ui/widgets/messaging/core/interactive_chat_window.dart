@@ -7,9 +7,9 @@ import 'package:flutter_chatbot/app/constants/prompts_data.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_chatbot/app/models/bubble_model.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
+import 'package:flutter_chatbot/app/models/theme_model.dart';
 import 'package:flutter_chatbot/app/models/therabot_model.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
-import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/core/message_feed.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/feedback/feedback_overlay.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/settings/settings_overlay.dart';
@@ -116,24 +116,17 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     myFocusNode = FocusNode();
 
-    if (Provider.of<AuthService>(context, listen: false).isNew) {
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        Navigator.pushNamed(context, Strings.onBoardingRoute);
+    Future.delayed(Duration(milliseconds: 250)).then((_) {
+      FirebaseDbService.getUserData().then((data) async {
+        if (data != null) {
+          Provider.of<ThemeModel>(context, listen: false)
+              .setTheme(data["isDark"]);
+          print(data);
+          convoID = data["convoID"];
+        }
       });
-    } else {
-      // if (Provider.of<ThemeModel>(context, listen: false).fetchTheme()) {
-      //   FirebaseDbService.getUserData().then((data) async {
-      //     if (data != null) {
-      //       Provider.of<ThemeModel>(context, listen: false)
-      //           .setTheme(data["isDark"]);
-      // print(data);
-      //       // convoID = data["convoID"];
-      //     }
-      //     initializeChat();
-      //   });
-      // } else {}
-      initializeChat();
-    }
+    });
+    initializeChat();
   }
 
   String processBotText(String text) {
@@ -168,7 +161,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     // FirebaseDbService.updateConvoID(convoID);
 
     await Future.delayed(Duration(milliseconds: 250));
-    channel.sink.add(MessagingStrings.convoInit);
+    // channel.sink.add(MessagingStrings.convoInit);
+    print("initializing chat");
 
     // await Future.delayed(Duration(milliseconds: 2000));
     // channel.sink.add('{"text": "Begin"}');

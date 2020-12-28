@@ -21,6 +21,7 @@ class _SignInFormState extends State<SignInForm> {
   void savePassword(String newValue) => password = newValue;
 
   void onSubmit() {
+    print("------------------ LOGGING IN --------------");
     setState(() {
       errorMessage = "";
     });
