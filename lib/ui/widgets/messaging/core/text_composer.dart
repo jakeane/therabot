@@ -4,10 +4,12 @@ import 'package:flutter_chatbot/app/constants/messaging_strings.dart';
 import 'package:flutter_chatbot/assets/assets.dart';
 
 class TextComposer extends StatelessWidget {
-  TextComposer({this.focusNode, this.handleSubmit, this.controller});
+  TextComposer(
+      {this.focusNode, this.handleSubmit, this.resetTimer, this.controller});
 
   final FocusNode focusNode;
   final Function(String) handleSubmit;
+  final Function resetTimer;
   final TextEditingController controller;
 
   Widget build(BuildContext context) {
@@ -36,6 +38,9 @@ class TextComposer extends StatelessWidget {
                         keyboardType: TextInputType.multiline,
                         minLines: 1,
                         maxLines: 15,
+                        onChanged: (value) {
+                          resetTimer();
+                        },
                         onSubmitted: (value) {
                           handleSubmit(value);
                         },

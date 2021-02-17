@@ -7,17 +7,11 @@ class MessageModel {
       this.index,
       this.feedback,
       this.detail,
-      this.timestamp,
-      this.comment,
-      this.selected,
-      this.consecutive});
+      this.timestamp});
   String text;
   bool type;
   int index;
   FieldValue timestamp;
   int feedback;
   int detail;
-  String comment;
-  bool selected;
-  bool consecutive;
 }

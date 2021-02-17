@@ -22,6 +22,9 @@ class MyApp extends StatelessWidget {
           return MaterialApp(
             title: 'Chatbot App',
             theme: theme.getTheme(),
+            // theme: theme.getLight(),
+            // darkTheme: theme.getDark(),
+            // themeMode: theme.getIsDark() ? ThemeMode.dark : ThemeMode.light,
             initialRoute: Strings.signinRoute,
             routes: {
               Strings.signinRoute: (_) => PublicRoute(route: SignInView()),

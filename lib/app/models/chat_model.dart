@@ -1,78 +1,94 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/models/bubble_model.dart';
 import 'package:flutter_chatbot/app/models/message_model.dart';
 
 class ChatModel extends ChangeNotifier {
-  final List<MessageModel> _chatList = [];
-  MessageModel _botResponse;
+  final List<BubbleModel> _bubbleList = [];
+  final List<MessageModel> _messageList = [];
+  BubbleModel _botResponse;
   bool waiting = false;
   bool _highlightFeedback = false;
 
-  List<MessageModel> getChatList() => _chatList;
-  MessageModel getBotResponse() => _botResponse;
+  List<BubbleModel> getChatList() => _bubbleList;
+  BubbleModel getBotResponse() => _botResponse;
   bool getHighlightFeedback() => _highlightFeedback;
 
   void addChat(String text, bool type) {
     if (_botResponse != null) {
-      _chatList.add(_botResponse);
+      _bubbleList.add(_botResponse);
       _botResponse = null;
     }
 
-    if (_chatList.length > 0 && _chatList.last.type == type) {
-      _chatList.last.consecutive = true;
+    BubbleModel bubble = createBubble(text, type);
+
+    if (!(text.endsWith(".") || text.endsWith("!") || text.endsWith("?"))) {
+      text += ".";
     }
 
-    MessageModel message = createMessage(text, type);
-    _chatList.add(message);
+    if (_messageList.length > 0 && _messageList.last.type == type) {
+      _bubbleList.last.consecutive = true;
+
+      _messageList.last.text += " $text";
+    } else {
+      _messageList.add(createMessage(text, type));
+    }
+
+    _bubbleList.add(bubble);
 
     notifyListeners();
   }
 
   void addBotResponse(String text, bool type) {
     if (_botResponse != null) {
-      _chatList.add(_botResponse);
+      _bubbleList.add(_botResponse);
       _botResponse = null;
     }
 
-    _botResponse = createMessage(text, type);
+    _botResponse = createBubble(text, type);
+    _messageList.add(createMessage(text, type));
 
     notifyListeners();
   }
 
+  BubbleModel createBubble(String text, bool type) {
+    return BubbleModel(
+        text: text, type: type, feedback: -1, consecutive: false);
+  }
+
   MessageModel createMessage(String text, bool type) {
     return MessageModel(
-      text: text,
-      type: type,
-      index: _chatList.length,
-      feedback: -1,
-      detail: -1,
-      timestamp: FieldValue.serverTimestamp(),
-      comment: "",
-      selected: false,
-      consecutive: false,
-    );
+        text: text,
+        type: type,
+        index: _messageList.length,
+        feedback: -1,
+        detail: -1,
+        timestamp: FieldValue.serverTimestamp());
   }
 
   void giveFeedback(int index, int feedback) {
     if (index == -1) {
       _botResponse.feedback = feedback;
+      if (feedback == -1) {
+        _messageList.last.detail = -1;
+      }
     } else {
-      _chatList[index].feedback = feedback;
+      _bubbleList[index].feedback = feedback;
     }
     notifyListeners();
   }
 
   void feedbackDetail(int index, int detail) {
     if (index == -1) {
-      _botResponse.detail = detail;
+      _messageList.last.detail = detail;
     } else {
-      _chatList[index].detail = detail;
+      _messageList[index].detail = detail;
     }
     notifyListeners();
   }
 
   void restartConvo() {
-    _chatList.clear();
+    _bubbleList.clear();
     _botResponse = null;
   }
 
@@ -82,7 +98,7 @@ class ChatModel extends ChangeNotifier {
 
   void setWaitingMessage() async {
     waiting = true;
-    _botResponse = createMessage("Hold on, I'm thinking...", false);
+    _botResponse = createBubble("Hold on, I'm thinking...", false);
     notifyListeners();
 
     await Future.delayed(Duration(milliseconds: 1000));
@@ -102,24 +118,24 @@ class ChatModel extends ChangeNotifier {
 
   Map<String, Object> getLastMessage() {
     return {
-      "index": _chatList.last.index,
-      "type": _chatList.last.type,
-      "text": _chatList.last.text,
+      "index": _messageList.last.index,
+      "type": _messageList.last.type,
+      "text": _messageList.last.text,
       "feedback": null,
       "detail": null,
-      "timestamp": _chatList.last.timestamp,
+      "timestamp": _messageList.last.timestamp,
     };
   }
 
   Map<String, Object> getBotMessage() {
     if (_botResponse != null) {
       return {
-        "index": _botResponse.index,
-        "type": _botResponse.type,
-        "text": _botResponse.text,
+        "index": _messageList.last.index,
+        "type": _messageList.last.type,
+        "text": _messageList.last.text,
         "feedback": _botResponse.feedback,
-        "detail": _botResponse.detail,
-        "timestamp": _botResponse.timestamp,
+        "detail": _messageList.last.detail,
+        "timestamp": _messageList.last.timestamp,
       };
     }
     return null;

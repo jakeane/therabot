@@ -5,7 +5,7 @@ import 'package:flutter_chatbot/ui/widgets/auth/forms/sign_in_form.dart';
 import 'package:flutter_chatbot/ui/widgets/auth/buttons/google_sign_in_button.dart';
 import 'package:flutter_chatbot/ui/widgets/auth/buttons/go_to_button.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
-import 'package:flutter_svg/svg.dart';
+// import 'package:flutter_svg/svg.dart';
 
 class SignInView extends StatelessWidget {
   const SignInView({Key key}) : super(key: key);
@@ -26,7 +26,7 @@ class SignInView extends StatelessWidget {
           SignInForm(),
           Container(
             margin: EdgeInsets.only(top: 20),
-            child: SvgPicture.asset("assets/images/OR.svg"),
+            // child: SvgPicture.asset("assets/images/OR.svg"),
           ),
           GoogleSignInButton(),
         ]),

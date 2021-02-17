@@ -34,12 +34,16 @@ dependencies:
   bubble: ^1.1.9+1
   google_fonts: ^1.1.0
   intl: ^0.16.1
-  flutter_svg: ^0.19.0
+  # flutter_svg: ^0.19.2+1
   uuid: ^2.2.2
+  http: ^0.12.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
+
+dependency_overrides:
+  intl: ^0.17.0-nullsafety.2
 
 dev_dependencies:
   flutter_test:
@@ -65,12 +69,14 @@ flutter:
     - family: Cb
       fonts:
         - asset: assets/fonts/Cb.ttf
+        - asset: assets/fonts/Restart.ttf
 
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/dartmouth_logo.png
     - assets/credentials/simplechatbot-pkhufy-24d22513a231.json
     - assets/bots/bot_transparent.gif
+    - assets/bots/bot_transparent1.gif
     - assets/images/bot_logo.svg
     - assets/images/therabot.svg
     - assets/images/onboardDesign.png
@@ -79,6 +85,20 @@ flutter:
     - assets/images/onboardTalk.png
     - assets/images/OR.svg
     - assets/images/google.svg
+
+    # animations
+    - assets/animations/idle/happy_idle1/
+    - assets/animations/idle/happy_idle2/
+    - assets/animations/happy/CB1.Happy.Idle1/
+    - assets/animations/happy/CB1.Happy.Idle2/
+    - assets/animations/happy/CB1.Happy.Idle3/
+    - assets/animations/happy/CB1.Happy.Idle4/
+    - assets/animations/happy/CB1.Happy.Idle5/
+    - assets/animations/sad/CB1.Sad.Idle1/
+    - assets/animations/sad/CB1.Sad.Idle2/
+    - assets/animations/sad/CB1.Sad.Idle3/
+    - assets/animations/sad/CB1.Sad.Idle4/
+    - assets/animations/sad/CB1.Sad.Idle5/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

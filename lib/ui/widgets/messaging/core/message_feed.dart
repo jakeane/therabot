@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/models/bubble_model.dart';
 import 'package:flutter_chatbot/app/models/chat_model.dart';
 import 'package:flutter_chatbot/app/models/message_model.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/chatbot/avatar_view.dart';
+import 'package:flutter_chatbot/ui/widgets/messaging/core/user_prompt.dart';
 import 'package:flutter_chatbot/ui/widgets/messaging/message/chat_message.dart';
 import 'package:provider/provider.dart';
 
 class MessageFeed extends StatelessWidget {
   final bool botThinking;
   final Function setFeedbackView;
+  final List<TextSpan> prompt;
 
-  MessageFeed({this.botThinking, this.setFeedbackView});
+  MessageFeed({this.botThinking, this.setFeedbackView, this.prompt});
 
   @override
   Widget build(BuildContext context) {
@@ -18,27 +21,30 @@ class MessageFeed extends StatelessWidget {
           onTap: () => FocusScope.of(context).unfocus(),
           child: Consumer<ChatModel>(
             builder: (context, chat, child) {
-              List<MessageModel> chatList = chat.getChatList();
+              List<BubbleModel> chatList = chat.getChatList();
 
               return ListView.builder(
                   padding: EdgeInsets.symmetric(horizontal: 20.0),
                   reverse: true,
-                  itemCount: chatList.length + 1,
+                  itemCount: chatList.length + 2,
                   itemBuilder: (_, index) {
-                    return index == 0
-                        ? AvatarView(
-                            botThinking: botThinking,
-                            setFeedbackView: setFeedbackView)
-                        : () {
-                            MessageModel message =
-                                chatList[chatList.length - index];
-                            return ChatMessage(
-                              text: message.text,
-                              type: message.type,
-                              feedback: message.feedback,
-                              consecutive: message.consecutive,
-                            );
-                          }();
+                    if (index == 0) {
+                      return AvatarView(
+                          botThinking: botThinking,
+                          setFeedbackView: setFeedbackView);
+                    } else if (index == chatList.length + 1) {
+                      return UserPrompt(
+                        prompt: prompt,
+                      );
+                    } else {
+                      BubbleModel message = chatList[chatList.length - index];
+                      return ChatMessage(
+                        text: message.text,
+                        type: message.type,
+                        feedback: message.feedback,
+                        consecutive: message.consecutive,
+                      );
+                    }
                   });
             },
           )),
