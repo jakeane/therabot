@@ -82,7 +82,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
 
-      // Could turn this into helper?
       text = processBotText(text);
 
       if (MessagingStrings.botInitPhrases.indexOf(text) == 0) {
@@ -118,12 +117,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     Future.delayed(Duration(milliseconds: 250)).then((_) {
       FirebaseDbService.getUserData().then((data) async {
-        if (data != null) {
-          Provider.of<ThemeModel>(context, listen: false)
-              .setTheme(data["isDark"]);
-          print(data);
-          convoID = data["convoID"];
-        }
+        // if (data != null) {
+        //   Provider.of<ThemeModel>(context, listen: false)
+        //       .setTheme(data["isDark"]);
+        //   print(data);
+        //   convoID = data["convoID"];
+        // }
       });
     });
     initializeChat();
@@ -161,8 +160,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     // FirebaseDbService.updateConvoID(convoID);
 
     await Future.delayed(Duration(milliseconds: 250));
-    // channel.sink.add(MessagingStrings.convoInit);
-    print("initializing chat");
+    channel.sink.add(MessagingStrings.convoInit);
+    // print("initializing chat");
 
     // await Future.delayed(Duration(milliseconds: 2000));
     // channel.sink.add('{"text": "Begin"}');
