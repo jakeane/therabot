@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
-import 'package:flutter_svg/svg.dart';
+// import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
 class GoogleSignInButton extends StatelessWidget {
@@ -20,8 +20,8 @@ class GoogleSignInButton extends StatelessWidget {
             children: [
               Container(
                 margin: EdgeInsets.only(right: 5),
-                child: SvgPicture.asset("assets/images/google.svg",
-                    width: 20, height: 20),
+                // child: SvgPicture.asset("assets/images/google.svg",
+                //     width: 20, height: 20),
               ),
               Text(
                 "Login with Google",

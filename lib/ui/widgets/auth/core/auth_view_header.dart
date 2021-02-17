@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
+// import 'package:flutter_svg/svg.dart';
 
 class AuthViewHeader extends StatelessWidget {
   Widget build(BuildContext context) {
@@ -9,9 +9,9 @@ class AuthViewHeader extends StatelessWidget {
       children: [
         Container(
           margin: EdgeInsets.only(top: 15),
-          child: SvgPicture.asset(
-            'assets/images/bot_logo.svg',
-          ),
+          // child: SvgPicture.asset(
+          //   'assets/images/bot_logo.svg',
+          // ),
         ),
         Container(
           margin: EdgeInsets.only(top: 5, bottom: bottomMargin),
