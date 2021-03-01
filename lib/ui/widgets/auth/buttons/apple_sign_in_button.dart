@@ -3,28 +3,33 @@ import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 
-class GoogleSignInButton extends StatelessWidget {
-  const GoogleSignInButton({Key key}) : super(key: key);
+class AppleSignInButton extends StatelessWidget {
+  const AppleSignInButton({Key key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.only(top: 20),
+      margin: EdgeInsets.only(top: 15),
       width: 300,
       child: FlatButton(
           onPressed: () {
-            Provider.of<AuthService>(context, listen: false).signInWithGoogle();
+            Provider.of<AuthService>(context, listen: false)
+                .signInAppleAccount();
           },
           child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Container(
                 margin: EdgeInsets.only(right: 5),
-                child: SvgPicture.asset("assets/images/google.svg",
-                    width: 20, height: 20),
+                child: SvgPicture.asset(
+                  "assets/images/apple.svg",
+                  width: 20,
+                  height: 20,
+                  color: Theme.of(context).colorScheme.secondary,
+                ),
               ),
               Text(
-                "Login with Google",
+                "Login with Apple",
                 style: Theme.of(context)
                     .textTheme
                     .bodyText2

@@ -1,3 +1,4 @@
+import 'package:apple_sign_in/apple_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chatbot/app/services/firebase_db_service.dart';
@@ -6,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 class AuthService extends ChangeNotifier {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final GoogleSignIn googleSignIn = GoogleSignIn();
+  final AppleSignIn appleSignIn = AppleSignIn();
 
   bool _isNew = false;
 
@@ -53,6 +55,49 @@ class AuthService extends ChangeNotifier {
       return '$user';
     }
     notifyListeners();
+    return null;
+  }
+
+  Future<String> signInAppleAccount() async {
+    final result = await AppleSignIn.performRequests([
+      AppleIdRequest(requestedScopes: [Scope.email])
+    ]);
+
+    switch (result.status) {
+      case AuthorizationStatus.authorized:
+        final appleIdCredential = result.credential;
+        final oAuthProvider = OAuthProvider('apple.com');
+        final credential = oAuthProvider.credential(
+            accessToken:
+                String.fromCharCodes(appleIdCredential.authorizationCode),
+            idToken: String.fromCharCodes(appleIdCredential.identityToken));
+        final authResult = await _auth.signInWithCredential(credential);
+        _isNew = authResult.additionalUserInfo.isNewUser;
+
+        final User user = authResult.user;
+
+        if (user != null) {
+          assert(!user.isAnonymous);
+          assert(await user.getIdToken() != null);
+
+          final User currentUser = _auth.currentUser;
+          assert(user.uid == currentUser.uid);
+
+          // print('signInWithGoogle succeeded: $user');
+          if (_isNew) FirebaseDbService.initUserData(user.uid);
+
+          notifyListeners();
+          return '$user';
+        }
+        notifyListeners();
+        return null;
+      case AuthorizationStatus.cancelled:
+        break;
+      case AuthorizationStatus.error:
+        print('error');
+        print(result.error.toString());
+        break;
+    }
     return null;
   }
 
