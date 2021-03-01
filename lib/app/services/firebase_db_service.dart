@@ -16,11 +16,18 @@ class FirebaseDbService {
     firestoreInstance.collection('messages').add(messageData);
   }
 
+  static void addConvoPrompt(String convoID, String prompt) {
+    firestoreInstance
+        .collection('convos')
+        .doc(convoID)
+        .set({"userID": authInstance.currentUser.uid, "prompt": prompt});
+  }
+
   static void initUserData(String userID) {
     firestoreInstance
         .collection('users')
         .doc(userID)
-        .set({"isDark": true, "convoID": 0});
+        .set({"isDark": true, "convoID": ''});
   }
 
   static Future<Map<String, dynamic>> getUserData() async {

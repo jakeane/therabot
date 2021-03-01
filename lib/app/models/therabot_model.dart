@@ -6,23 +6,24 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 
 class TherabotModel extends ChangeNotifier {
-  static const String EMOTION_URL = 'http://52.13.17.107:80/predict';
+  static const String EMOTION_URL = 'http://35.167.240.2:8888/predict';
   static const double CONF_THRESHOLD = 0.1;
 
-  static const Map<String, List<double>> tempEmotions = {
-    'happy': [7.47, 6.05, 7.21],
-    'sad': [2.4, 2.81, 3.84]
-  };
-
   static const Map<String, List<double>> animationEmotions = {
-    'anger': [2.5, 5.93, 5.14],
-    'anticipation': [5.26, 5.39, 5.53],
+    'terror': [2.75, 6.35, 2.95],
+    'happy_anticipation': [5.26, 7.39, 5.53],
+    'sad_anticipation': [5.26, 3.39, 5.53],
+    'anxiety': [2.38, 4.78, 3.39],
     'disgust': [3.32, 5, 4.84],
+    'happy_surprise': [7.44, 8.57, 5.17],
+    'sad_surprise': [7.44, 4.57, 5.17],
+    'anger': [2.5, 5.93, 5.14],
+    'happy_trust': [7.24, 6.3, 6.95],
+    'sad_trust': [7.24, 2.3, 6.95],
     'fear': [2.93, 6.14, 3.32],
+    'depression': [2.44, 5.2, 3.33],
+    'sad': [2.1, 3.49, 3.84],
     'joy': [8.21, 5.55, 7],
-    'sadness': [2.4, 2.81, 3.84],
-    'surprise': [7.44, 6.57, 5.17],
-    'trust': [7.24, 4.3, 6.95]
   };
 
   static const Map<String, List<double>> apiEmotions = {
@@ -60,7 +61,7 @@ class TherabotModel extends ChangeNotifier {
     'devastated': [2.09, 5.5, 3.96]
   };
 
-  Queue<List<double>> emotionHist = Queue.of(List.filled(3, List.filled(3, 5)));
+  Queue<List<double>> emotionHist = Queue.of(List.filled(3, List.filled(3, 6)));
 
   String getEmotion() {
     List<List<double>> emotionList = emotionHist.toList();
@@ -95,7 +96,7 @@ class TherabotModel extends ChangeNotifier {
     double shortestDist = double.maxFinite;
     double dist;
 
-    tempEmotions.forEach((emotion, dims) {
+    animationEmotions.forEach((emotion, dims) {
       dist = [0, 1, 2]
           .fold(0, (total, i) => total + pow(dims[i] - currEmotion[i], 2));
       if (dist < shortestDist) {
@@ -123,6 +124,7 @@ class TherabotModel extends ChangeNotifier {
   }
 
   void calculateEmotion(String textJSON) {
+    print('hi from calculateEmotion');
     post(EMOTION_URL, body: textJSON).then((res) {
       Map<String, double> emotionProbs =
           jsonDecode(res.body)['probabilities'].cast<String, double>();

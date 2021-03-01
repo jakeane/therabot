@@ -33,7 +33,7 @@ dependencies:
   font_awesome_flutter: ^8.8.1
   bubble: ^1.1.9+1
   google_fonts: ^1.1.0
-  intl: ^0.16.1
+  # intl: ^0.16.1
   # flutter_svg: ^0.19.2+1
   uuid: ^2.2.2
   http: ^0.12.2
@@ -42,8 +42,6 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^0.1.3
 
-dependency_overrides:
-  intl: ^0.17.0-nullsafety.2
 
 dev_dependencies:
   flutter_test:
@@ -87,6 +85,81 @@ flutter:
     - assets/images/google.svg
 
     # animations
+    - assets/animations/CB1/terror2/
+    - assets/animations/CB1/happy_nod6/
+    - assets/animations/CB1/happy_nod1/
+    - assets/animations/CB1/sad_think2/
+    - assets/animations/CB1/sad_anticipation2/
+    - assets/animations/CB1/happy_think1/
+    - assets/animations/CB1/anxiety2/
+    - assets/animations/CB1/sad_think4/
+    - assets/animations/CB1/sad_think3/
+    - assets/animations/CB1/disgust1/
+    - assets/animations/CB1/sad_surprise1/
+    - assets/animations/CB1/happy_surprise1/
+    - assets/animations/CB1/happy_idle2/
+    - assets/animations/CB1/anger1/
+    - assets/animations/CB1/happy_idle5/
+    - assets/animations/CB1/happy_anticipation2/
+    - assets/animations/CB1/sad_nod1/
+    - assets/animations/CB1/sad_nod6/
+    - assets/animations/CB1/happy_idle4/
+    - assets/animations/CB1/happy_idle3/
+    - assets/animations/CB1/happy_idle10/
+    - assets/animations/CB1/sad_idle12/
+    - assets/animations/CB1/sad_trust2/
+    - assets/animations/CB1/happy_trust1/
+    - assets/animations/CB1/happy_idle11/
+    - assets/animations/CB1/fear2/
+    - assets/animations/CB1/sad_idle2/
+    - assets/animations/CB1/depression1/
+    - assets/animations/CB1/sad_idle5/
+    - assets/animations/CB1/sad1/
+    - assets/animations/CB1/joy3/
+    - assets/animations/CB1/sad_idle4/
+    - assets/animations/CB1/sad_idle3/
+    - assets/animations/CB1/joy2/
+    - assets/animations/CB1/sad_think1/
+    - assets/animations/CB1/terror1/
+    - assets/animations/CB1/happy_think4/
+    - assets/animations/CB1/happy_think3/
+    - assets/animations/CB1/happy_nod2/
+    - assets/animations/CB1/happy_nod5/
+    - assets/animations/CB1/anxiety1/
+    - assets/animations/CB1/sad_anticipation1/
+    - assets/animations/CB1/happy_nod4/
+    - assets/animations/CB1/happy_nod3/
+    - assets/animations/CB1/happy_think2/
+    - assets/animations/CB1/anger2/
+    - assets/animations/CB1/happy_idle6/
+    - assets/animations/CB1/happy_idle1/
+    - assets/animations/CB1/sad_nod3/
+    - assets/animations/CB1/happy_idle8/
+    - assets/animations/CB1/sad_nod4/
+    - assets/animations/CB1/happy_anticipation1/
+    - assets/animations/CB1/disgust2/
+    - assets/animations/CB1/happy_surprise2/
+    - assets/animations/CB1/sad_surprise2/
+    - assets/animations/CB1/sad_nod5/
+    - assets/animations/CB1/happy_idle9/
+    - assets/animations/CB1/sad_nod2/
+    - assets/animations/CB1/happy_idle7/
+    - assets/animations/CB1/sad_idle11/
+    - assets/animations/CB1/sad_trust1/
+    - assets/animations/CB1/sad_idle10/
+    - assets/animations/CB1/fear1/
+    - assets/animations/CB1/happy_trust2/
+    - assets/animations/CB1/happy_idle12/
+    - assets/animations/CB1/sad_idle8/
+    - assets/animations/CB1/depression2/
+    - assets/animations/CB1/sad2/
+    - assets/animations/CB1/sad_idle6/
+    - assets/animations/CB1/sad_idle1/
+    - assets/animations/CB1/joy1/
+    - assets/animations/CB1/sad_idle7/
+    - assets/animations/CB1/sad_idle9/
+
+    # old animations
     - assets/animations/idle/happy_idle1/
     - assets/animations/idle/happy_idle2/
     - assets/animations/happy/CB1.Happy.Idle1/

@@ -122,7 +122,7 @@ class PromptsData {
       TextSpan(text: " and ", style: textStyle),
       TextSpan(
           text:
-              "you've had a depressed mood, low energy, and difficulty sleeping, wihtout suicidal thoughts.",
+              "you've had a depressed mood, low energy, and difficulty sleeping, without suicidal thoughts.",
           style: boldStyle),
     ],
     8: [

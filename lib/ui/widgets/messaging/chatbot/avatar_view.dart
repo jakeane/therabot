@@ -21,8 +21,11 @@ class AvatarView extends StatelessWidget {
               children: [
                 Column(
                   children: [
-                    Text(Provider.of<TherabotModel>(context).getEmotion()),
-                    AvatarAnimation()
+                    // Text(
+                    //   Provider.of<TherabotModel>(context).getAnimation(),
+                    //   style: TextStyle(fontSize: 10),
+                    // ),
+                    AvatarAnimation(botThinking: botThinking)
                     // Container(
                     //   width: 100,
                     //   height: 140,

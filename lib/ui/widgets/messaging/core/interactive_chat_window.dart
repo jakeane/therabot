@@ -23,8 +23,8 @@ import 'package:intl/intl.dart';
 const LOCAL_IP = 'localhost';
 const LOCAL_PORT = '10001';
 const AWS_DNS = 'ec2-52-24-20-184.us-west-2.us-west-2.compute.amazonaws.com';
-const AWS_IP = '52.24.20.184';
-const AWS_PORT = '8080';
+const AWS_IP = '34.221.229.5';
+const AWS_PORT = '8888';
 const LOCAL_URL = 'ws://$LOCAL_IP:$LOCAL_PORT/websocket';
 const AWS_URL = 'ws://$AWS_IP:$AWS_PORT/websocket';
 const NRCLEX_URL =
@@ -91,6 +91,10 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           prompt = PromptsData.getContext();
         });
         await Future.delayed(Duration(milliseconds: 2000));
+        if (!breakMode) {
+          FirebaseDbService.addConvoPrompt(
+              convoID, prompt.map((element) => element.text).join());
+        }
         channel.sink.add(MessagingStrings.convoBegin);
         Provider.of<ChatModel>(context, listen: false)
             .addBotResponse(MessagingStrings.welcomeMessage, false);
@@ -101,7 +105,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         await Future.delayed(Duration(seconds: 1));
 
         int waitTime = text.length * 30;
-        // print('waittime: $waitTime');
 
         await Future.delayed(Duration(milliseconds: waitTime));
         Provider.of<ChatModel>(context, listen: false)
@@ -115,14 +118,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     myFocusNode = FocusNode();
 
-    Future.delayed(Duration(milliseconds: 250)).then((_) {
+    Future.delayed(Duration(milliseconds: 500)).then((_) {
       FirebaseDbService.getUserData().then((data) async {
-        // if (data != null) {
-        //   Provider.of<ThemeModel>(context, listen: false)
-        //       .setTheme(data["isDark"]);
-        //   print(data);
-        //   convoID = data["convoID"];
-        // }
+        if (data != null) {
+          Provider.of<ThemeModel>(context, listen: false)
+              .setTheme(data["isDark"]);
+          convoID = data["convoID"];
+        }
       });
     });
     initializeChat();
@@ -156,15 +158,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void initializeChat() async {
-    // convoID = Uuid().v4();
-    // FirebaseDbService.updateConvoID(convoID);
-
     await Future.delayed(Duration(milliseconds: 250));
     channel.sink.add(MessagingStrings.convoInit);
-    // print("initializing chat");
-
-    // await Future.delayed(Duration(milliseconds: 2000));
-    // channel.sink.add('{"text": "Begin"}');
   }
 
   @override
@@ -191,13 +186,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void newConvo() {
-    // channel.sink.add('{"text": "[DONE]"}');
-    // Provider.of<ChatModel>(context, listen: false).restartConvo();
-    // setState(() {
-    //   botThinking = true;
-    // });
-    // convoID = Uuid().v4();
-    // FirebaseDbService.updateConvoID(convoID);
+    channel.sink.add('{"text": "[DONE]"}');
+
     SchedulerBinding.instance.addPostFrameCallback((_) {
       Navigator.of(context).pushReplacementNamed(Strings.messagingViewRoute);
     });
@@ -228,6 +218,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   void handleResponse(String text) async {
     Map<String, Object> botMessage =
         Provider.of<ChatModel>(context, listen: false).getBotMessage();
+    botMessage['convoID'] = convoID;
 
     if (botMessage != null) {
       if (!breakMode) {
@@ -251,6 +242,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     Map<String, Object> userMessage =
         Provider.of<ChatModel>(context, listen: false).getLastMessage();
+    userMessage['convoID'] = convoID;
 
     String textJSON = jsonEncode(<String, String>{'text': userMessage['text']});
 
