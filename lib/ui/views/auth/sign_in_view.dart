@@ -28,7 +28,7 @@ class SignInView extends StatelessWidget {
         Column(children: [
           SignInForm(),
           Container(
-            margin: EdgeInsets.only(top: 20),
+            margin: EdgeInsets.only(top: 15),
             child: SvgPicture.asset("assets/images/OR.svg"),
           ),
           GoogleSignInButton(),

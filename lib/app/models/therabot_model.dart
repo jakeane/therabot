@@ -15,7 +15,7 @@ class TherabotModel extends ChangeNotifier {
     "happy_trust",
     "happy_surprise",
     "happy_anticipation",
-    "sadness",
+    "sad",
     "depression",
     "disgust",
     "fear",
@@ -47,7 +47,7 @@ class TherabotModel extends ChangeNotifier {
   }
 
   void calculateEmotion(String textJSON) {
-    post(LOCAL_URL, body: textJSON).then((res) {
+    post(EMOTION_URL, body: textJSON).then((res) {
       List<double> emotionProbs =
           jsonDecode(res.body)['animations'].cast<double>();
       Map<String, double> topEmotions =

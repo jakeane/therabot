@@ -8,7 +8,7 @@ class GoToButton extends StatelessWidget {
 
   Widget build(BuildContext context) {
     return Container(
-        margin: EdgeInsets.only(bottom: 20),
+        margin: EdgeInsets.only(bottom: 15),
         child: FlatButton(
           onPressed: () {
             navigate();

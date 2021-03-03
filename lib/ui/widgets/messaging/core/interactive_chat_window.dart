@@ -59,7 +59,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final channel = WebSocketChannel.connect(Uri.parse(AWS_URL));
 
   // SET FALSE BEFORE DEPLOYMENT
-  final breakMode = true;
+  final breakMode = false;
 
   String convoID;
   bool botThinking = true;
@@ -81,6 +81,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
+      print('hello');
 
       text = processBotText(text);
 
