@@ -41,9 +41,12 @@ class _AvatarAnimationState extends State<AvatarAnimation>
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           setState(() {
-            String nextEmotion =
+            String modelEmotion =
                 Provider.of<TherabotModel>(context, listen: false)
                     .getAnimation();
+
+            String nextEmotion =
+                modelEmotion == 'neutral' ? currentEmotion : modelEmotion;
             // currentEmotion =
             //     ['joy', 'fear', 'happy_surprise'][Random.secure().nextInt(3)];
             currentAnimation = nextEmotion == currentEmotion

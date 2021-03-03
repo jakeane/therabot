@@ -232,6 +232,10 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     Provider.of<ChatModel>(context, listen: false).addChat(text, true);
 
+    String textJSON = jsonEncode(<String, String>{'text': text});
+    Provider.of<TherabotModel>(context, listen: false)
+        .calculateEmotion(textJSON);
+
     myFocusNode.requestFocus();
   }
 
@@ -245,9 +249,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     userMessage['convoID'] = convoID;
 
     String textJSON = jsonEncode(<String, String>{'text': userMessage['text']});
-
-    Provider.of<TherabotModel>(context, listen: false)
-        .calculateEmotion(textJSON);
 
     channel.sink.add(textJSON);
 
