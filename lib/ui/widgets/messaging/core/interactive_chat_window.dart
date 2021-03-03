@@ -81,7 +81,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
-      print('hello');
 
       text = processBotText(text);
 

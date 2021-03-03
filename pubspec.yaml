@@ -160,19 +160,6 @@ flutter:
     - assets/animations/CB1/sad_idle7/
     - assets/animations/CB1/sad_idle9/
 
-    # old animations
-    - assets/animations/idle/happy_idle1/
-    - assets/animations/idle/happy_idle2/
-    - assets/animations/happy/CB1.Happy.Idle1/
-    - assets/animations/happy/CB1.Happy.Idle2/
-    - assets/animations/happy/CB1.Happy.Idle3/
-    - assets/animations/happy/CB1.Happy.Idle4/
-    - assets/animations/happy/CB1.Happy.Idle5/
-    - assets/animations/sad/CB1.Sad.Idle1/
-    - assets/animations/sad/CB1.Sad.Idle2/
-    - assets/animations/sad/CB1.Sad.Idle3/
-    - assets/animations/sad/CB1.Sad.Idle4/
-    - assets/animations/sad/CB1.Sad.Idle5/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

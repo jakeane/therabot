@@ -55,6 +55,9 @@ class TherabotModel extends ChangeNotifier {
       print(topEmotions);
       emotionHist.removeLast();
       emotionHist.addFirst(emotionProbs);
+      [0, 1, 2].forEach((element) {
+        print("$element: ${emotionHist.toList()[element]}");
+      });
       notifyListeners();
     });
   }
