@@ -51,7 +51,7 @@ class _SignInFormState extends State<SignInForm> {
           // Make entry type email
           EntryField(
               hintText: "Email",
-              topMargin: 10,
+              topMargin: 5,
               obscureText: false,
               saveValue: saveEmail,
               textInputType: TextInputType.emailAddress),

@@ -42,7 +42,7 @@ class TextComposer extends StatelessWidget {
                           resetTimer();
                         },
                         onSubmitted: (value) {
-                          handleSubmit(value);
+                          handleSubmit(value.trim());
                         },
                         decoration: InputDecoration.collapsed(
                           hintText: "Type message here",

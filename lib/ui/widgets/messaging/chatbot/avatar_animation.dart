@@ -1,10 +1,13 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_chatbot/app/constants/animations.dart';
 import 'package:flutter_chatbot/app/models/therabot_model.dart';
 import 'package:provider/provider.dart';
 
 class AvatarAnimation extends StatefulWidget {
+  final bool botThinking;
+  AvatarAnimation({this.botThinking});
   @override
   _AvatarAnimationState createState() => _AvatarAnimationState();
 }
@@ -12,58 +15,14 @@ class AvatarAnimation extends StatefulWidget {
 class _AvatarAnimationState extends State<AvatarAnimation>
     with TickerProviderStateMixin {
   final String root = "assets/animations";
+  final String chatbot = "CB1";
 
   AnimationController _controller;
   IntTween _intTween;
   Animation<int> _animation;
 
-  String currentEmotion = "happy";
-  String currentAnimation = "CB1.Happy.Idle1";
-
-  final Map<String, List<String>> animations = {
-    "happy": [
-      "CB1.Happy.Idle1",
-      "CB1.Happy.Idle2",
-      "CB1.Happy.Idle3",
-      "CB1.Happy.Idle4",
-      "CB1.Happy.Idle5",
-    ],
-    "sad": [
-      "CB1.Sad.Idle1",
-      "CB1.Sad.Idle2",
-      // "CB1.Sad.Idle3",
-      // "CB1.Sad.Idle4",
-      // "CB1.Sad.Idle5",
-    ]
-    // "idle1": "assets/animations/idle/happy_idle1/CB1_Happy_Idle1.",
-    // "idle2": "assets/animations/idle/happy_idle2/CB1.Happy.Idle12",
-  };
-
-  final Map<String, String> animationFrameRoot = {
-    "CB1.Happy.Idle1": "CB1_Happy_Idle1",
-    "CB1.Happy.Idle2": "CB1_Happy_Idle2",
-    "CB1.Happy.Idle3": "CB1_Happy_Idle3",
-    "CB1.Happy.Idle4": "CB1_Happy_Idle4",
-    "CB1.Happy.Idle5": "CB1_Happy_Idle5",
-    "CB1.Sad.Idle1": "CB1_Sad_Idle1",
-    "CB1.Sad.Idle2": "CB1_Sad_Idle2",
-    "CB1.Sad.Idle3": "CB1_Sad_Idle3",
-    "CB1.Sad.Idle4": "CB1_Sad_Idle4",
-    "CB1.Sad.Idle5": "CB1.Sad.Idle5",
-  };
-
-  final Map<String, int> animationLengths = {
-    "CB1.Happy.Idle1": 72,
-    "CB1.Happy.Idle2": 99,
-    "CB1.Happy.Idle3": 160,
-    "CB1.Happy.Idle4": 109,
-    "CB1.Happy.Idle5": 95,
-    "CB1.Sad.Idle1": 85,
-    "CB1.Sad.Idle2": 124,
-    "CB1.Sad.Idle3": 192,
-    "CB1.Sad.Idle4": 72,
-    "CB1.Sad.Idle5": 72,
-  };
+  String currentEmotion = "happy_trust";
+  String currentAnimation = "happy_trust1";
 
   @override
   void initState() {
@@ -72,20 +31,31 @@ class _AvatarAnimationState extends State<AvatarAnimation>
         vsync: this,
         duration: Duration(
             milliseconds:
-                (animationLengths[currentAnimation] / 24 * 1000).round()));
+                (Animations.animationLengths[currentAnimation] / 24 * 1000)
+                    .round()));
 
-    _intTween = IntTween(begin: 0, end: animationLengths[currentAnimation] - 1);
+    _intTween =
+        IntTween(begin: 0, end: Animations.animationLengths[currentAnimation]);
 
     _animation = _intTween.animate(_controller)
       ..addStatusListener((status) {
         if (status == AnimationStatus.completed) {
           setState(() {
-            currentEmotion = Provider.of<TherabotModel>(context, listen: false)
-                .getAnimation();
-            currentAnimation = animations[currentEmotion]
-                [Random.secure().nextInt(animations[currentEmotion].length)];
+            String modelEmotion =
+                Provider.of<TherabotModel>(context, listen: false)
+                    .getAnimation();
+
+            String nextEmotion =
+                modelEmotion == 'neutral' ? currentEmotion : modelEmotion;
+            // currentEmotion =
+            //     ['joy', 'fear', 'happy_surprise'][Random.secure().nextInt(3)];
+            currentAnimation = nextEmotion == currentEmotion
+                ? "${Animations.isEmotionHappy[currentEmotion] ? 'happy' : 'sad'}_${widget.botThinking ? 'think' : 'idle'}${1 + Random.secure().nextInt(widget.botThinking ? 4 : 12)}"
+                : "$nextEmotion${1 + Random.secure().nextInt(Animations.animationBuckets[nextEmotion])}";
+            print(currentAnimation);
+            currentEmotion = nextEmotion;
             // print("Next animation: $currentAnimation");
-            _intTween.end = animationLengths[currentAnimation] - 1;
+            _intTween.end = Animations.animationLengths[currentAnimation];
             _controller.duration =
                 Duration(milliseconds: (_intTween.end / 24 * 1000).round());
           });
@@ -110,9 +80,7 @@ class _AvatarAnimationState extends State<AvatarAnimation>
       animation: _animation,
       builder: (context, child) {
         String frameNum = _animation.value.toString();
-        String frame = _intTween.end > 100
-            ? frameNum.padLeft(3, '0')
-            : frameNum.padLeft(2, '0');
+        String frame = frameNum.padLeft(4, '0');
         return Container(
             width: 100,
             height: 140,
@@ -121,23 +89,12 @@ class _AvatarAnimationState extends State<AvatarAnimation>
                 maxHeight: 180,
                 maxWidth: 135,
                 child: Image.asset(
-                  "$root/$currentEmotion/$currentAnimation/${animationFrameRoot[currentAnimation]}_$frame.png",
+                  "$root/$chatbot/$currentAnimation/$currentAnimation.$frame.png",
                   gaplessPlayback: true,
                   width: 200,
                   height: 280,
                 )));
       },
-    );
-
-    return Container(
-      width: 100,
-      height: 140,
-      margin: EdgeInsets.only(right: 20),
-      child: Image(
-        image: AssetImage("assets/bots/bot_transparent1.gif"),
-        width: 100,
-        height: 140,
-      ),
     );
   }
 }
