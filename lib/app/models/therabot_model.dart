@@ -46,18 +46,16 @@ class TherabotModel extends ChangeNotifier {
         : emotions[currEmotion.indexOf(emotionMax)];
   }
 
-  void calculateEmotion(String textJSON) async {
-    Response res = await post(LOCAL_URL, body: textJSON);
-
-    List<double> emotionProbs =
-        jsonDecode(res.body)['animations'].cast<double>();
-    Map<String, double> topEmotions =
-        jsonDecode(res.body)['emotion'].cast<String, double>();
-    print(topEmotions);
-    emotionHist.removeLast();
-    emotionHist.addFirst(emotionProbs);
-    [0, 1, 2].forEach((element) {
-      print("$element: ${emotionHist.toList()[element]}");
+  void calculateEmotion(String textJSON) {
+    post(EMOTION_URL, body: textJSON).then((res) {
+      List<double> emotionProbs =
+          jsonDecode(res.body)['animations'].cast<double>();
+      Map<String, double> topEmotions =
+          jsonDecode(res.body)['emotion'].cast<String, double>();
+      print(topEmotions);
+      emotionHist.removeLast();
+      emotionHist.addFirst(emotionProbs);
+      notifyListeners();
     });
     notifyListeners();
 

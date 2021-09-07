@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:io' show Platform;
+import 'package:flutter_chatbot/app/services/firebase_auth_service.dart';
 import 'package:flutter_chatbot/ui/page_base.dart';
 import 'package:flutter_chatbot/ui/widgets/auth/buttons/apple_sign_in_button.dart';
 import 'package:flutter_chatbot/ui/widgets/auth/core/auth_view_header.dart';
@@ -8,6 +8,7 @@ import 'package:flutter_chatbot/ui/widgets/auth/buttons/google_sign_in_button.da
 import 'package:flutter_chatbot/ui/widgets/auth/buttons/go_to_button.dart';
 import 'package:flutter_chatbot/app/constants/strings.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 class SignInView extends StatelessWidget {
   const SignInView({Key key}) : super(key: key);
@@ -31,7 +32,7 @@ class SignInView extends StatelessWidget {
             child: SvgPicture.asset("assets/images/OR.svg"),
           ),
           GoogleSignInButton(),
-          if (Platform.isIOS) AppleSignInButton()
+          AppleSignInButton()
         ]),
         Spacer(),
         GoToButton(

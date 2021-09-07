@@ -23,7 +23,7 @@ import 'package:intl/intl.dart';
 const LOCAL_IP = 'localhost';
 const LOCAL_PORT = '10001';
 const AWS_DNS = 'ec2-52-24-20-184.us-west-2.us-west-2.compute.amazonaws.com';
-const AWS_IP = '34.221.229.5';
+const AWS_IP = '54.245.49.155';
 const AWS_PORT = '8888';
 const LOCAL_URL = 'ws://$LOCAL_IP:$LOCAL_PORT/websocket';
 const AWS_URL = 'ws://$AWS_IP:$AWS_PORT/websocket';
