@@ -52,13 +52,12 @@ class TherabotModel extends ChangeNotifier {
           jsonDecode(res.body)['animations'].cast<double>();
       Map<String, double> topEmotions =
           jsonDecode(res.body)['emotion'].cast<String, double>();
-      print(topEmotions);
+      // print(topEmotions);
       emotionHist.removeLast();
       emotionHist.addFirst(emotionProbs);
-      [0, 1, 2].forEach((element) {
-        print("$element: ${emotionHist.toList()[element]}");
-      });
       notifyListeners();
     });
+    notifyListeners();
+
   }
 }

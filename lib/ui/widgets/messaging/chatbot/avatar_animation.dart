@@ -52,7 +52,7 @@ class _AvatarAnimationState extends State<AvatarAnimation>
             currentAnimation = nextEmotion == currentEmotion
                 ? "${Animations.isEmotionHappy[currentEmotion] ? 'happy' : 'sad'}_${widget.botThinking ? 'think' : 'idle'}${1 + Random.secure().nextInt(widget.botThinking ? 4 : 12)}"
                 : "$nextEmotion${1 + Random.secure().nextInt(Animations.animationBuckets[nextEmotion])}";
-            print(currentAnimation);
+            // print(currentAnimation);
             currentEmotion = nextEmotion;
             // print("Next animation: $currentAnimation");
             _intTween.end = Animations.animationLengths[currentAnimation];
