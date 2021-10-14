@@ -49,7 +49,6 @@ class AuthProvider extends ChangeNotifier {
 
     if (user != null) {
       assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
 
       final User? currentUser = _auth.currentUser;
       assert(user.uid == currentUser?.uid);
@@ -81,7 +80,6 @@ class AuthProvider extends ChangeNotifier {
 
     if (user != null) {
       assert(!user.isAnonymous);
-      assert(await user.getIdToken() != null);
 
       final currentUser = _auth.currentUser;
       assert(user.uid == currentUser?.uid);

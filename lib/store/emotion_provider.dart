@@ -50,9 +50,6 @@ class EmotionProvider extends ChangeNotifier {
     post(Uri.parse(emotionUrl), body: textJSON).then((res) {
       List<double> emotionProbs =
           jsonDecode(res.body)['animations'].cast<double>();
-      Map<String, double> topEmotions =
-          jsonDecode(res.body)['emotion'].cast<String, double>();
-      // print(topEmotions);
       emotionHist.removeLast();
       emotionHist.addFirst(emotionProbs);
       notifyListeners();

@@ -79,7 +79,7 @@ class _CreateAccountFormState extends State<CreateAccountForm> {
             style: Theme.of(context)
                 .textTheme
                 .bodyText1
-                ?.copyWith(fontSize: 12, color: Color(0xFFEB5757)),
+                ?.copyWith(fontSize: 12, color: const Color(0xFFEB5757)),
           ),
           // Make entry type email
           EntryField(

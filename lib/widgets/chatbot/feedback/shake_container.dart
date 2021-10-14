@@ -22,9 +22,9 @@ class _ShakeContainerState extends State<ShakeContainer>
   void initState() {
     super.initState();
     _controller =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+        AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
     // ..repeat(reverse: true);
-    _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: Offset(0.25, 0.0))
+    _offsetAnimation = Tween<Offset>(begin: Offset.zero, end: const Offset(0.25, 0.0))
         .animate(CurvedAnimation(parent: _controller!, curve: Curves.elasticIn))
           ..addStatusListener((status) {
             if (status == AnimationStatus.completed) {
