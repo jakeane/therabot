@@ -1,77 +1,101 @@
 <!DOCTYPE html>
 <html>
-
 <head>
+  <!--
+    If you are serving your web app in a path other than the root, change the
+    href value below to reflect the base path you are serving from.
+
+    The path provided below has to start and end with a slash "/" in order for
+    it to work correctly.
+
+    For more details:
+    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
+
+    This is a placeholder for base href that will be replaced by the value of
+    the `--base-href` argument provided to `flutter build`.
+  -->
+  <base href="$FLUTTER_BASE_HREF">
+
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
 
-  <!-- STEP 3: ADD YOUR CLIENT ID -->
-  <meta name="google-signin-client_id" content="792796736973-f6jmntn4u6va1819nfmmpbc8r92bs305.apps.googleusercontent.com">
-
-
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="flutter_web_firebase_googe_auth">
+  <meta name="apple-mobile-web-app-title" content="therabot">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
-  <link rel="shortcut icon" type="image/png" href="favicon.png" />
-
-  <title>flutter_web_firebase_googe_auth</title>
+  <title>therabot</title>
   <link rel="manifest" href="manifest.json">
 </head>
-
 <body>
   <!-- This script installs service_worker.js to provide PWA functionality to
        application. For more information, see:
        https://developers.google.com/web/fundamentals/primers/service-workers -->
-
-
-  <!-- STEP 1: Add SDKs for Firebase products that you want to use
-     https://firebase.google.com/docs/web/setup#available-libraries -->
-  <script src="https://www.gstatic.com/firebasejs/7.14.6/firebase-app.js"></script>
-
-  <!-- TODO: Add SDKs for Firebase products that you want to use
-      https://firebase.google.com/docs/web/setup#available-libraries -->
-  <script src="https://www.gstatic.com/firebasejs/7.14.6/firebase-analytics.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/7.14.6/firebase-auth.js"></script>
-
-    <!-- For firebase storage -->
-  <script src="https://www.gstatic.com/firebasejs/7.15.1/firebase-firestore.js"></script>
-
-  
-  <!-- Step 2: Initialize Firebase with configuration -->
   <script>
-    // Your web app's Firebase configuration
-    // TODO ADD YOUR FIREBASE CONFIG
-    const firebaseConfig = {
-      apiKey: "AIzaSyDKIlsascVTHqTaqWRqjDJF0H6aaq4TEIs",
-      authDomain: "flutter-chatbot-bbe5a.firebaseapp.com",
-      databaseURL: "https://flutter-chatbot-bbe5a.firebaseio.com",
-      projectId: "flutter-chatbot-bbe5a",
-      storageBucket: "flutter-chatbot-bbe5a.appspot.com",
-      messagingSenderId: "792796736973",
-      appId: "1:792796736973:web:6810d7b4dcf80e1e1ee884",
-      measurementId: "G-37QEPGF455"
-    };
-    // Initialize Firebase
-    firebase.initializeApp(firebaseConfig);
-    firebase.analytics();
-  </script>
+    var serviceWorkerVersion = null;
+    var scriptLoaded = false;
+    function loadMainDartJs() {
+      if (scriptLoaded) {
+        return;
+      }
+      scriptLoaded = true;
+      var scriptTag = document.createElement('script');
+      scriptTag.src = 'main.dart.js';
+      scriptTag.type = 'application/javascript';
+      document.body.append(scriptTag);
+    }
 
-  <script src="/__/firebase/init.js"></script>
-  
-  <!-- Flutter Initialization -->
-  <script>
     if ('serviceWorker' in navigator) {
+      // Service workers are supported. Use them.
       window.addEventListener('load', function () {
-        navigator.serviceWorker.register('flutter_service_worker.js');
+        // Wait for registration to finish before dropping the <script> tag.
+        // Otherwise, the browser will load the script multiple times,
+        // potentially different versions.
+        var serviceWorkerUrl = 'flutter_service_worker.js?v=' + serviceWorkerVersion;
+        navigator.serviceWorker.register(serviceWorkerUrl)
+          .then((reg) => {
+            function waitForActivation(serviceWorker) {
+              serviceWorker.addEventListener('statechange', () => {
+                if (serviceWorker.state == 'activated') {
+                  console.log('Installed new service worker.');
+                  loadMainDartJs();
+                }
+              });
+            }
+            if (!reg.active && (reg.installing || reg.waiting)) {
+              // No active web worker and we have installed or are installing
+              // one for the first time. Simply wait for it to activate.
+              waitForActivation(reg.installing || reg.waiting);
+            } else if (!reg.active.scriptURL.endsWith(serviceWorkerVersion)) {
+              // When the app updates the serviceWorkerVersion changes, so we
+              // need to ask the service worker to update.
+              console.log('New service worker available.');
+              reg.update();
+              waitForActivation(reg.installing);
+            } else {
+              // Existing service worker is still good.
+              console.log('Loading app from service worker.');
+              loadMainDartJs();
+            }
+          });
+
+        // If service worker doesn't succeed in a reasonable amount of time,
+        // fallback to plaint <script> tag.
+        setTimeout(() => {
+          if (!scriptLoaded) {
+            console.warn(
+              'Failed to load app from service worker. Falling back to plain <script> tag.',
+            );
+            loadMainDartJs();
+          }
+        }, 4000);
       });
+    } else {
+      // Service workers not supported. Just drop the <script> tag.
+      loadMainDartJs();
     }
   </script>
-  <script src="main.dart.js" type="application/javascript"></script>
 </body>
-
 </html>

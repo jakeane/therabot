@@ -1,0 +1,91 @@
+{
+  "project_info": {
+    "project_number": "792796736973",
+    "firebase_url": "https://flutter-chatbot-bbe5a.firebaseio.com",
+    "project_id": "flutter-chatbot-bbe5a",
+    "storage_bucket": "flutter-chatbot-bbe5a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:792796736973:android:0346f23046eb88711ee884",
+        "android_client_info": {
+          "package_name": "com.example.flutter_chatbot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "792796736973-f6jmntn4u6va1819nfmmpbc8r92bs305.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQKXoW98R9X3yfM1EYSQThnlUTHD-DHyc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "792796736973-f6jmntn4u6va1819nfmmpbc8r92bs305.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "792796736973-rvd72d384l3ch467tjklr7a3bsqgfhkh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jacobson.therabot"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:792796736973:android:f4164a9c94e0e0a41ee884",
+        "android_client_info": {
+          "package_name": "com.jacobson.therabot"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "792796736973-k1dm60a72p3s20n0a0n5i90vn8dq0hpk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jacobson.therabot",
+            "certificate_hash": "88aec678d98786d92e444433535a139d2dd56e93"
+          }
+        },
+        {
+          "client_id": "792796736973-f6jmntn4u6va1819nfmmpbc8r92bs305.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDQKXoW98R9X3yfM1EYSQThnlUTHD-DHyc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "792796736973-f6jmntn4u6va1819nfmmpbc8r92bs305.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "792796736973-rvd72d384l3ch467tjklr7a3bsqgfhkh.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.jacobson.therabot"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
