@@ -18,7 +18,6 @@ class Animations {
 
   static const Map<String, int> animationBuckets = {
     "terror": 2,
-    "happy_nod": 6,
     "sad_think": 4,
     "sad_anticipation": 2,
     "happy_think": 4,
@@ -29,7 +28,6 @@ class Animations {
     "happy_idle": 12,
     "anger": 2,
     "happy_anticipation": 2,
-    "sad_nod": 6,
     "sad_idle": 12,
     "sad_trust": 2,
     "happy_trust": 2,
