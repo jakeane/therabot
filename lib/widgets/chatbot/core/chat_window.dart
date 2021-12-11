@@ -22,7 +22,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 import 'package:intl/intl.dart';
 
 const localIp = 'localhost';
-const localPort = '8888';
+const localPort = '8000';
 const awsDns = 'ec2-52-24-20-184.us-west-2.us-west-2.compute.amazonaws.com';
 const awsIp = '54.202.232.232';
 const awsPort = '8888';
@@ -54,7 +54,7 @@ class InteractiveChatWindow extends StatefulWidget {
 
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
-  final channel = WebSocketChannel.connect(Uri.parse(awsUrl));
+  final channel = WebSocketChannel.connect(Uri.parse(localUrl));
 
   // SET FALSE BEFORE DEPLOYMENT
   // final breakMode = true;
@@ -83,22 +83,43 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       text = processBotText(text);
 
       if (MessagingStrings.botInitPhrases.indexOf(text) == 0) {
-        convoID = const Uuid().v4();
-        FirebaseDbService.updateConvoID(convoID);
+
+        var userData = await FirebaseDbService.getUserData();
         setState(() {
+          convoID = userData?['convoID'] ?? '';
           prompt = PromptsData.getContext() ?? [];
         });
-        await Future.delayed(const Duration(milliseconds: 2000));
+
+        var convo = await FirebaseDbService.getConvo(convoID);
+        channel.sink.add(MessagingStrings.getConvoBegin(json.encode(convo)));
+
+        if (convo.isEmpty) {
+          await Future.delayed(const Duration(milliseconds: 2000));
+        }
         // if (!breakMode) {
         if (Provider.of<ConfigProvider>(context, listen: false).getMode() != Mode.dev) {
           FirebaseDbService.addConvoPrompt(
               convoID, prompt.map((element) => element.text).join());
         }
-        channel.sink.add(MessagingStrings.convoBegin);
         Provider.of<ChatProvider>(context, listen: false)
             .addBotResponse(MessagingStrings.welcomeMessage, false);
+
+        for (var exchange in convo) {
+          if (exchange['user'].isNotEmpty) {
+            Provider.of<ChatProvider>(context, listen: false)
+            .addChat(exchange['user'], true);
+          }
+          if (exchange['bot'].isNotEmpty) {
+            Provider.of<ChatProvider>(context, listen: false)
+            .addBotResponse(exchange['bot'], false);
+          }
+        }
+
+        Map<String, Object>? botMessage =
+          Provider.of<ChatProvider>(context, listen: false).getBotMessage();
+
         setState(() {
-          botThinking = false;
+          botThinking = botMessage == null;
         });
       } else if (!MessagingStrings.botInitPhrases.contains(text)) {
         await Future.delayed(const Duration(seconds: 1));
@@ -112,7 +133,23 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         setState(() {
           botThinking = false;
         });
+
+        Map<String, Object>? botMessage =
+          Provider.of<ChatProvider>(context, listen: false).getBotMessage();
+
+        if (botMessage != null) {
+          botMessage['convoID'] = convoID;
+          var mode = Provider.of<ConfigProvider>(context, listen: false).getMode();
+          if (mode == Mode.trial) {
+            FirebaseDbService.addMessageData(botMessage);
+          } else if (mode == Mode.dev) {
+            print(botMessage);
+          }
+        }
+
       }
+
+      
     });
 
     focusNode = FocusNode();
@@ -186,6 +223,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
   void newConvo() {
     channel.sink.add('{"text": "[DONE]"}');
+    convoID = const Uuid().v4();
+    FirebaseDbService.updateConvoID(convoID);
 
     SchedulerBinding.instance?.addPostFrameCallback((_) {
       Navigator.of(context).pushReplacementNamed(Strings.messagingViewRoute);
@@ -220,11 +259,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         Provider.of<ChatProvider>(context, listen: false).getBotMessage();
 
     if (botMessage != null) {
-      botMessage['convoID'] = convoID;
-      if (Provider.of<ConfigProvider>(context, listen: false).getMode() != Mode.dev) {
+      if (Provider.of<ConfigProvider>(context, listen: false).getMode() == Mode.prod) {
+        botMessage['convoID'] = convoID;
         FirebaseDbService.addMessageData(botMessage);
-      } else {
-        print(botMessage);
       }
 
       _timer = RestartableTimer(const Duration(seconds: 5), sendMessage);

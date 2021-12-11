@@ -5,7 +5,7 @@ class MessagingStrings {
   ];
 
   static const List<String> botInitPhrases = [
-    "Welcome to the overworld for the ParlAI messenger chatbot demo. Please type \"begin\" to start.",
+    "Welcome to the overworld for the ParlAI messenger chatbot demo. Please type \"begin\" to start, or \"exit\" to exit",
     "Welcome to the ParlAI Chatbot demo. You are now paired with a bot - feel free to send a message.Type [DONE] to finish the chat, or [RESET] to reset the dialogue history."
   ];
 
@@ -16,6 +16,10 @@ class MessagingStrings {
   static const String convoBegin = '{"text": "Begin"}';
   static const String convoDone = '{"text": "[DONE]"}';
   static const String convoExit = '{"text": "[EXIT]"}';
+
+  static String getConvoBegin(String convo) {
+    return '{"text": "begin", "payload": $convo}';
+  }
 
   static const String emojiFilter =
       r"(\u00a9|\u00ae|[\u2028-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])";

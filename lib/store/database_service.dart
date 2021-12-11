@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:http/http.dart';
+import 'dart:convert';
 
 class FirebaseDbService {
   static final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
@@ -67,4 +69,27 @@ class FirebaseDbService {
         .doc(userID)
         .set({"isDark": isDark}, SetOptions(merge: true));
   }
+
+  
+
+  static Future<List<dynamic>> getConvo(String convoID) async {
+    try {
+      Response res = await get(Uri.parse('http://localhost:5001/flutter-chatbot-bbe5a/us-central1/getConversation?convoID=$convoID'));
+      var data = json.decode(res.body)['data'] as List<dynamic>;
+      return data;
+    } catch(e) {
+      print(e.toString());
+      return [];
+    }
+  }
+}
+
+class Exchange {
+  final String user;
+  final String bot;
+  Exchange(this.user, this.bot);
+
+  Exchange.fromJson(Map<String, dynamic> json)
+    : user = json['user'],
+      bot = json['bot'];
 }
