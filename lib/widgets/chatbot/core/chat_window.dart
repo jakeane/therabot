@@ -31,19 +31,7 @@ const awsUrl = 'ws://$awsIp:$awsPort/websocket';
 const nrclexUrl =
     'https://gabho7ma71.execute-api.us-west-2.amazonaws.com/default/NRC_Lex';
 
-// ignore: todo
-// TODO
-// 1. Add message bubble spacing logic
-// 2. Set up backend with dialogue model and emotions
-// 3. Placeholder GIFs for chatbot avatar
-//      - Parse user's text
-//      - Query for emotion with nrcLEX
-// 4. Save local data
-//      - Theme
-//      - UserID?
-//      - Also current conversation?
-// 5. Prevent user message consecutively
-// 6. User cannot send without providing feedback
+
 
 class InteractiveChatWindow extends StatefulWidget {
   const InteractiveChatWindow({Key? key}) : super(key: key);
@@ -96,7 +84,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         if (convo.isEmpty) {
           await Future.delayed(const Duration(milliseconds: 2000));
         }
-        // if (!breakMode) {
+
         if (Provider.of<ConfigProvider>(context, listen: false).getMode() != Mode.dev) {
           FirebaseDbService.addConvoPrompt(
               convoID, prompt.map((element) => element.text).join());
@@ -105,13 +93,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
             .addBotResponse(MessagingStrings.welcomeMessage, false);
 
         for (var exchange in convo) {
-          if (exchange['user'].isNotEmpty) {
+          if (exchange.user.isNotEmpty) {
             Provider.of<ChatProvider>(context, listen: false)
-            .addChat(exchange['user'], true);
+            .addChat(exchange.user, true);
           }
-          if (exchange['bot'].isNotEmpty) {
+          if (exchange.bot.isNotEmpty) {
             Provider.of<ChatProvider>(context, listen: false)
-            .addBotResponse(exchange['bot'], false);
+            .addBotResponse(exchange.bot, false);
           }
         }
 
