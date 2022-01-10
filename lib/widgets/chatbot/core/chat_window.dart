@@ -42,7 +42,7 @@ class InteractiveChatWindow extends StatefulWidget {
 
 class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   final TextEditingController _textController = TextEditingController();
-  final channel = WebSocketChannel.connect(Uri.parse(localUrl));
+  final channel = WebSocketChannel.connect(Uri.parse(awsUrl));
 
   // SET FALSE BEFORE DEPLOYMENT
   // final breakMode = true;
