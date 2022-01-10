@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+// import 'package:therabot/widgets/chatbot/avatar/_avatar_animation.dart';
 import 'package:therabot/widgets/chatbot/avatar/avatar_animation.dart';
 import 'package:therabot/widgets/chatbot/avatar/response_container.dart';
 
@@ -22,11 +23,7 @@ class Avatar extends StatelessWidget {
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Column(
-                  children: [
-                    AvatarAnimation(botThinking: botThinking)
-                  ],
-                ),
+                AvatarAnimation(botThinking: botThinking),
                 ResponseContainer(
                   botThinking: botThinking,
                   setFeedbackView: setFeedbackView,

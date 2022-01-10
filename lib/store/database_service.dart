@@ -17,17 +17,25 @@ class FirebaseDbService {
   }
 
   static void addConvoPrompt(String convoID, String prompt) {
-    firestoreInstance
-        .collection('convos')
-        .doc(convoID)
-        .set({"userID": authInstance.currentUser?.uid ?? "", "prompt": prompt});
+    try {
+      firestoreInstance
+          .collection('convos')
+          .doc(convoID)
+          .set({"userID": authInstance.currentUser?.uid ?? "", "prompt": prompt});
+    } catch (e) {
+      return;
+    }
   }
 
   static void initUserData(String userID) {
-    firestoreInstance
-        .collection('users')
-        .doc(userID)
-        .set({"isDark": true, "convoID": ''});
+    try {
+      firestoreInstance
+          .collection('users')
+          .doc(userID)
+          .set({"isDark": true, "convoID": ''});
+    } catch (e) {
+      return;
+    }
   }
 
   static Future<Map<String, dynamic>?> getUserData() async {
@@ -51,20 +59,91 @@ class FirebaseDbService {
   }
 
   static void updateConvoID(String newID) {
-    String userID = authInstance.currentUser?.uid ?? "";
+    try {
+      String userID = authInstance.currentUser?.uid ?? "";
 
-    firestoreInstance
-        .collection('users')
-        .doc(userID)
-        .set({"convoID": newID}, SetOptions(merge: true));
+      firestoreInstance
+          .collection('users')
+          .doc(userID)
+          .set({"convoID": newID}, SetOptions(merge: true));
+
+    } catch (e) {
+      return;
+    }
   }
 
   static void saveTheme(bool isDark) {
-    String userID = authInstance.currentUser?.uid ?? "";
+    try {
+      String userID = authInstance.currentUser?.uid ?? "";
 
-    firestoreInstance
-        .collection('users')
-        .doc(userID)
-        .set({"isDark": isDark}, SetOptions(merge: true));
+      firestoreInstance
+          .collection('users')
+          .doc(userID)
+          .set({"isDark": isDark}, SetOptions(merge: true));
+    } catch (e) {
+      return;
+    }
+  }
+
+  static Future<List<Exchange>> getConvo(String convoID) async {
+    try {
+      var messageQuery = await firestoreInstance
+        .collection('messages')
+        .where('convoID', isEqualTo: convoID)
+        .where('userID', isEqualTo: authInstance.currentUser?.uid)
+        .get();
+
+      var messages = messageQuery.docs
+        .where((doc) => doc.exists)
+        .map((doc) => doc.data())
+        .map((doc) => Message(doc['type'], doc['index'], doc['text']))
+        .where((msg) => msg.index != 0)
+        .toList()
+        ..sort((a, b) => a.index - b.index);
+
+      var messageSequence = messages.fold<List<Exchange>>([], (msgPairs, msg) => (
+        msg.type
+          ? [...msgPairs, Exchange(msg.text, '')]
+          : [
+              ...msgPairs.sublist(0, msgPairs.length-1),
+              Exchange(msgPairs.last.user, msg.text)
+            ]
+      ));
+
+      return messageSequence;
+
+    } catch (e) {
+      return [];
+    }
+
+  }
+}
+
+class Exchange {
+  final String user;
+  final String bot;
+  Exchange(this.user, this.bot);
+
+  Map<String, dynamic> toJson() => {
+    'user': user,
+    'bot': bot
+  };
+
+  @override
+  String toString() {
+    return "{ user: $user, bot: $bot }";
+  }
+}
+
+class Message {
+  final bool type;
+  final int index;
+  final String text;
+
+  Message(this.type, this.index, this.text);
+
+  @override
+  String toString() {
+    return "Message $index from ${type ? 'user' : 'bot'}: $text";
   }
 }

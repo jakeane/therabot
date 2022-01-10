@@ -160,6 +160,15 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_gifimage:
+    dependency: "direct main"
+    description:
+      path: "."
+      ref: HEAD
+      resolved-ref: "3dc34a11332e62be0e2d32649b3faa47b3bb778b"
+      url: "git://github.com/Coec0/flutter_gifimage.git"
+    source: git
+    version: "1.1.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
