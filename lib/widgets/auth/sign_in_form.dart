@@ -47,7 +47,7 @@ class _SignInFormState extends State<SignInForm> {
             style: Theme.of(context)
                 .textTheme
                 .bodyText1
-                ?.copyWith(fontSize: 12, color: const Color(0xFFEB5757)),
+                ?.copyWith(fontSize: 12, color: Theme.of(context).errorColor),
           ),
           // Make entry type email
           EntryField(

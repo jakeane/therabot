@@ -59,6 +59,7 @@ class ThemeProvider extends ChangeNotifier {
     visualDensity: VisualDensity.adaptivePlatformDensity,
     dividerColor: const Color(0xFF3D403F),
     backgroundColor: const Color(0xFF161A19),
+    errorColor: const Color(0xFFEB5757),
     colorScheme: const ColorScheme.dark(
         primary: Color(0xFF50BFA4),
         primaryVariant: Color(0xFF5E6665),
@@ -80,6 +81,7 @@ class ThemeProvider extends ChangeNotifier {
     visualDensity: VisualDensity.adaptivePlatformDensity,
     dividerColor: const Color(0xFFD2D9D7),
     backgroundColor: const Color(0xFFF5F5F5),
+    errorColor: const Color(0xFFEB5757),
     colorScheme: const ColorScheme.dark(
         primary: Color(0xFF50BFA4),
         primaryVariant: Color(0xFFE3E5E5),
