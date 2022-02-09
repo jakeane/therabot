@@ -2,10 +2,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:provider/provider.dart';
-import 'package:therabot/store/auth_provider.dart';
-import 'package:therabot/store/database_service.dart';
-import 'package:therabot/store/theme_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class CrisisOverlay extends StatelessWidget {
@@ -102,8 +98,8 @@ class Call911Button extends StatelessWidget {
       height: 50,
       margin: const EdgeInsets.only(bottom: 5, top: 5),
       child: OutlinedButton(
-        onPressed: () {
-          launch('tel:+16178179957');
+        onPressed: () async {
+          await launch('tel:911');
         },
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           FaIcon(
@@ -143,11 +139,13 @@ class SuicideHotlineButton extends StatelessWidget {
       width: 180,
       margin: const EdgeInsets.only(bottom: 5),
       child: OutlinedButton(
-        onPressed: () {},
+        onPressed: () async {
+          await launch('tel:+18002738255');
+        },
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           FaIcon(
             FontAwesomeIcons.phoneAlt,
-            color: Theme.of(context).textTheme.bodyText1?.color,
+            color: Theme.of(context).textTheme.bodyText2?.color,
             size: 18
           ),
           Container(
@@ -158,7 +156,7 @@ class SuicideHotlineButton extends StatelessWidget {
                 .of(context)
                 .textTheme
                 .bodyText2
-                ?.copyWith(fontSize: 14, color: Theme.of(context).textTheme.bodyText1?.color),
+                ?.copyWith(fontSize: 14, color: Theme.of(context).textTheme.bodyText2?.color),
             ),
           )
         ]),
@@ -168,7 +166,7 @@ class SuicideHotlineButton extends StatelessWidget {
           ),
           side: BorderSide(
             width: 1,
-            color: Theme.of(context).textTheme.bodyText1?.color ?? Theme.of(context).colorScheme.secondary)
+            color: Theme.of(context).textTheme.bodyText2?.color ?? Theme.of(context).colorScheme.secondary)
         )
       ),
     );
@@ -184,11 +182,13 @@ class CrisisTextlineButton extends StatelessWidget {
       width: 180,
       margin: const EdgeInsets.only(bottom: 5),
       child: OutlinedButton(
-        onPressed: () {},
+        onPressed: () async {
+          await launch('sms:741741?body=HOME');
+        },
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           FaIcon(
             FontAwesomeIcons.mobileAlt,
-            color: Theme.of(context).textTheme.bodyText1?.color,
+            color: Theme.of(context).textTheme.bodyText2?.color,
             size: 18
           ),
           Container(
@@ -199,7 +199,7 @@ class CrisisTextlineButton extends StatelessWidget {
                 .of(context)
                 .textTheme
                 .bodyText2
-                ?.copyWith(fontSize: 14, color: Theme.of(context).textTheme.bodyText1?.color),
+                ?.copyWith(fontSize: 14, color: Theme.of(context).textTheme.bodyText2?.color),
             ),
           )
         ]),
@@ -209,7 +209,7 @@ class CrisisTextlineButton extends StatelessWidget {
           ),
           side: BorderSide(
             width: 1,
-            color: Theme.of(context).textTheme.bodyText1?.color ?? Theme.of(context).colorScheme.secondary)
+            color: Theme.of(context).textTheme.bodyText2?.color ?? Theme.of(context).colorScheme.secondary)
         )
       ),
     );
