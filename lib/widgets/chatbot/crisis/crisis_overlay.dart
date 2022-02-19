@@ -183,7 +183,7 @@ class CrisisTextlineButton extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 5),
       child: OutlinedButton(
         onPressed: () async {
-          await launch('sms:741741?body=HOME');
+          await launch('sms:741741&body=HOME');
         },
         child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
           FaIcon(
