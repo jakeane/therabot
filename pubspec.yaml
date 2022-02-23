@@ -51,6 +51,8 @@ dependencies:
   flutter_gifimage:
     git:
       url: 'git://github.com/Coec0/flutter_gifimage.git'
+  ionicons: ^0.1.2
+  url_launcher: ^6.0.18
 
 dev_dependencies:
   flutter_test:

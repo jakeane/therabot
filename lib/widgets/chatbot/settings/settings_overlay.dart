@@ -158,7 +158,7 @@ class NewConvoButton extends StatelessWidget {
           Container(
             margin: const EdgeInsets.only(left: 5),
             child: Text(
-              "New Conversation",
+              "Restart Conversation",
               style:
                   Theme.of(context).textTheme.bodyText2?.copyWith(fontSize: 18),
             ),

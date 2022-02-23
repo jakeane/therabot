@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
+import 'package:ionicons/ionicons.dart';
 import 'package:therabot/constants/messaging_strings.dart';
 import 'package:therabot/constants/prompts_data.dart';
 import 'package:therabot/constants/strings.dart';
@@ -13,6 +14,7 @@ import 'package:therabot/store/chat_provider.dart';
 import 'package:therabot/store/database_service.dart';
 import 'package:therabot/widgets/chatbot/core/message_feed.dart';
 import 'package:therabot/widgets/chatbot/core/text_composer.dart';
+import 'package:therabot/widgets/chatbot/crisis/crisis_overlay.dart';
 import 'package:therabot/widgets/chatbot/feedback/feedback_overlay.dart';
 import 'package:therabot/widgets/chatbot/settings/settings_overlay.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -51,6 +53,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   bool botThinking = true;
   bool _settingsOpen = false;
   bool _feedbackOpen = false;
+  bool _crisisOpen = false;
 
   List<TextSpan> prompt = [];
 
@@ -201,6 +204,12 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     });
   }
 
+  void setCrisisView() {
+    setState(() {
+      _crisisOpen = !_crisisOpen;
+    });
+  }
+
   void setFeedbackView(int detail) async {
     Provider.of<ChatProvider>(context, listen: false).feedbackDetail(-1, detail);
     if (detail != -1) await Future.delayed(const Duration(milliseconds: 300));
@@ -322,13 +331,25 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         Positioned(
           top: 10,
           left: 20,
-          child: IconButton(
-            icon: const FaIcon(FontAwesomeIcons.redoAlt),
-            color: Theme.of(context).dividerColor,
-            onPressed: () {
-              newConvo();
-            },
-          ),
+          child: TextButton(
+            child: Row(
+              children: [
+                Icon(
+                  Ionicons.alert_circle_outline,
+                  color: Theme.of(context).errorColor,
+                ),
+                const Padding(padding: EdgeInsets.symmetric(horizontal: 2)),
+                Text(
+                  "Crisis?",
+                  style: Theme.of(context)
+                    .textTheme
+                    .bodyText1
+                    ?.copyWith(color: Theme.of(context).errorColor),
+                )
+              ],
+            ),
+            onPressed: setCrisisView,
+          )
         ),
         if (_settingsOpen)
           SettingsOverlay(
@@ -338,6 +359,10 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         if (_feedbackOpen)
           FeedbackOverlay(
             setFeedbackView: setFeedbackView,
+          ),
+        if (_crisisOpen)
+          CrisisOverlay(
+            setCrisisView: setCrisisView
           )
       ],
     );
