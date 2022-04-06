@@ -13,6 +13,7 @@
                 "localhost",
                 "--web-port",
                 "5000",
+                "--no-sound-null-safety",
             ],
         }
     ]
