@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:developer';
 import 'package:async/async.dart';
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:ionicons/ionicons.dart';
@@ -7,6 +9,7 @@ import 'package:therabot/constants/messaging_strings.dart';
 import 'package:therabot/constants/prompts_data.dart';
 import 'package:therabot/constants/strings.dart';
 import 'package:therabot/store/config_provider.dart';
+import 'package:therabot/store/notif_provider.dart';
 import 'package:therabot/types/chat.dart';
 import 'package:therabot/store/theme_provider.dart';
 import 'package:therabot/store/emotion_provider.dart';
@@ -32,8 +35,6 @@ const localUrl = 'ws://$localIp:$localPort/websocket';
 const awsUrl = 'ws://$awsIp:$awsPort/websocket';
 const nrclexUrl =
     'https://gabho7ma71.execute-api.us-west-2.amazonaws.com/default/NRC_Lex';
-
-
 
 class InteractiveChatWindow extends StatefulWidget {
   const InteractiveChatWindow({Key? key}) : super(key: key);
@@ -67,6 +68,15 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   void initState() {
     super.initState();
 
+    AwesomeNotifications().actionStream.listen((receivedNotification) {
+      log("RECEIVED NOTIF");
+      log(receivedNotification.body.toString());
+      if (receivedNotification.body != null) {
+        Provider.of<NotifProvider>(context, listen: false)
+            .setBody(receivedNotification.body.toString());
+      }
+    });
+
     channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
       var text = data['text'];
@@ -74,7 +84,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       text = processBotText(text);
 
       if (MessagingStrings.botInitPhrases.indexOf(text) == 0) {
-
         var userData = await FirebaseDbService.getUserData();
         setState(() {
           convoID = userData?['convoID'] ?? '';
@@ -88,7 +97,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           await Future.delayed(const Duration(milliseconds: 2000));
         }
 
-        if (Provider.of<ConfigProvider>(context, listen: false).getMode() != Mode.dev) {
+        if (Provider.of<ConfigProvider>(context, listen: false).getMode() !=
+            Mode.dev) {
           FirebaseDbService.addConvoPrompt(
               convoID, prompt.map((element) => element.text).join());
         }
@@ -98,16 +108,16 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         for (var exchange in convo) {
           if (exchange.user.isNotEmpty) {
             Provider.of<ChatProvider>(context, listen: false)
-            .addChat(exchange.user, true);
+                .addChat(exchange.user, true);
           }
           if (exchange.bot.isNotEmpty) {
             Provider.of<ChatProvider>(context, listen: false)
-            .addBotResponse(exchange.bot, false);
+                .addBotResponse(exchange.bot, false);
           }
         }
 
         Map<String, Object>? botMessage =
-          Provider.of<ChatProvider>(context, listen: false).getBotMessage();
+            Provider.of<ChatProvider>(context, listen: false).getBotMessage();
 
         setState(() {
           botThinking = botMessage == null;
@@ -126,21 +136,19 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         });
 
         Map<String, Object>? botMessage =
-          Provider.of<ChatProvider>(context, listen: false).getBotMessage();
+            Provider.of<ChatProvider>(context, listen: false).getBotMessage();
 
         if (botMessage != null) {
           botMessage['convoID'] = convoID;
-          var mode = Provider.of<ConfigProvider>(context, listen: false).getMode();
+          var mode =
+              Provider.of<ConfigProvider>(context, listen: false).getMode();
           if (mode == Mode.trial) {
             FirebaseDbService.addMessageData(botMessage);
           } else if (mode == Mode.dev) {
             print(botMessage);
           }
         }
-
       }
-
-      
     });
 
     focusNode = FocusNode();
@@ -211,7 +219,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void setFeedbackView(int detail) async {
-    Provider.of<ChatProvider>(context, listen: false).feedbackDetail(-1, detail);
+    Provider.of<ChatProvider>(context, listen: false)
+        .feedbackDetail(-1, detail);
     if (detail != -1) await Future.delayed(const Duration(milliseconds: 300));
     setState(() {
       _feedbackOpen = !_feedbackOpen;
@@ -237,7 +246,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     } else if (response != null &&
         response.feedback == -1 &&
         response.text != MessagingStrings.welcomeMessage &&
-        Provider.of<ConfigProvider>(context, listen: false).getMode() != Mode.trial) {
+        Provider.of<ConfigProvider>(context, listen: false).getMode() !=
+            Mode.trial) {
       Provider.of<ChatProvider>(context, listen: false).runHighlightFeedback();
     } else if (text != '') {
       _textController.clear();
@@ -256,7 +266,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         Provider.of<ChatProvider>(context, listen: false).getBotMessage();
 
     if (botMessage != null) {
-      if (Provider.of<ConfigProvider>(context, listen: false).getMode() == Mode.prod) {
+      if (Provider.of<ConfigProvider>(context, listen: false).getMode() ==
+          Mode.prod) {
         botMessage['convoID'] = convoID;
         FirebaseDbService.addMessageData(botMessage);
       }
@@ -282,11 +293,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         Provider.of<ChatProvider>(context, listen: false).getLastMessage();
     userMessage['convoID'] = convoID;
 
-    String textJSON = jsonEncode(<String, String>{'text': "${userMessage['text']}"});
+    String textJSON =
+        jsonEncode(<String, String>{'text': "${userMessage['text']}"});
 
     channel.sink.add(textJSON);
 
-    if (Provider.of<ConfigProvider>(context, listen: false).getMode() != Mode.dev) {
+    if (Provider.of<ConfigProvider>(context, listen: false).getMode() !=
+        Mode.dev) {
       FirebaseDbService.addMessageData(userMessage);
     } else {
       print(userMessage);
@@ -304,6 +317,14 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     return Stack(
       children: [
         Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
+          Consumer<NotifProvider>(
+            builder: (context, notif, child) {
+              String? body = notif.getNotificationBody();
+              Widget toReturn =
+                  body != null ? Text(body) : const Text("Texting");
+              return toReturn;
+            },
+          ),
           MessageFeed(
             botThinking: botThinking,
             setFeedbackView: setFeedbackView,
@@ -329,28 +350,27 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           ),
         ),
         Positioned(
-          top: 10,
-          left: 20,
-          child: TextButton(
-            child: Row(
-              children: [
-                Icon(
-                  Ionicons.alert_circle_outline,
-                  color: Theme.of(context).errorColor,
-                ),
-                const Padding(padding: EdgeInsets.symmetric(horizontal: 2)),
-                Text(
-                  "Crisis?",
-                  style: Theme.of(context)
-                    .textTheme
-                    .bodyText1
-                    ?.copyWith(color: Theme.of(context).errorColor),
-                )
-              ],
-            ),
-            onPressed: setCrisisView,
-          )
-        ),
+            top: 10,
+            left: 20,
+            child: TextButton(
+              child: Row(
+                children: [
+                  Icon(
+                    Ionicons.alert_circle_outline,
+                    color: Theme.of(context).errorColor,
+                  ),
+                  const Padding(padding: EdgeInsets.symmetric(horizontal: 2)),
+                  Text(
+                    "Crisis?",
+                    style: Theme.of(context)
+                        .textTheme
+                        .bodyText1
+                        ?.copyWith(color: Theme.of(context).errorColor),
+                  )
+                ],
+              ),
+              onPressed: setCrisisView,
+            )),
         if (_settingsOpen)
           SettingsOverlay(
             setSettingsView: setSettingsView,
@@ -360,10 +380,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           FeedbackOverlay(
             setFeedbackView: setFeedbackView,
           ),
-        if (_crisisOpen)
-          CrisisOverlay(
-            setCrisisView: setCrisisView
-          )
+        if (_crisisOpen) CrisisOverlay(setCrisisView: setCrisisView)
       ],
     );
   }

@@ -12,7 +12,7 @@ Future<void> main() async {
 
   await _initializeNotifications();
   await _createTherabotNotification();
-  _createTherabotNotificationListener();
+  // _createTherabotNotificationListener();
 
   runApp(const App());
 }
@@ -56,8 +56,8 @@ Future<void> _createTherabotNotification() async {
 
   notificationSchedule = NotificationCalendar(
     timeZone: localTimeZone,
-    hour: 17,
-    minute: 42,
+    hour: 23,
+    minute: 6,
     second: 0,
     allowWhileIdle: true,
     repeats: true,
@@ -82,8 +82,8 @@ Future<void> _createTherabotNotification() async {
   );
 }
 
-void _createTherabotNotificationListener() async {
-  AwesomeNotifications().actionStream.listen((receivedNotification) {
-    log("RECEIVED NOTIF");
-  });
-}
+// void _createTherabotNotificationListener() async {
+//   AwesomeNotifications().actionStream.listen((receivedNotification) {
+//     log("RECEIVED NOTIF");
+//   });
+// }
