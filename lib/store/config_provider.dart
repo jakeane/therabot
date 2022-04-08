@@ -3,10 +3,11 @@ import 'package:flutter/material.dart';
 enum Mode {
   trial,
   prod,
-  dev
+  dev,
+  prompt
 }
 class ConfigProvider extends ChangeNotifier {
-  Mode mode = Mode.trial;
+  Mode mode = Mode.prompt;
 
   Mode getMode() => mode;
 }
