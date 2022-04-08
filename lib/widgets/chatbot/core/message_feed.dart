@@ -27,7 +27,8 @@ class MessageFeed extends StatelessWidget {
           child: Consumer<ChatProvider>(
             builder: (context, chat, child) {
               List<BubbleModel> chatList = chat.getChatList();
-              bool showPrompt = Provider.of<ConfigProvider>(context, listen: false).getMode() != Mode.trial;
+              bool showPrompt = Provider.of<ConfigProvider>(context, listen: false).getMode() != Mode.trial 
+                      && Provider.of<ConfigProvider>(context, listen: false).getMode() != Mode.prompt;
 
               return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
