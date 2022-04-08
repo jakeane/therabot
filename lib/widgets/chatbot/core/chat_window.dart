@@ -221,8 +221,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         Mode.prompt) {
       Provider.of<ChatProvider>(context, listen: false)
           .addBotResponse(MessagingStrings.demoPrompts[promptNum++], false);
+      if (promptNum >= MessagingStrings.demoPrompts.length) {
+        promptNum = 0;
+      }
       return;
-    } 
+    }
     channel.sink.add('{"text": "[DONE]"}');
     convoID = const Uuid().v4();
     FirebaseDbService.updateConvoID(convoID);
@@ -264,8 +267,9 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     if (botMessage != null) {
       if (Provider.of<ConfigProvider>(context, listen: false).getMode() ==
-          Mode.prod || Provider.of<ConfigProvider>(context, listen: false).getMode() ==
-          Mode.prompt) {
+              Mode.prod ||
+          Provider.of<ConfigProvider>(context, listen: false).getMode() ==
+              Mode.prompt) {
         botMessage['convoID'] = convoID;
         FirebaseDbService.addMessageData(botMessage);
       }
