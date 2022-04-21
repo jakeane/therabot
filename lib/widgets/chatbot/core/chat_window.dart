@@ -80,9 +80,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         });
 
         var convo = await FirebaseDbService.getConvo(convoID);
-        channel.sink.add(MessagingStrings.getConvoBegin(json.encode(convo)));
+        var messages = convo[0];
+        var messageSequence = convo[1];
+        channel.sink.add(MessagingStrings.getConvoBegin(json.encode(messageSequence)));
 
-        if (convo.isEmpty) {
+        if (messageSequence.isEmpty) {
           await Future.delayed(const Duration(milliseconds: 2000));
         }
 
@@ -94,14 +96,13 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         Provider.of<ChatProvider>(context, listen: false)
             .addBotResponse(MessagingStrings.welcomeMessage, false);
 
-        for (var exchange in convo) {
-          if (exchange.user.isNotEmpty) {
+        for (var message in messages) {
+          if (message.type) {
             Provider.of<ChatProvider>(context, listen: false)
-                .addChat(exchange.user, true);
-          }
-          if (exchange.bot.isNotEmpty) {
+                .addChat(message.text, true);
+          } else {
             Provider.of<ChatProvider>(context, listen: false)
-                .addBotResponse(exchange.bot, false);
+                .addBotResponse(message.text, false);
           }
         }
 

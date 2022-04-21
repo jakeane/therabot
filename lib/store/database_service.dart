@@ -82,7 +82,7 @@ class FirebaseDbService {
     }
   }
 
-  static Future<List<Exchange>> getConvo(String convoID) async {
+  static Future<List<dynamic>> getConvo(String convoID) async {
     try {
       var messageQuery = await firestoreInstance
           .collection('messages')
@@ -98,16 +98,36 @@ class FirebaseDbService {
           .toList()
         ..sort((a, b) => a.index - b.index);
 
-      var messageSequence = messages.fold<List<Exchange>>(
-          [],
-          (msgPairs, msg) => (msg.type
-              ? [...msgPairs, Exchange(msg.text, '')]
-              : [
-                  ...msgPairs.sublist(0, msgPairs.length - 1),
-                  Exchange(msgPairs.last.user, msg.text)
-                ]));
+      var exchangeNum = 0;
+      var userMessages = [''];
+      var botMessages = [''];
+      var newExchange = false;
 
-      return messageSequence;
+      for (int i = 0; i < messages.length; i++) {
+        if (messages.elementAt(i).type) {
+          if (newExchange) {
+            exchangeNum++;
+            userMessages.insert(exchangeNum, '');
+            botMessages.insert(exchangeNum, '');
+            newExchange = false;
+          }
+          userMessages.insert(exchangeNum,
+              userMessages.elementAt(exchangeNum) + messages.elementAt(i).text);
+        } else {
+          botMessages.insert(exchangeNum,
+              botMessages.elementAt(exchangeNum) + messages.elementAt(i).text);
+          newExchange = true;
+        }
+      }
+
+      var messageSequence = [];
+
+      for (int i = 0; i <= exchangeNum; i++) {
+        messageSequence
+            .add(Exchange(userMessages.elementAt(i), botMessages.elementAt(i)));
+      }
+
+      return [messages, messageSequence];
     } catch (e) {
       return [];
     }
