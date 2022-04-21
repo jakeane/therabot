@@ -216,7 +216,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     });
   }
 
-  void newConvo() {
+  void newPrompt() {
     if (Provider.of<ConfigProvider>(context, listen: false).getMode() ==
         Mode.prompt) {
       Provider.of<ChatProvider>(context, listen: false)
@@ -224,8 +224,20 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       if (promptNum >= MessagingStrings.demoPrompts.length) {
         promptNum = 0;
       }
+
+      Map<String, Object>? botMessage =
+          Provider.of<ChatProvider>(context, listen: false).getBotMessage();
+
+      if (botMessage != null) {
+        botMessage['convoID'] = convoID;
+        FirebaseDbService.addMessageData(botMessage);
+      }
+
       return;
     }
+  }
+
+  void newConvo() {
     channel.sink.add('{"text": "[DONE]"}');
     convoID = const Uuid().v4();
     FirebaseDbService.updateConvoID(convoID);
@@ -267,9 +279,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
     if (botMessage != null) {
       if (Provider.of<ConfigProvider>(context, listen: false).getMode() ==
-              Mode.prod ||
-          Provider.of<ConfigProvider>(context, listen: false).getMode() ==
-              Mode.prompt) {
+          Mode.prod) {
         botMessage['convoID'] = convoID;
         FirebaseDbService.addMessageData(botMessage);
       }
@@ -369,6 +379,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           SettingsOverlay(
             setSettingsView: setSettingsView,
             newConvo: newConvo,
+            newPrompt: newPrompt,
           ),
         if (_feedbackOpen)
           FeedbackOverlay(
