@@ -71,6 +71,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       var text = data['text'];
 
       text = processBotText(text);
+      print(text);
 
       if (MessagingStrings.botInitPhrases.indexOf(text) == 0) {
         var userData = await FirebaseDbService.getUserData();
@@ -82,7 +83,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         var convo = await FirebaseDbService.getConvo(convoID);
         var messages = convo[0];
         var messageSequence = convo[1];
-        channel.sink.add(MessagingStrings.getConvoBegin(json.encode(messageSequence)));
+        channel.sink
+            .add(MessagingStrings.getConvoBegin(json.encode(messageSequence)));
 
         if (messageSequence.isEmpty) {
           await Future.delayed(const Duration(milliseconds: 2000));
@@ -217,7 +219,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     });
   }
 
-  void newPrompt() {
+  void newPrompt() async {
     if (Provider.of<ConfigProvider>(context, listen: false).getMode() ==
         Mode.prompt) {
       Provider.of<ChatProvider>(context, listen: false)
@@ -232,6 +234,10 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       if (botMessage != null) {
         botMessage['convoID'] = convoID;
         FirebaseDbService.addMessageData(botMessage);
+
+        channel.sink.add('{"text": "[DONE]"}');
+
+        Provider.of<ChatProvider>(context, listen: false).restartConvo();
       }
 
       return;
