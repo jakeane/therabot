@@ -1,7 +1,5 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'package:async/async.dart';
-import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:ionicons/ionicons.dart';
@@ -9,7 +7,6 @@ import 'package:therabot/constants/messaging_strings.dart';
 import 'package:therabot/constants/prompts_data.dart';
 import 'package:therabot/constants/strings.dart';
 import 'package:therabot/store/config_provider.dart';
-import 'package:therabot/store/notif_provider.dart';
 import 'package:therabot/types/chat.dart';
 import 'package:therabot/store/theme_provider.dart';
 import 'package:therabot/store/emotion_provider.dart';
@@ -67,15 +64,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   @override
   void initState() {
     super.initState();
-
-    AwesomeNotifications().actionStream.listen((receivedNotification) {
-      log("RECEIVED NOTIF");
-      log(receivedNotification.body.toString());
-      if (receivedNotification.body != null) {
-        Provider.of<NotifProvider>(context, listen: false)
-            .setBody(receivedNotification.body.toString());
-      }
-    });
 
     channel.stream.listen((event) async {
       var data = jsonDecode(event) as Map;
@@ -317,14 +305,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     return Stack(
       children: [
         Column(mainAxisAlignment: MainAxisAlignment.end, children: <Widget>[
-          Consumer<NotifProvider>(
-            builder: (context, notif, child) {
-              String? body = notif.getNotificationBody();
-              Widget toReturn =
-                  body != null ? Text(body) : const Text("Texting");
-              return toReturn;
-            },
-          ),
           MessageFeed(
             botThinking: botThinking,
             setFeedbackView: setFeedbackView,

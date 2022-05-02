@@ -18,11 +18,11 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => AuthProvider()),
-        ChangeNotifierProvider(create: (_) => ConfigProvider())
-      ],
+        providers: [
+          ChangeNotifierProvider(create: (_) => ThemeProvider()),
+          ChangeNotifierProvider(create: (_) => AuthProvider()),
+          ChangeNotifierProvider(create: (_) => ConfigProvider())
+        ],
         child: Consumer<ThemeProvider>(builder: (context, theme, _) {
           return MaterialApp(
             title: 'Chatbot App',
@@ -32,8 +32,10 @@ class App extends StatelessWidget {
             // themeMode: theme.getIsDark() ? ThemeMode.dark : ThemeMode.light,
             initialRoute: Strings.signinRoute,
             routes: {
-              Strings.signinRoute: (_) => const PublicRoute(route: SignInScreen()),
-              Strings.createAccountRoute: (_) => const PublicRoute(route: CreateAccountScreen()),
+              Strings.signinRoute: (_) =>
+                  const PublicRoute(route: SignInScreen()),
+              Strings.createAccountRoute: (_) =>
+                  const PublicRoute(route: CreateAccountScreen()),
               Strings.messagingViewRoute: (_) =>
                   const PrivateRoute(route: ChatbotScreen()),
               Strings.onBoardingRoute: (_) =>
