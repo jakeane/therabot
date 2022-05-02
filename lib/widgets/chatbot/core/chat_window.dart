@@ -71,7 +71,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       var text = data['text'];
 
       text = processBotText(text);
-      print(text);
 
       if (MessagingStrings.botInitPhrases.indexOf(text) == 0) {
         var userData = await FirebaseDbService.getUserData();
@@ -219,11 +218,14 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     });
   }
 
+  /* in "prompt" mode, this method adds a prompt from the bot into 
+     the conversation */
   void newPrompt() async {
     if (Provider.of<ConfigProvider>(context, listen: false).getMode() ==
         Mode.prompt) {
       Provider.of<ChatProvider>(context, listen: false)
           .addBotResponse(MessagingStrings.demoPrompts[promptNum++], false);
+      // loop back to the first prompt
       if (promptNum >= MessagingStrings.demoPrompts.length) {
         promptNum = 0;
       }
@@ -237,6 +239,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
 
         channel.sink.add('{"text": "[DONE]"}');
 
+        // clears bubble list before the conversation is re filled to include
+        // the prompt now
         Provider.of<ChatProvider>(context, listen: false).restartConvo();
       }
 
