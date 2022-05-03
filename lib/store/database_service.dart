@@ -18,10 +18,8 @@ class FirebaseDbService {
 
   static void addConvoPrompt(String convoID, String prompt) {
     try {
-      firestoreInstance
-          .collection('convos')
-          .doc(convoID)
-          .set({"userID": authInstance.currentUser?.uid ?? "", "prompt": prompt});
+      firestoreInstance.collection('convos').doc(convoID).set(
+          {"userID": authInstance.currentUser?.uid ?? "", "prompt": prompt});
     } catch (e) {
       return;
     }
@@ -66,7 +64,6 @@ class FirebaseDbService {
           .collection('users')
           .doc(userID)
           .set({"convoID": newID}, SetOptions(merge: true));
-
     } catch (e) {
       return;
     }
@@ -88,34 +85,32 @@ class FirebaseDbService {
   static Future<List<Exchange>> getConvo(String convoID) async {
     try {
       var messageQuery = await firestoreInstance
-        .collection('messages')
-        .where('convoID', isEqualTo: convoID)
-        .where('userID', isEqualTo: authInstance.currentUser?.uid)
-        .get();
+          .collection('messages')
+          .where('convoID', isEqualTo: convoID)
+          .where('userID', isEqualTo: authInstance.currentUser?.uid)
+          .get();
 
       var messages = messageQuery.docs
-        .where((doc) => doc.exists)
-        .map((doc) => doc.data())
-        .map((doc) => Message(doc['type'], doc['index'], doc['text']))
-        .where((msg) => msg.index != 0)
-        .toList()
+          .where((doc) => doc.exists)
+          .map((doc) => doc.data())
+          .map((doc) => Message(doc['type'], doc['index'], doc['text']))
+          .where((msg) => msg.index != 0)
+          .toList()
         ..sort((a, b) => a.index - b.index);
 
-      var messageSequence = messages.fold<List<Exchange>>([], (msgPairs, msg) => (
-        msg.type
-          ? [...msgPairs, Exchange(msg.text, '')]
-          : [
-              ...msgPairs.sublist(0, msgPairs.length-1),
-              Exchange(msgPairs.last.user, msg.text)
-            ]
-      ));
+      var messageSequence = messages.fold<List<Exchange>>(
+          [],
+          (msgPairs, msg) => (msg.type
+              ? [...msgPairs, Exchange(msg.text, '')]
+              : [
+                  ...msgPairs.sublist(0, msgPairs.length - 1),
+                  Exchange(msgPairs.last.user, msg.text)
+                ]));
 
       return messageSequence;
-
     } catch (e) {
       return [];
     }
-
   }
 }
 
@@ -124,10 +119,7 @@ class Exchange {
   final String bot;
   Exchange(this.user, this.bot);
 
-  Map<String, dynamic> toJson() => {
-    'user': user,
-    'bot': bot
-  };
+  Map<String, dynamic> toJson() => {'user': user, 'bot': bot};
 
   @override
   String toString() {
