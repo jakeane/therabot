@@ -8,12 +8,12 @@ import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:therabot/navigation/app.dart';
 import 'package:therabot/store/notif_provider.dart';
 
-StreamSubscription<ReceivedNotification>? receivedNotificaationStream;
+StreamSubscription<ReceivedNotification>? receivedNotificationStream;
 StreamSubscription<ReceivedAction>? receivedActionStream;
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-
   await _createTherabotNotification();
   _createTherabotNotificationListener();
 
@@ -51,7 +51,19 @@ Future<void> _initializeNotifications(
 
 Future<void> _createTherabotNotification() async {
   AwesomeNotifications notifications = AwesomeNotifications();
-  _initializeNotifications(notifications);
+  // notifications.dispose();
+
+  await _initializeNotifications(notifications);
+  bool shouldCreate = true;
+  var test = await notifications.listScheduledNotifications();
+  for (var i in test) {
+    if (i.content?.groupKey != null &&
+        i.content?.groupKey == 'therabot_prompt_group') {
+      shouldCreate = false;
+      break;
+    }
+  }
+  if (!shouldCreate) return;
 
   NotificationCalendar notificationSchedule;
   String localTimeZone = await notifications.getLocalTimeZoneIdentifier();
@@ -62,7 +74,6 @@ Future<void> _createTherabotNotification() async {
     // minute: 59,
     second: 0,
     allowWhileIdle: true,
-    // repeats: true,
   );
 
   await notifications.createNotification(
@@ -89,8 +100,10 @@ void _createTherabotNotificationListener() async {
   int count = 0;
   int id = 1;
 
-  receivedNotificaationStream ??=
+  receivedNotificationStream ??=
       notifications.displayedStream.listen((receivedNotification) async {
+    log("${receivedNotification.body}");
+    // FirebaseDbService.addMessageData(receivedNotification.body); //TODO
     NotificationCalendar notificationSchedule;
     String localTimeZone = await notifications.getLocalTimeZoneIdentifier();
 
@@ -127,5 +140,7 @@ void _createTherabotNotificationListener() async {
       notifications.actionStream.listen((receivedAction) async {
     notifications.dismissNotificationsByGroupKey('therabot_prompt_group');
     id = 0;
+
+    log("${await notifications.listScheduledNotifications()}");
   });
 }
