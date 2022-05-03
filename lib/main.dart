@@ -140,7 +140,5 @@ void _createTherabotNotificationListener() async {
       notifications.actionStream.listen((receivedAction) async {
     notifications.dismissNotificationsByGroupKey('therabot_prompt_group');
     id = 0;
-
-    log("${await notifications.listScheduledNotifications()}");
   });
 }

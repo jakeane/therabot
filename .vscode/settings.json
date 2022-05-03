@@ -1,9 +1,0 @@
-{
-    "java.configuration.updateBuildConfiguration": "automatic",
-    "dart.flutterRunAdditionalArgs": [
-        "--no-sound-null-safety"
-    ],
-    "dart.vmAdditionalArgs": [
-        "--no-sound-null-safety"
-    ]
-}
