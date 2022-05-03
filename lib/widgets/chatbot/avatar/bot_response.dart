@@ -40,6 +40,7 @@ class BotResponse extends StatelessWidget {
               maxWidth: MediaQuery.of(context).size.width - 180,
               feedback: feedback,
               feedbackIcon: ActiveFeedbackIcon(feedback: feedback),
+              consecutive: false,
             ),
             feedback != -1 || suppressFeedback
                 ? Container(

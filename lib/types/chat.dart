@@ -16,17 +16,17 @@ class MessageModel {
   int feedback;
   int detail;
 }
-class BubbleModel {
-  BubbleModel({
-    required this.text,
-    required this.type,
-    required this.feedback,
-    required this.consecutive
-  });
+// class BubbleModel {
+//   BubbleModel({
+//     required this.text,
+//     required this.type,
+//     required this.feedback,
+//     required this.consecutive
+//   });
 
-  String text;
-  bool type;
-  int feedback;
-  bool consecutive;
-}
+//   String text;
+//   bool type;
+//   int feedback;
+//   bool consecutive;
+// }
 

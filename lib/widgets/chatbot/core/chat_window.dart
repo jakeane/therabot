@@ -7,6 +7,7 @@ import 'package:therabot/constants/messaging_strings.dart';
 import 'package:therabot/constants/prompts_data.dart';
 import 'package:therabot/constants/strings.dart';
 import 'package:therabot/store/config_provider.dart';
+import 'package:therabot/store/helpers.dart';
 import 'package:therabot/types/chat.dart';
 import 'package:therabot/store/theme_provider.dart';
 import 'package:therabot/store/emotion_provider.dart';
@@ -95,16 +96,11 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
               convoID, prompt.map((element) => element.text).join());
         }
         Provider.of<ChatProvider>(context, listen: false)
-            .addBotResponse(MessagingStrings.welcomeMessage, false);
+            .addChat(MessagingStrings.welcomeMessage, false);
 
         for (var message in messages) {
-          if (message.type) {
-            Provider.of<ChatProvider>(context, listen: false)
-                .addChat(message.text, true);
-          } else {
-            Provider.of<ChatProvider>(context, listen: false)
-                .addBotResponse(message.text, false);
-          }
+          Provider.of<ChatProvider>(context, listen: false)
+              .addChat(message.text, message.type);
         }
 
         Map<String, Object>? botMessage =
@@ -119,8 +115,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         int waitTime = text.length * 30;
 
         await Future.delayed(Duration(milliseconds: waitTime));
-        Provider.of<ChatProvider>(context, listen: false)
-            .addBotResponse(text, false);
+        Provider.of<ChatProvider>(context, listen: false).addChat(text, false);
 
         setState(() {
           botThinking = false;
@@ -224,7 +219,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
     if (Provider.of<ConfigProvider>(context, listen: false).getMode() ==
         Mode.prompt) {
       Provider.of<ChatProvider>(context, listen: false)
-          .addBotResponse(MessagingStrings.demoPrompts[promptNum++], false);
+          .addChat(MessagingStrings.demoPrompts[promptNum++], false);
       // loop back to the first prompt
       if (promptNum >= MessagingStrings.demoPrompts.length) {
         promptNum = 0;
@@ -243,8 +238,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         // the prompt now
         Provider.of<ChatProvider>(context, listen: false).restartConvo();
       }
-
-      return;
     }
   }
 
@@ -259,18 +252,18 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void handleSubmitted(String text) {
-    BubbleModel? response =
+    MessageModel? response =
         Provider.of<ChatProvider>(context, listen: false).getBotResponse();
+
+    Mode mode = Provider.of<ConfigProvider>(context, listen: false).getMode();
 
     if (botThinking) {
       Provider.of<ChatProvider>(context, listen: false).setWaitingMessage();
     } else if (response != null &&
         response.feedback == -1 &&
         response.text != MessagingStrings.welcomeMessage &&
-        Provider.of<ConfigProvider>(context, listen: false).getMode() !=
-            Mode.trial &&
-        Provider.of<ConfigProvider>(context, listen: false).getMode() !=
-            Mode.prompt) {
+        mode != Mode.trial &&
+        mode != Mode.prompt) {
       Provider.of<ChatProvider>(context, listen: false).runHighlightFeedback();
     } else if (text != '') {
       _textController.clear();
@@ -312,20 +305,24 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       botThinking = true;
     });
 
-    Map<String, Object> userMessage =
-        Provider.of<ChatProvider>(context, listen: false).getLastMessage();
-    userMessage['convoID'] = convoID;
+    List<Map<String, Object>> userMessages =
+        Provider.of<ChatProvider>(context, listen: false).getLastMessages()!;
 
-    String textJSON =
-        jsonEncode(<String, String>{'text': "${userMessage['text']}"});
+    var combinedMessages = userMessages.fold<String>(
+        "", (accMsg, msg) => (concatMessages(accMsg, msg['text'].toString())));
+
+    String textJSON = jsonEncode(<String, String>{'text': combinedMessages});
 
     channel.sink.add(textJSON);
 
     if (Provider.of<ConfigProvider>(context, listen: false).getMode() !=
         Mode.dev) {
-      FirebaseDbService.addMessageData(userMessage);
+      for (var msg in userMessages) {
+        msg['convoID'] = convoID;
+        FirebaseDbService.addMessageData(msg);
+      }
     } else {
-      print(userMessage);
+      print(userMessages);
     }
   }
 

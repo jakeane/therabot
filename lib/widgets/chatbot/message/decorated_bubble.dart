@@ -7,13 +7,15 @@ class DecoratedBubble extends StatelessWidget {
   final double maxWidth;
   final int feedback;
   final Widget feedbackIcon;
+  final bool consecutive;
 
   const DecoratedBubble({
     Key? key,
     required this.text,
     required this.maxWidth,
     required this.feedback,
-    required this.feedbackIcon
+    required this.feedbackIcon,
+    required this.consecutive
   }) : super(key: key);
 
   @override
@@ -26,7 +28,7 @@ class DecoratedBubble extends StatelessWidget {
           textStyle: Theme.of(context).textTheme.bodyText2!,
           maxWidth: maxWidth,
         ),
-        // if (!consecutive)
+        if (!consecutive)
         Positioned(
           bottom: -5,
           child: CustomPaint(

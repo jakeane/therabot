@@ -26,30 +26,42 @@ class MessageFeed extends StatelessWidget {
           onTap: () => FocusScope.of(context).unfocus(),
           child: Consumer<ChatProvider>(
             builder: (context, chat, child) {
-              List<BubbleModel> chatList = chat.getChatList();
-              bool showPrompt = Provider.of<ConfigProvider>(context, listen: false).getMode() != Mode.trial 
-                      && Provider.of<ConfigProvider>(context, listen: false).getMode() != Mode.prompt;
+              List<MessageModel> chatList = chat.getChatList();
+              
+              // if a prompt is being rendered, thus adding another item to the ListView
+              Mode mode = Provider.of<ConfigProvider>(context, listen: false).getMode();
+              bool showPrompt = mode != Mode.trial && mode != Mode.prompt;
+
+              /**
+               * Check if the last message is from the chatbot
+               * If so, it will be rendered with the chatbot avatar, not with the other messages
+               * In that case, the ListView is one item shorter
+               */
+              bool hasBotResponse = chatList.isNotEmpty && !chatList.last.type;
+              int brAdjustment = hasBotResponse ? -1 : 0;
 
               return ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 20.0),
                   reverse: true,
-                  itemCount: chatList.length + (showPrompt ? 2 : 1),
+                  itemCount: chatList.length + (showPrompt ? 2 : 1) + brAdjustment,
                   itemBuilder: (_, index) {
                     if (index == 0) {
                       return Avatar(
                           botThinking: botThinking,
                           setFeedbackView: setFeedbackView);
-                    } else if (showPrompt && index == chatList.length + 1) {
-                      return UserPrompt(
-                        prompt: prompt,
-                      );
+                    } else if (showPrompt && index == chatList.length) {
+                      return UserPrompt(prompt: prompt);
                     } else {
-                      BubbleModel message = chatList[chatList.length - index];
+                      MessageModel message = chatList[chatList.length - index + brAdjustment];
+                      var prevMsgType = index > 1
+                        ? chatList[chatList.length - index + 1 + brAdjustment].type
+                        : !message.type;
+
                       return ChatMessage(
                         text: message.text,
                         type: message.type,
                         feedback: message.feedback,
-                        consecutive: message.consecutive,
+                        consecutive: message.type == prevMsgType,
                       );
                     }
                   });

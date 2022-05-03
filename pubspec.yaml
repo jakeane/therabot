@@ -47,12 +47,13 @@ dependencies:
   google_sign_in: ^5.1.1
   sign_in_with_apple: ^3.2.0
   crypto: ^3.0.1
+  ionicons: ^0.1.2
+  url_launcher: ^6.0.18
+  tuple: ^2.0.0
   # flutter_gifimage: ^1.0.1
   flutter_gifimage:
     git:
       url: 'git://github.com/Coec0/flutter_gifimage.git'
-  ionicons: ^0.1.2
-  url_launcher: ^6.0.18
 
 dev_dependencies:
   flutter_test:
