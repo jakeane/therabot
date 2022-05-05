@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:developer';
+
 import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
@@ -17,6 +19,7 @@ import 'package:therabot/widgets/chatbot/core/text_composer.dart';
 import 'package:therabot/widgets/chatbot/crisis/crisis_overlay.dart';
 import 'package:therabot/widgets/chatbot/feedback/feedback_overlay.dart';
 import 'package:therabot/widgets/chatbot/settings/settings_overlay.dart';
+import 'package:therabot/notifications.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -226,6 +229,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void handleSubmitted(String text) {
+    log("SUBMITTED: $text");
+    shouldCancelNextNotification(DateTime.now()); // TODO: Put somwhere else?
     BubbleModel? response =
         Provider.of<ChatProvider>(context, listen: false).getBotResponse();
 

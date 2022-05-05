@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:therabot/store/chat_provider.dart';
 import 'package:therabot/store/emotion_provider.dart';
-import 'package:therabot/store/notif_provider.dart';
 
 class ChatbotScreen extends StatelessWidget {
   const ChatbotScreen({Key? key}) : super(key: key);
@@ -15,7 +14,6 @@ class ChatbotScreen extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(create: (_) => ChatProvider()),
           ChangeNotifierProvider(create: (_) => EmotionProvider()),
-          ChangeNotifierProvider(create: (_) => NotifProvider()),
         ],
         child: Container(
           color: Theme.of(context).backgroundColor,
