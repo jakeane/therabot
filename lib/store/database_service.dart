@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:therabot/store/helpers.dart';
+import 'package:tuple/tuple.dart';
 
 class FirebaseDbService {
   static final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
@@ -30,7 +32,7 @@ class FirebaseDbService {
       firestoreInstance
           .collection('users')
           .doc(userID)
-          .set({"isDark": true, "convoID": ''});
+          .set({"isDark": true, "convoID": '', "promptNum": 0});
     } catch (e) {
       return;
     }
@@ -69,6 +71,19 @@ class FirebaseDbService {
     }
   }
 
+  static void updatePromptNum(int newPromptNum) {
+    try {
+      String userID = authInstance.currentUser?.uid ?? "";
+
+      firestoreInstance
+          .collection('users')
+          .doc(userID)
+          .set({"promptNum": newPromptNum}, SetOptions(merge: true));
+    } catch (e) {
+      return;
+    }
+  }
+
   static void saveTheme(bool isDark) {
     try {
       String userID = authInstance.currentUser?.uid ?? "";
@@ -82,7 +97,7 @@ class FirebaseDbService {
     }
   }
 
-  static Future<List<dynamic>> getConvo(String convoID) async {
+  static Future<Tuple2<List<Message>, List<Exchange>>> getConvo(String convoID) async {
     try {
       var messageQuery = await firestoreInstance
           .collection('messages')
@@ -90,7 +105,7 @@ class FirebaseDbService {
           .where('userID', isEqualTo: authInstance.currentUser?.uid)
           .get();
 
-      var messages = messageQuery.docs
+      List<Message> messages = messageQuery.docs
           .where((doc) => doc.exists)
           .map((doc) => doc.data())
           .map((doc) => Message(doc['type'], doc['index'], doc['text']))
@@ -107,29 +122,29 @@ class FirebaseDbService {
         if (messages.elementAt(i).type) {
           if (newExchange) {
             exchangeNum++;
-            userMessages.insert(exchangeNum, '');
-            botMessages.insert(exchangeNum, '');
+            userMessages.add('');
+            botMessages.add('');
             newExchange = false;
           }
-          userMessages.insert(exchangeNum,
-              userMessages.elementAt(exchangeNum) + messages.elementAt(i).text);
+          userMessages[exchangeNum] =
+            concatMessages(userMessages[exchangeNum], messages[i].text);
         } else {
-          botMessages.insert(exchangeNum,
-              botMessages.elementAt(exchangeNum) + messages.elementAt(i).text);
+          botMessages[exchangeNum] = 
+            concatMessages(botMessages[exchangeNum], messages[i].text);
           newExchange = true;
         }
       }
 
-      var messageSequence = [];
+      List<Exchange> messageSequence = [];
 
       for (int i = 0; i <= exchangeNum; i++) {
         messageSequence
             .add(Exchange(userMessages.elementAt(i), botMessages.elementAt(i)));
       }
 
-      return [messages, messageSequence];
+      return Tuple2(messages, messageSequence);
     } catch (e) {
-      return [];
+      return const Tuple2([],[]);
     }
   }
 }

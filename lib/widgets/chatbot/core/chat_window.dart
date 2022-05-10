@@ -33,7 +33,6 @@ const localUrl = 'ws://$localIp:$localPort/websocket';
 const awsUrl = 'ws://$awsIp:$awsPort/websocket';
 const nrclexUrl =
     'https://gabho7ma71.execute-api.us-west-2.amazonaws.com/default/NRC_Lex';
-int promptNum = 0; // for dev prompt testing purposes
 
 class InteractiveChatWindow extends StatefulWidget {
   const InteractiveChatWindow({Key? key}) : super(key: key);
@@ -54,6 +53,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   bool _settingsOpen = false;
   bool _feedbackOpen = false;
   bool _crisisOpen = false;
+  int promptNum = 0; // for dev prompt testing purposes
 
   List<TextSpan> prompt = [];
 
@@ -81,8 +81,8 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
         });
 
         var convo = await FirebaseDbService.getConvo(convoID);
-        var messages = convo[0];
-        var messageSequence = convo[1];
+        var messages = convo.item1;
+        var messageSequence = convo.item2;
         channel.sink
             .add(MessagingStrings.getConvoBegin(json.encode(messageSequence)));
 
@@ -145,6 +145,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
           Provider.of<ThemeProvider>(context, listen: false)
               .setTheme(data["isDark"]);
           convoID = data["convoID"];
+          promptNum = data["promptNum"] ?? 0;
         }
       });
     });
@@ -218,26 +219,32 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   void newPrompt() async {
     if (Provider.of<ConfigProvider>(context, listen: false).getMode() ==
         Mode.prompt) {
-      Provider.of<ChatProvider>(context, listen: false)
-          .addChat(MessagingStrings.demoPrompts[promptNum++], false);
+      // create a new bot message with the next prompt
+      MessageModel promptMessage =
+          Provider.of<ChatProvider>(context, listen: false)
+              .createMessage(MessagingStrings.demoPrompts[promptNum++], false);
+
       // loop back to the first prompt
       if (promptNum >= MessagingStrings.demoPrompts.length) {
         promptNum = 0;
       }
 
-      Map<String, Object>? botMessage =
-          Provider.of<ChatProvider>(context, listen: false).getBotMessage();
+      //update promptNum in firebase
+      FirebaseDbService.updatePromptNum(promptNum);
 
-      if (botMessage != null) {
-        botMessage['convoID'] = convoID;
-        FirebaseDbService.addMessageData(botMessage);
+      Map<String, Object>? promptData =
+          Provider.of<ChatProvider>(context, listen: false).getPromptData(promptMessage);
 
-        channel.sink.add('{"text": "[DONE]"}');
+      // add prompt data to firebase
+      promptData['convoID'] = convoID;
+      FirebaseDbService.addMessageData(promptData);
 
-        // clears bubble list before the conversation is re filled to include
-        // the prompt now
-        Provider.of<ChatProvider>(context, listen: false).restartConvo();
-      }
+      channel.sink.add('{"text": "[DONE]"}');
+
+      SchedulerBinding.instance?.addPostFrameCallback((_) {
+        Navigator.of(context)
+            .pushReplacementNamed(Strings.messagingViewRoute);
+      });
     }
   }
 

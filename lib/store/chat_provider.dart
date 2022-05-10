@@ -10,12 +10,10 @@ class ChatProvider extends ChangeNotifier {
   List<MessageModel> getChatList() => _messageList;
   bool getHighlightFeedback() => _highlightFeedback;
 
-  MessageModel? getBotResponse() => (
-    _messageList.isEmpty || _messageList.last.type
-      ? null
-      : _messageList.last
-  );
-  
+  MessageModel? getBotResponse() =>
+      (_messageList.isEmpty || _messageList.last.type
+          ? null
+          : _messageList.last);
 
   void addChat(String text, bool type) {
     var message = createMessage(text, type);
@@ -23,7 +21,6 @@ class ChatProvider extends ChangeNotifier {
 
     notifyListeners();
   }
-
 
   MessageModel createMessage(String text, bool type) {
     return MessageModel(
@@ -93,10 +90,8 @@ class ChatProvider extends ChangeNotifier {
 
     List<Map<String, Object>> messages = [];
 
-    while (
-      _messageList.length > messages.length &&
-      _messageList[_messageList.length - messages.length - 1].type
-    ) {
+    while (_messageList.length > messages.length &&
+        _messageList[_messageList.length - messages.length - 1].type) {
       var i = _messageList.length - messages.length - 1;
       messages.add({
         "index": _messageList[i].index,
@@ -123,5 +118,16 @@ class ChatProvider extends ChangeNotifier {
       };
     }
     return null;
+  }
+
+  Map<String, Object> getPromptData(MessageModel promptMessage) {
+    return {
+      "index": promptMessage.index,
+      "type": promptMessage.type,
+      "text": promptMessage.text,
+      "feedback": promptMessage.feedback,
+      "detail": promptMessage.detail,
+      "timestamp": promptMessage.timestamp,
+    };
   }
 }

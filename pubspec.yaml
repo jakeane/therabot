@@ -53,7 +53,7 @@ dependencies:
   # flutter_gifimage: ^1.0.1
   flutter_gifimage:
     git:
-      url: 'git://github.com/Coec0/flutter_gifimage.git'
+      url: 'https://github.com/Coec0/flutter_gifimage.git'
 
 dev_dependencies:
   flutter_test:
