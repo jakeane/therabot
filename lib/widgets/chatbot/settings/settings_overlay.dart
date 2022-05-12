@@ -5,16 +5,16 @@ import 'package:provider/provider.dart';
 import 'package:therabot/store/auth_provider.dart';
 import 'package:therabot/store/database_service.dart';
 import 'package:therabot/store/theme_provider.dart';
+import 'package:therabot/store/config_provider.dart';
 
 class SettingsOverlay extends StatelessWidget {
   final Function setSettingsView;
   final Function newConvo;
+  final Function newPrompt;
 
-  const SettingsOverlay({
-    Key? key,
-    required this.setSettingsView,
-    required this.newConvo
-  }) : super(key: key);
+  const SettingsOverlay(
+      {Key? key, required this.setSettingsView, required this.newConvo, required this.newPrompt})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +29,11 @@ class SettingsOverlay extends StatelessWidget {
       Align(
           alignment: Alignment.center,
           child: Stack(
-            clipBehavior: Clip.none, children: [
+            clipBehavior: Clip.none,
+            children: [
               SettingsBox(
                 newConvo: newConvo,
+                newPrompt: newPrompt,
               ),
               Positioned(
                   top: -5,
@@ -48,7 +50,8 @@ class SettingsOverlay extends StatelessWidget {
                   top: -20,
                   right: -20,
                   child: IconButton(
-                      icon: SvgPicture.asset("assets/svgs/FeedbackExPressed.svg"),
+                      icon:
+                          SvgPicture.asset("assets/svgs/FeedbackExPressed.svg"),
                       iconSize: 25,
                       color: Theme.of(context).colorScheme.secondary,
                       padding: const EdgeInsets.all(0.0),
@@ -63,8 +66,10 @@ class SettingsOverlay extends StatelessWidget {
 
 class SettingsBox extends StatelessWidget {
   final Function newConvo;
+  final Function newPrompt;
 
-  const SettingsBox({Key? key, required this.newConvo}) : super(key: key);
+  const SettingsBox({Key? key, required this.newConvo, required this.newPrompt})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -79,19 +84,28 @@ class SettingsBox extends StatelessWidget {
           margin: const EdgeInsets.only(top: 10, bottom: 10),
           child: Text(
             "Settings",
-            style: Theme.of(context).textTheme.bodyText2?.copyWith(fontSize: 18),
+            style:
+                Theme.of(context).textTheme.bodyText2?.copyWith(fontSize: 18),
           ),
         ),
         Divider(
           color: Theme.of(context).colorScheme.secondary,
           height: 1,
         ),
-        Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          const ThemeSwitch(),
-          NewConvoButton(
-            newConvo: newConvo,
-          ),
-          const LogOutButton()
+        Column(mainAxisAlignment: MainAxisAlignment.center, children: Provider.of<ConfigProvider>(context, listen: false).getMode() == Mode.prompt 
+            ? [const ThemeSwitch(),
+            NewConvoButton(
+              newConvo: newConvo,
+            ),
+            NewPromptButton(
+              newPrompt: newPrompt,
+            ),
+            const LogOutButton()]
+          : [const ThemeSwitch(),
+            NewConvoButton(
+              newConvo: newConvo,
+            ),
+            const LogOutButton()
         ])
       ]),
     );
@@ -108,8 +122,11 @@ class ThemeSwitch extends StatelessWidget {
         TextStyle? activeText =
             Theme.of(context).textTheme.bodyText2?.copyWith(fontSize: 18);
 
-        TextStyle? inactiveText = Theme.of(context).textTheme.bodyText2?.copyWith(
-            fontSize: 18, color: Theme.of(context).colorScheme.secondary);
+        TextStyle? inactiveText = Theme.of(context)
+            .textTheme
+            .bodyText2
+            ?.copyWith(
+                fontSize: 18, color: Theme.of(context).colorScheme.secondary);
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -159,6 +176,39 @@ class NewConvoButton extends StatelessWidget {
             margin: const EdgeInsets.only(left: 5),
             child: Text(
               "Restart Conversation",
+              style:
+                  Theme.of(context).textTheme.bodyText2?.copyWith(fontSize: 18),
+            ),
+          )
+        ]),
+      ),
+    );
+  }
+}
+
+class NewPromptButton extends StatelessWidget {
+  final Function newPrompt;
+
+  const NewPromptButton({Key? key, required this.newPrompt}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 240,
+      margin: const EdgeInsets.only(bottom: 5),
+      child: FlatButton(
+        onPressed: () {
+          newPrompt();
+        },
+        child: Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+          FaIcon(
+            FontAwesomeIcons.solidPlusSquare,
+            color: Theme.of(context).textTheme.bodyText2?.color,
+          ),
+          Container(
+            margin: const EdgeInsets.only(left: 5),
+            child: Text(
+              "New Prompt",
               style:
                   Theme.of(context).textTheme.bodyText2?.copyWith(fontSize: 18),
             ),

@@ -27,7 +27,8 @@ class BotResponse extends StatelessWidget {
   Widget build(BuildContext context) {
     bool suppressFeedback =
         MessagingStrings.suppressFeedbackText.contains(text) ||
-        Provider.of<ConfigProvider>(context, listen: false).getMode() == Mode.trial;
+        Provider.of<ConfigProvider>(context, listen: false).getMode() == Mode.trial ||
+        Provider.of<ConfigProvider>(context, listen: false).getMode() == Mode.prompt;
 
     return Container(
         margin: const EdgeInsets.only(bottom: 40),
@@ -39,6 +40,7 @@ class BotResponse extends StatelessWidget {
               maxWidth: MediaQuery.of(context).size.width - 180,
               feedback: feedback,
               feedbackIcon: ActiveFeedbackIcon(feedback: feedback),
+              consecutive: false,
             ),
             feedback != -1 || suppressFeedback
                 ? Container(

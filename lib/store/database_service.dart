@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:therabot/store/helpers.dart';
+import 'package:tuple/tuple.dart';
 
 class FirebaseDbService {
   static final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
@@ -18,10 +20,8 @@ class FirebaseDbService {
 
   static void addConvoPrompt(String convoID, String prompt) {
     try {
-      firestoreInstance
-          .collection('convos')
-          .doc(convoID)
-          .set({"userID": authInstance.currentUser?.uid ?? "", "prompt": prompt});
+      firestoreInstance.collection('convos').doc(convoID).set(
+          {"userID": authInstance.currentUser?.uid ?? "", "prompt": prompt});
     } catch (e) {
       return;
     }
@@ -32,7 +32,7 @@ class FirebaseDbService {
       firestoreInstance
           .collection('users')
           .doc(userID)
-          .set({"isDark": true, "convoID": ''});
+          .set({"isDark": true, "convoID": '', "promptNum": 0});
     } catch (e) {
       return;
     }
@@ -66,7 +66,19 @@ class FirebaseDbService {
           .collection('users')
           .doc(userID)
           .set({"convoID": newID}, SetOptions(merge: true));
+    } catch (e) {
+      return;
+    }
+  }
 
+  static void updatePromptNum(int newPromptNum) {
+    try {
+      String userID = authInstance.currentUser?.uid ?? "";
+
+      firestoreInstance
+          .collection('users')
+          .doc(userID)
+          .set({"promptNum": newPromptNum}, SetOptions(merge: true));
     } catch (e) {
       return;
     }
@@ -85,37 +97,55 @@ class FirebaseDbService {
     }
   }
 
-  static Future<List<Exchange>> getConvo(String convoID) async {
+  static Future<Tuple2<List<Message>, List<Exchange>>> getConvo(String convoID) async {
     try {
       var messageQuery = await firestoreInstance
-        .collection('messages')
-        .where('convoID', isEqualTo: convoID)
-        .where('userID', isEqualTo: authInstance.currentUser?.uid)
-        .get();
+          .collection('messages')
+          .where('convoID', isEqualTo: convoID)
+          .where('userID', isEqualTo: authInstance.currentUser?.uid)
+          .get();
 
-      var messages = messageQuery.docs
-        .where((doc) => doc.exists)
-        .map((doc) => doc.data())
-        .map((doc) => Message(doc['type'], doc['index'], doc['text']))
-        .where((msg) => msg.index != 0)
-        .toList()
+      List<Message> messages = messageQuery.docs
+          .where((doc) => doc.exists)
+          .map((doc) => doc.data())
+          .map((doc) => Message(doc['type'], doc['index'], doc['text']))
+          .where((msg) => msg.index != 0)
+          .toList()
         ..sort((a, b) => a.index - b.index);
 
-      var messageSequence = messages.fold<List<Exchange>>([], (msgPairs, msg) => (
-        msg.type
-          ? [...msgPairs, Exchange(msg.text, '')]
-          : [
-              ...msgPairs.sublist(0, msgPairs.length-1),
-              Exchange(msgPairs.last.user, msg.text)
-            ]
-      ));
+      var exchangeNum = 0;
+      var userMessages = [''];
+      var botMessages = [''];
+      var newExchange = false;
 
-      return messageSequence;
+      for (int i = 0; i < messages.length; i++) {
+        if (messages.elementAt(i).type) {
+          if (newExchange) {
+            exchangeNum++;
+            userMessages.add('');
+            botMessages.add('');
+            newExchange = false;
+          }
+          userMessages[exchangeNum] =
+            concatMessages(userMessages[exchangeNum], messages[i].text);
+        } else {
+          botMessages[exchangeNum] = 
+            concatMessages(botMessages[exchangeNum], messages[i].text);
+          newExchange = true;
+        }
+      }
 
+      List<Exchange> messageSequence = [];
+
+      for (int i = 0; i <= exchangeNum; i++) {
+        messageSequence
+            .add(Exchange(userMessages.elementAt(i), botMessages.elementAt(i)));
+      }
+
+      return Tuple2(messages, messageSequence);
     } catch (e) {
-      return [];
+      return const Tuple2([],[]);
     }
-
   }
 }
 
@@ -124,10 +154,7 @@ class Exchange {
   final String bot;
   Exchange(this.user, this.bot);
 
-  Map<String, dynamic> toJson() => {
-    'user': user,
-    'bot': bot
-  };
+  Map<String, dynamic> toJson() => {'user': user, 'bot': bot};
 
   @override
   String toString() {

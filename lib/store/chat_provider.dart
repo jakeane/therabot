@@ -3,56 +3,23 @@ import 'package:flutter/material.dart';
 import 'package:therabot/types/chat.dart';
 
 class ChatProvider extends ChangeNotifier {
-  final List<BubbleModel> _bubbleList = [];
   final List<MessageModel> _messageList = [];
-  BubbleModel? _botResponse;
   bool waiting = false;
   bool _highlightFeedback = false;
 
-  List<BubbleModel> getChatList() => _bubbleList;
-  BubbleModel? getBotResponse() => _botResponse;
+  List<MessageModel> getChatList() => _messageList;
   bool getHighlightFeedback() => _highlightFeedback;
 
+  MessageModel? getBotResponse() =>
+      (_messageList.isEmpty || _messageList.last.type
+          ? null
+          : _messageList.last);
+
   void addChat(String text, bool type) {
-    if (_botResponse != null) {
-      _bubbleList.add(_botResponse!);
-      _botResponse = null;
-    }
-
-    BubbleModel bubble = createBubble(text, type);
-
-    if (!(text.endsWith(".") || text.endsWith("!") || text.endsWith("?"))) {
-      text += ".";
-    }
-
-    if (_messageList.isNotEmpty && _messageList.last.type == type) {
-      _bubbleList.last.consecutive = true;
-
-      _messageList.last.text += " $text";
-    } else {
-      _messageList.add(createMessage(text, type));
-    }
-
-    _bubbleList.add(bubble);
+    var message = createMessage(text, type);
+    _messageList.add(message);
 
     notifyListeners();
-  }
-
-  void addBotResponse(String text, bool type) {
-    if (_botResponse != null) {
-      _bubbleList.add(_botResponse!);
-      _botResponse = null;
-    }
-
-    _botResponse = createBubble(text, type);
-    _messageList.add(createMessage(text, type));
-
-    notifyListeners();
-  }
-
-  BubbleModel createBubble(String text, bool type) {
-    return BubbleModel(
-        text: text, type: type, feedback: -1, consecutive: false);
   }
 
   MessageModel createMessage(String text, bool type) {
@@ -67,18 +34,20 @@ class ChatProvider extends ChangeNotifier {
 
   void giveFeedback(int index, int feedback) {
     if (index == -1) {
-      _botResponse!.feedback = feedback;
+      if (_messageList.isEmpty || _messageList.last.type) return;
+      _messageList.last.feedback = feedback;
       if (feedback == -1) {
         _messageList.last.detail = -1;
       }
     } else {
-      _bubbleList[index].feedback = feedback;
+      _messageList[index].feedback = feedback;
     }
     notifyListeners();
   }
 
   void feedbackDetail(int index, int detail) {
     if (index == -1) {
+      if (_messageList.isEmpty || _messageList.last.type) return;
       _messageList.last.detail = detail;
     } else {
       _messageList[index].detail = detail;
@@ -87,22 +56,23 @@ class ChatProvider extends ChangeNotifier {
   }
 
   void restartConvo() {
-    _bubbleList.clear();
-    _botResponse = null;
+    _messageList.clear();
   }
 
   bool isWaiting() {
-    return _botResponse == null || waiting;
+    return waiting || !(_messageList.isNotEmpty && _messageList.last.type);
   }
 
   void setWaitingMessage() async {
     waiting = true;
-    _botResponse = createBubble("Hold on, I'm thinking...", false);
+    var waitingMessage = createMessage("Hold on, I'm thinking...", false);
+    _messageList.add(waitingMessage);
+
     notifyListeners();
 
     await Future.delayed(const Duration(milliseconds: 1000));
 
-    _botResponse = null;
+    _messageList.removeLast();
     waiting = false;
     notifyListeners();
   }
@@ -115,28 +85,49 @@ class ChatProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Map<String, Object> getLastMessage() {
-    return {
-      "index": _messageList.last.index,
-      "type": _messageList.last.type,
-      "text": _messageList.last.text,
-      "feedback": "",
-      "detail": "",
-      "timestamp": _messageList.last.timestamp,
-    };
+  List<Map<String, Object>>? getLastMessages() {
+    if (_messageList.isEmpty) return null;
+
+    List<Map<String, Object>> messages = [];
+
+    while (_messageList.length > messages.length &&
+        _messageList[_messageList.length - messages.length - 1].type) {
+      var i = _messageList.length - messages.length - 1;
+      messages.add({
+        "index": _messageList[i].index,
+        "type": _messageList[i].type,
+        "text": _messageList[i].text,
+        "feedback": "",
+        "detail": "",
+        "timestamp": _messageList[i].timestamp,
+      });
+    }
+
+    return messages;
   }
 
   Map<String, Object>? getBotMessage() {
-    if (_botResponse != null) {
+    if (_messageList.isNotEmpty && !_messageList.last.type) {
       return {
         "index": _messageList.last.index,
         "type": _messageList.last.type,
         "text": _messageList.last.text,
-        "feedback": _botResponse!.feedback,
+        "feedback": _messageList.last.feedback,
         "detail": _messageList.last.detail,
         "timestamp": _messageList.last.timestamp,
       };
     }
     return null;
+  }
+
+  Map<String, Object> getPromptData(MessageModel promptMessage) {
+    return {
+      "index": promptMessage.index,
+      "type": promptMessage.type,
+      "text": promptMessage.text,
+      "feedback": promptMessage.feedback,
+      "detail": promptMessage.detail,
+      "timestamp": promptMessage.timestamp,
+    };
   }
 }

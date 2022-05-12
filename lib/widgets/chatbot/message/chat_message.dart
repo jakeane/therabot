@@ -19,12 +19,14 @@ class ChatMessage extends StatelessWidget {
   final bool consecutive;
 
   Widget otherMessage(context) {
-    return Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.start,children: [
       DecoratedBubble(
         text: text,
         maxWidth: (2 * MediaQuery.of(context).size.width / 3) + 20,
         feedback: feedback,
         feedbackIcon: InactiveFeedbackIcon(feedback: feedback),
+        consecutive: consecutive,
       )
     ]);
   }
