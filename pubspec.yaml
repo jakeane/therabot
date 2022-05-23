@@ -50,6 +50,7 @@ dependencies:
   ionicons: ^0.1.2
   url_launcher: ^6.0.18
   tuple: ^2.0.0
+  sentry_flutter: ^6.5.1
   # flutter_gifimage: ^1.0.1
   flutter_gifimage:
     git:
