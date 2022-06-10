@@ -1,24 +1,77 @@
 import 'dart:async';
 import 'dart:developer';
+import 'dart:math' as math;
 
+import 'package:collection/collection.dart';
 import 'package:awesome_notifications/awesome_notifications.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
-enum Unit { day, hour, minute, second }
+import 'package:therabot/widgets/chatbot/core/chat_window.dart';
+
 AwesomeNotifications notifications = AwesomeNotifications();
 StreamSubscription<ReceivedNotification>? receivedNotificationStream;
 StreamSubscription<ReceivedAction>? receivedActionStream;
 
 // Map<String, int> globalNotificationScheduleMap = {'hour': 17, 'minute': 0, 'second': 0};
-Map<String, int> globalNotificationScheduleMap = {'second': 0};
+Map<int, Map<String, int>> globalNotificationScheduleMaps = {
+  0: {'minute': 0, 'second': 0},
+  1: {'minute': 10, 'second': 0},
+  2: {'minute': 20, 'second': 0},
+  3: {'minute': 30, 'second': 0},
+  4: {'minute': 40, 'second': 0},
+  5: {'minute': 50, 'second': 0}
+};
+// Map<int, Map<String, int>> globalNotificationScheduleMaps = {
+//   0: {'hour': 16, 'minute': 0, 'second': 0},
+//   1: {'hour': 17, 'minute': 0, 'second': 0},
+//   2: {'hour': 18, 'minute': 0, 'second': 0},
+//   3: {'hour': 19, 'minute': 0, 'second': 0},
+// };
+
 String notificationGroupKey = 'therabot_prompt_group';
 String notificationChannelKey = 'therabot_notifications';
-Duration cancelDuration = const Duration(seconds: 30);
-Unit timeUnit = Unit.minute;
+Duration cancelDuration = const Duration(minutes: 5);
 
-Future<void> initializeTherabotNotification() async {
+Future<void> initializeAndCreateTherabotNotification() async {
   await _initializeNotifications();
   _createTherabotNotificationListeners();
+  bool shouldCreate = await _shouldCreate();
+  if (!shouldCreate) return;
 
+  Map<String, int>? scheduleMap = _getInitialScheduleMap();
+  log("INITIAL SCHEDULE: $scheduleMap");
+  await _createTherabotNotification(0, _getRandomPrompt(), scheduleMap);
+}
+
+Future<void> _initializeNotifications() async {
+  await notifications.initialize(
+    null,
+    [
+      NotificationChannel(
+        channelGroupKey: notificationGroupKey,
+        channelKey: notificationChannelKey,
+        channelDescription: 'Therabot notifications',
+        channelName: 'Therabot notifications',
+        importance: NotificationImportance.High,
+        groupAlertBehavior: GroupAlertBehavior.All,
+        onlyAlertOnce: false,
+      )
+    ],
+    channelGroups: [
+      NotificationChannelGroup(
+          channelGroupkey: notificationGroupKey,
+          channelGroupName: 'Therabot prompt group')
+    ],
+  );
+
+  await notifications.isNotificationAllowed().then((isAllowed) async {
+    if (!isAllowed) {
+      await notifications.requestPermissionToSendNotifications();
+    }
+  });
+}
+
+Future<bool> _shouldCreate() async {
   bool shouldCreate = true;
   List<NotificationModel> scheduledNotifications =
       await notifications.listScheduledNotifications();
@@ -29,17 +82,47 @@ Future<void> initializeTherabotNotification() async {
       break;
     }
   }
-  if (!shouldCreate) return;
-  await createTherabotNotification(0, "Initial notification text!");
+
+  return shouldCreate;
 }
 
-Future<void> createTherabotNotification(int id, String notificationBody,
-    [Map<String, int>? notificationScheduleMap]) async {
-  NotificationCalendar notificationSchedule = notificationScheduleMap != null
-      ? await _createNotificationCalendar(notificationScheduleMap)
-      : await _createNotificationCalendar(globalNotificationScheduleMap);
+Map<String, int>? _getInitialScheduleMap() {
+  for (int id in globalNotificationScheduleMaps.keys) {
+    Map<String, int> scheduleMap = globalNotificationScheduleMaps[id]!;
+    DateTime scheduleTime = _notifScheduleToDateTime(scheduleMap, init: true);
+    log("HERE: $scheduleTime");
 
-  await notifications.createNotification(
+    // Initial notification time should be the next occurring time
+    if (scheduleTime.isAfter(DateTime.now())) {
+      return globalNotificationScheduleMaps[id];
+    }
+  }
+  // If all notification times have already occurred, schedule for the next unit of time
+  return globalNotificationScheduleMaps[0];
+}
+
+int _getInitialScheduleMapInd() {
+  for (int id in globalNotificationScheduleMaps.keys) {
+    Map<String, int> scheduleMap = globalNotificationScheduleMaps[id]!;
+    DateTime scheduleTime = _notifScheduleToDateTime(scheduleMap, init: true);
+    log("HERE: $scheduleTime");
+
+    // Initial notification time should be the next occurring time
+    if (scheduleTime.isAfter(DateTime.now())) {
+      return id;
+    }
+  }
+  // If all notification times have already occurred, schedule for the next unit of time
+  return 0;
+}
+
+Future<void> _createTherabotNotification(int id, String notificationBody,
+    [Map<String, int>? scheduleMap]) async {
+  NotificationCalendar notificationSchedule = scheduleMap != null
+      ? await _createNotificationCalendar(scheduleMap)
+      : await _createNotificationCalendar(globalNotificationScheduleMaps[0]!);
+
+  bool created = await notifications.createNotification(
     content: NotificationContent(
         groupKey: notificationGroupKey,
         channelKey: notificationChannelKey,
@@ -48,6 +131,15 @@ Future<void> createTherabotNotification(int id, String notificationBody,
         body: notificationBody),
     schedule: notificationSchedule,
   );
+
+  log("CREATED NOTIFICATION! $created");
+  await _logScheduledNotifs();
+}
+
+Future<void> _logScheduledNotifs() async {
+  List<NotificationModel> notifs =
+      await notifications.listScheduledNotifications();
+  log("$notifs");
 }
 
 Future<NotificationCalendar> _createNotificationCalendar(
@@ -71,167 +163,156 @@ Future<NotificationCalendar> _createNotificationCalendar(
   );
 }
 
-Future<void> _initializeNotifications() async {
-  await notifications.initialize(
-    null,
-    [
-      NotificationChannel(
-        channelGroupKey: notificationGroupKey,
-        channelKey: notificationChannelKey,
-        channelDescription: 'Therabot notifications',
-        channelName: 'Therabot notifications',
-        importance: NotificationImportance.High,
-        groupAlertBehavior: GroupAlertBehavior.All,
-      )
-    ],
-    channelGroups: [
-      NotificationChannelGroup(
-          channelGroupkey: notificationGroupKey,
-          channelGroupName: 'Therabot prompt group')
-    ],
-  );
-
-  await notifications.isNotificationAllowed().then((isAllowed) async {
-    if (!isAllowed) {
-      await notifications.requestPermissionToSendNotifications();
-    }
-  });
-}
-
 void _createTherabotNotificationListeners() async {
-  if (receivedNotificationStream != null) return;
-  int count = 0;
-  bool dismissed = false;
+  if (receivedNotificationStream != null) {
+    // Only create listeners if not listening already
+    return;
+  }
+  bool dismissed =
+      false; // Used to determined whether we can reset the ids on subsequent notifications
 
   receivedNotificationStream ??=
       notifications.displayedStream.listen((receivedNotification) async {
-    log("${receivedNotification.id}: ${receivedNotification.body}");
+    log("${receivedNotification.id}: ${receivedNotification.body}, ${receivedNotification.groupKey}");
+
     int? idPrev = receivedNotification.id;
-    if (dismissed) {
-      await createTherabotNotification(0, 'New text + $count');
-      dismissed = false;
-    } else {
-      await createTherabotNotification((idPrev ?? -1) + 1, 'New text + $count');
+    if (idPrev != null) {
+      bool result = await InternetConnectionChecker().hasConnection;
+      if (result == true) {
+        log('YAY! Free cute dog pics!');
+      } else {
+        log('No internet :( Reason:');
+      }
+
+      if (!result) {
+        //TODO LO: Check connectivity
+        await notifications.dismiss(idPrev);
+        log("DISMISSED!");
+        int schedule = _getInitialScheduleMapInd();
+        await _delayNotification(receivedNotification.id!.toInt(),
+            receivedNotification.body!, schedule);
+        await notifications.cancelSchedule(idPrev);
+        return;
+      }
+
+      await notifications.cancelSchedule(
+          idPrev); // Remove the notification schedule to prevent clutter
+      if (dismissed) {
+        // If notifications were dismissed, reset the ids on subsequent notifications
+        await _createTherabotNotification(0, _getRandomPrompt());
+        dismissed = false;
+      } else {
+        await _createTherabotNotification(idPrev + 1, _getRandomPrompt());
+      }
     }
     // FirebaseDbService.addMessageData(receivedNotification.body); //TODO
-
-    if (idPrev != null) {
-      await notifications.cancelSchedule(idPrev);
-    }
-    count += 1;
   });
 
   receivedActionStream ??=
       notifications.actionStream.listen((receivedAction) async {
+    // Dismiss all notifications if one is selected
+    log("ACTION!");
     notifications.dismissNotificationsByGroupKey(notificationGroupKey);
     dismissed = true;
   });
 }
 
-Future<void> shouldCancelNextNotification(DateTime lastInteractionTime) async {
-  int? id = 0;
-  String body = _getRandomPrompt();
-  log("${(await notifications.listScheduledNotifications())}");
-
+Future<void> checkDelayNextNotification(DateTime lastInteractionTime) async {
   NotificationModel model = (await notifications.listScheduledNotifications())
       .firstWhere(
           (element) => element.content?.groupKey == notificationGroupKey,
           orElse: () => NotificationModel(content: null));
+  log("MODEL: $model");
+  if (model.content != null &&
+      model.schedule != null &&
+      model.content!.id != null &&
+      model.content!.body != null) {
+    NotificationSchedule schedule = model.schedule!;
+    int id = model.content!.id!;
+    String body = model.content!.body!;
 
-  if (model.content != null) {
-    NotificationSchedule? schedule = model.schedule;
-    if (model.content!.id != null) {
-      id = model.content!.id!.toInt();
-    }
-    if (model.content!.body != null) {
-      body = model.content!.body!.toString();
-    }
-    if (schedule != null) {
-      DateTime scheduleTime = notifScheduleToDateTime(schedule.toMap());
-      log("SCHED? $scheduleTime");
-      if (scheduleTime.difference(lastInteractionTime) <= cancelDuration) {
-        log("SHOULD CANCEL");
-        notifications.cancelSchedule(id);
-        await createTherabotNotification(
-            id, body, _getNewScheduleMap(schedule, scheduleTime));
-      }
-      log('Interaction time: $lastInteractionTime, Schedule: $scheduleTime');
+    DateTime scheduleTime = _notifScheduleToDateTime(schedule.toMap());
+    log("NOW: ${DateTime.now()}, SCHED: $scheduleTime");
+    if (scheduleTime.difference(lastInteractionTime) <= cancelDuration) {
+      log("SHOULD DELAY");
+      await _delayNotification(id, body, _getNextScheduleMapInd(schedule));
     }
   }
 }
 
-Map<String, int>? _getNewScheduleMap(
-    NotificationSchedule schedule, DateTime scheduleTime) {
-  Map<String, dynamic> scheduleMap = schedule.toMap();
+Future<void> _delayNotification(int id, String body, int scheduleInd) async {
+  notifications.cancelSchedule(id);
+  String newBody = scheduleInd == 0 ? _getRandomPrompt() : body;
 
-  if (timeUnit == Unit.day) {
-    scheduleMap['day'] = scheduleTime.add(const Duration(days: 1)).day;
-    return {
-      'day': scheduleMap['day'],
-      'hour': scheduleMap['hour'],
-      'minute': scheduleMap['minute'],
-      'second': scheduleMap['second']
-    };
-  } else if (timeUnit == Unit.hour) {
-    scheduleMap['hour'] = scheduleTime.add(const Duration(hours: 1)).hour;
-    return {
-      'hour': scheduleMap['hour'],
-      'minute': scheduleMap['minute'],
-      'second': scheduleMap['second']
-    };
-  } else if (timeUnit == Unit.minute) {
-    scheduleMap['minute'] = scheduleTime.add(const Duration(minutes: 1)).minute;
-    return {'minute': scheduleMap['minute'], 'second': scheduleMap['second']};
+  await _createTherabotNotification(
+      id, newBody, globalNotificationScheduleMaps[scheduleInd]);
+}
+
+int _getNextScheduleMapInd(NotificationSchedule schedule) {
+  Map<String, dynamic> scheduleMapFromNotif = schedule.toMap();
+  int? scheduleInd = _getScheduleIndex(scheduleMapFromNotif);
+  return scheduleInd! < globalNotificationScheduleMaps.length - 1
+      ? scheduleInd + 1
+      : 0;
+}
+
+int? _getScheduleIndex(Map<String, dynamic> scheduleMapFromNotif) {
+  const mapEquals = MapEquality();
+  Map<String, int> scheduleMap = Map.fromEntries(scheduleMapFromNotif.entries
+      .map((entry) => ['day', 'hour', 'minute', 'second'].contains(entry.key) &&
+              entry.value != null
+          ? MapEntry(entry.key, entry.value as int)
+          : null)
+      .whereNotNull());
+
+  log('SCHEDULE MAP (INT): $scheduleMap');
+  for (int id in globalNotificationScheduleMaps.keys) {
+    if (mapEquals.equals(globalNotificationScheduleMaps[id], scheduleMap)) {
+      return id;
+    }
   }
 }
 
-DateTime notifScheduleToDateTime(Map<String, dynamic> notificationSchedule) {
-  log("NOTIF SCHED: $notificationSchedule");
-  if (timeUnit == Unit.day) {
-    DateTime now = DateTime.now();
-    DateTime scheduled = DateTime(
-        now.year,
-        now.month,
-        notificationSchedule['day'] ?? now.day,
-        notificationSchedule['hour'],
-        notificationSchedule['minute'],
-        notificationSchedule['second']);
-    if (scheduled.isBefore(now)) {
-      return scheduled.add(const Duration(days: 1));
-    } else {
-      return scheduled;
-    }
-  } else if (timeUnit == Unit.hour) {
-    DateTime now = DateTime.now();
-    DateTime scheduled = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        notificationSchedule['hour'] ?? now.hour,
-        notificationSchedule['minute'],
-        notificationSchedule['second']);
-    if (scheduled.isBefore(now)) {
-      return scheduled.add(const Duration(hours: 1));
-    } else {
-      return scheduled;
-    }
-  } else {
-    DateTime now = DateTime.now();
-    DateTime scheduled = DateTime(
-        now.year,
-        now.month,
-        now.day,
-        now.hour,
-        notificationSchedule['minute'] ?? now.minute,
-        notificationSchedule['second']);
-    if (scheduled.isBefore(now)) {
+DateTime _notifScheduleToDateTime(Map<String, dynamic> notificationSchedule,
+    {bool init = false}) {
+  DateTime now = DateTime.now();
+  DateTime scheduled = DateTime(
+    now.year,
+    now.month,
+    notificationSchedule.containsKey('day') &&
+            notificationSchedule['day'] != null
+        ? notificationSchedule['day']
+        : now.day,
+    notificationSchedule.containsKey('hour') &&
+            notificationSchedule['hour'] != null
+        ? notificationSchedule['hour']
+        : now.hour,
+    notificationSchedule.containsKey('minute') &&
+            notificationSchedule['minute'] != null
+        ? notificationSchedule['minute']
+        : now.minute,
+    notificationSchedule.containsKey('second') &&
+            notificationSchedule['second'] != null
+        ? notificationSchedule['second']
+        : now.second,
+  );
+
+  if (init) {
+    return scheduled;
+  }
+  if (scheduled.isBefore(now)) {
+    if (!(notificationSchedule.containsKey('minute') &&
+        notificationSchedule['minute'] != null)) {
       return scheduled.add(const Duration(minutes: 1));
-    } else {
-      return scheduled;
+    } else if (!(notificationSchedule.containsKey('hour') &&
+        notificationSchedule['hour'] != null)) {
+      return scheduled.add(const Duration(hours: 1));
     }
   }
+  return scheduled;
 }
 
 String _getRandomPrompt() {
-  return "random prompt";
+  var rng = math.Random();
+  return "random prompt: ${rng.nextInt(100)}";
 }

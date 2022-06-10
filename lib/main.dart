@@ -10,7 +10,6 @@ import 'package:therabot/notifications.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await initializeTherabotNotification();
-
+  await initializeAndCreateTherabotNotification();
   runApp(const App());
 }

@@ -51,9 +51,10 @@ dependencies:
   # flutter_gifimage: ^1.0.1
   flutter_gifimage:
     git:
-      url: 'git://github.com/Coec0/flutter_gifimage.git'
+      url: 'https://github.com/Coec0/flutter_gifimage.git'
   ionicons: ^0.1.2
   url_launcher: ^6.0.18
+  internet_connection_checker: ^0.0.1
 
 dev_dependencies:
   flutter_test:
@@ -165,8 +166,6 @@ flutter:
   - assets/animations/CB1/joy1.gif
   - assets/animations/CB1/sad_idle7.gif
   - assets/animations/CB1/sad_idle9.gif
-
-
 
   # To add assets to your application, add an assets section, like this:
   # assets:

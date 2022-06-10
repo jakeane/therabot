@@ -229,8 +229,6 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
   }
 
   void handleSubmitted(String text) {
-    log("SUBMITTED: $text");
-    shouldCancelNextNotification(DateTime.now()); // TODO: Put somwhere else?
     BubbleModel? response =
         Provider.of<ChatProvider>(context, listen: false).getBotResponse();
 
@@ -282,6 +280,7 @@ class _InteractiveChatWindow extends State<InteractiveChatWindow> {
       botThinking = true;
     });
 
+    checkDelayNextNotification(DateTime.now()); // TODO LO: Put somwhere else
     Map<String, Object> userMessage =
         Provider.of<ChatProvider>(context, listen: false).getLastMessage();
     userMessage['convoID'] = convoID;

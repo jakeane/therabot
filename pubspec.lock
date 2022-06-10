@@ -170,10 +170,12 @@ packages:
   flutter_gifimage:
     dependency: "direct main"
     description:
-      name: flutter_gifimage
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
+      path: "."
+      ref: HEAD
+      resolved-ref: "3dc34a11332e62be0e2d32649b3faa47b3bb778b"
+      url: "https://github.com/Coec0/flutter_gifimage.git"
+    source: git
+    version: "1.1.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -261,6 +263,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.4"
+  internet_connection_checker:
+    dependency: "direct main"
+    description:
+      name: internet_connection_checker
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.1+3"
   intl:
     dependency: transitive
     description:
